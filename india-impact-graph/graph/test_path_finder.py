@@ -175,10 +175,18 @@ class TestPathFinder(unittest.TestCase):
         paths = finder.find_paths("S", "T")
         self.assertEqual(paths, []) # S cannot reach T because edge is T->S, regardless of 'negative' direction.
 
-    # 20. Invalid graph input
+    # 20. Invalid graph input (bad schema, unknown edge endpoints)
     def test_invalid_graph(self):
         with self.assertRaises(InvalidGraphError):
             ImpactPathFinder([])
+            
+        bad_edge_graph = {
+            "nodes": [{"id": "A", "type": "commodity", "label": "Node A"}],
+            "edges": [{"id": "e1", "source_node": "A", "target_node": "MISSING"}]
+        }
+        with self.assertRaises(InvalidGraphError) as cm:
+            ImpactPathFinder(bad_edge_graph)
+        self.assertIn("references unknown target node 'MISSING'", str(cm.exception))
 
 if __name__ == '__main__':
     unittest.main()

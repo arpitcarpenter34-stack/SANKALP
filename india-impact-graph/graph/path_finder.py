@@ -56,12 +56,17 @@ class ImpactPathFinder:
         self.adjacency: Dict[str, List[Dict[str, Any]]] = {n: [] for n in self.nodes}
         self.edges = {}
         for edge in graph_data["edges"]:
-            src = edge["source_node"]
-            tgt = edge["target_node"]
-            if src not in self.nodes or tgt not in self.nodes:
-                continue # Graceful handling of bad edges, though builder prevents this
+            src = edge.get("source_node")
+            tgt = edge.get("target_node")
+            if not src or not tgt:
+                raise InvalidGraphError(f"Edge '{edge.get('id')}' is missing source or target node.")
+            if src not in self.nodes:
+                raise InvalidGraphError(f"Edge '{edge.get('id')}' references unknown source node '{src}'.")
+            if tgt not in self.nodes:
+                raise InvalidGraphError(f"Edge '{edge.get('id')}' references unknown target node '{tgt}'.")
+                
             self.adjacency[src].append(edge)
-            self.edges[edge["id"]] = edge
+            self.edges[edge.get("id")] = edge
 
     def find_paths(
         self, 
