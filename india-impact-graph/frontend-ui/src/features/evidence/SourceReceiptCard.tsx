@@ -12,27 +12,27 @@ export interface SourceReceiptCardProps {
 }
 
 export const SourceReceiptCard: React.FC<SourceReceiptCardProps> = ({ receipt, title }) => {
-  const hasSafeUrl = isSafeUrl(receipt.source_url);
+  const hasSafeUrl = isSafeUrl(receipt.sourceUrl);
 
   return (
     <div className={styles.receiptCard} role="region" aria-label="Source Receipt Details">
       <div className={styles.receiptCardTitle}>
-        <span>{title || receipt.source_title}</span>
-        <ObservedInferredBadge verificationStatus={receipt.verification_status} />
+        <span>{title || receipt.sourceTitle}</span>
+        <ObservedInferredBadge verificationStatus={receipt.verificationStatus} />
       </div>
 
       <div className={styles.metaGrid}>
-        {receipt.table_or_series_id ? (
+        {receipt.tableOrSeriesId ? (
           <div className={styles.metaItem}>
             <span className={styles.metaLabel}>Table / Series</span>
-            <span className={styles.metaValue}>{receipt.table_or_series_id}</span>
+            <span className={styles.metaValue}>{receipt.tableOrSeriesId}</span>
           </div>
         ) : null}
 
-        {receipt.year_or_date ? (
+        {receipt.vintageYear ? (
           <div className={styles.metaItem}>
             <span className={styles.metaLabel}>Vintage / Year</span>
-            <span className={styles.metaValue}>{receipt.year_or_date}</span>
+            <span className={styles.metaValue}>{receipt.vintageYear}</span>
           </div>
         ) : null}
 
@@ -51,19 +51,19 @@ export const SourceReceiptCard: React.FC<SourceReceiptCardProps> = ({ receipt, t
         ) : null}
       </div>
 
-      {receipt.formula_details ? (
+      {receipt.formulaDetails ? (
         <div className={styles.formulaBox}>
           <div style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--muted-text)', marginBottom: '4px' }}>
             Deterministic Calculation Formula
           </div>
-          <div>{receipt.formula_details}</div>
+          <div>{receipt.formulaDetails}</div>
         </div>
       ) : null}
 
       {hasSafeUrl ? (
         <div>
           <a
-            href={receipt.source_url!}
+            href={receipt.sourceUrl!}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.sourceLink}
@@ -71,9 +71,9 @@ export const SourceReceiptCard: React.FC<SourceReceiptCardProps> = ({ receipt, t
             ↗ View Primary Publication
           </a>
         </div>
-      ) : receipt.source_url ? (
+      ) : receipt.sourceUrl ? (
         <div style={{ fontSize: '11px', color: 'var(--muted-text)' }}>
-          Source Ref: {receipt.source_url}
+          Source Ref: {receipt.sourceUrl}
         </div>
       ) : null}
     </div>

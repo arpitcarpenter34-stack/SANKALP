@@ -1,8 +1,6 @@
 import type {
   KnowledgeGraphData,
-  NodeType,
-  GraphNodeData,
-  GraphEdgeData,
+  KnowledgeGraphNode,
 } from '../../types/contracts';
 import {
   UIGraphNode,
@@ -14,7 +12,7 @@ import {
  * Assigns a deterministic topological column (0 to 4) to each node.
  * Shocks (Left) -> Intermediates -> Sectors -> Retail -> Household Budget (Right)
  */
-function getDeterministicColumn(node: GraphNodeData, incomingCount: number, outgoingCount: number): number {
+function getDeterministicColumn(node: KnowledgeGraphNode, incomingCount: number, outgoingCount: number): number {
   // Explicit entity overrides based on domain ontology
   if (node.type === 'persona') return 4;
   if (node.type === 'household_item') return 3;
@@ -74,7 +72,7 @@ export function computeDeterministicLayout(
   }
 
   // Group nodes into 5 columns
-  const columns: GraphNodeData[][] = [[], [], [], [], []];
+  const columns: KnowledgeGraphNode[][] = [[], [], [], [], []];
   for (const node of data.nodes) {
     const colIdx = getDeterministicColumn(
       node,
@@ -108,8 +106,8 @@ export function computeDeterministicLayout(
       const visual = NODE_VISUAL_MAP[node.type] || NODE_VISUAL_MAP.commodity;
       // Budget share scales node radius slightly if confirmed (e.g. 5% to 15% share -> 26 to 34px)
       let radius = visual.baseRadius;
-      if (typeof node.budget_share === 'number' && node.budget_share > 0) {
-        radius = Math.min(38, Math.max(24, visual.baseRadius + node.budget_share * 0.4));
+      if (typeof node.budgetSharePct === 'number' && node.budgetSharePct > 0) {
+        radius = Math.min(38, Math.max(24, visual.baseRadius + node.budgetSharePct * 0.4));
       }
 
       const uiNode: UIGraphNode = {
@@ -142,7 +140,6 @@ export function computeDeterministicLayout(
     const targetY = target.y;
 
     const dx = targetX - sourceX;
-    const dy = targetY - sourceY;
     const curvature = Math.max(40, Math.abs(dx) * 0.4);
 
     const cx1 = sourceX + curvature;

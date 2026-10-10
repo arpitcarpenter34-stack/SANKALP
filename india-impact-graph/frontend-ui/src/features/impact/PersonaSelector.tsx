@@ -1,17 +1,18 @@
 import React from 'react';
 import type {
   HouseholdPersonaConfig,
-  ExpenditureClass,
-  SectorArea,
 } from '../../types/contracts';
 import styles from './impact.module.css';
 
 export interface PersonaSelectorProps {
   config: HouseholdPersonaConfig;
   onChange?: (newConfig: HouseholdPersonaConfig) => void;
+  isHouseholdMode: boolean;
+  averageHouseholdSize?: number | null;
+  onToggleHouseholdMode: (isHouseholdMode: boolean) => void;
 }
 
-export const PersonaSelector: React.FC<PersonaSelectorProps> = ({ config, onChange }) => {
+export const PersonaSelector: React.FC<PersonaSelectorProps> = ({ config, onChange, isHouseholdMode, averageHouseholdSize, onToggleHouseholdMode }) => {
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (onChange) {
       onChange({
@@ -21,7 +22,7 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({ config, onChan
     }
   };
 
-  const handleSectorChange = (sector: SectorArea) => {
+  const handleSectorChange = (sector: 'Rural' | 'Urban') => {
     if (onChange) {
       onChange({
         ...config,
@@ -30,7 +31,7 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({ config, onChan
     }
   };
 
-  const handleClassChange = (expenditureClass: ExpenditureClass) => {
+  const handleClassChange = (expenditureClass: 'Low' | 'Middle' | 'High') => {
     if (onChange) {
       onChange({
         ...config,
@@ -39,14 +40,8 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({ config, onChan
     }
   };
 
-  const handleHouseholdModeToggle = (isHouseholdMode: boolean) => {
-    if (onChange) {
-      onChange({
-        ...config,
-        isHouseholdMode,
-        displayMode: isHouseholdMode ? 'household' : 'per_capita',
-      });
-    }
+  const handleHouseholdModeToggle = (mode: boolean) => {
+    onToggleHouseholdMode(mode);
   };
 
   return (
@@ -117,28 +112,28 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({ config, onChan
         <div className={styles.segmentedControl} role="radiogroup" aria-label="Reporting Mode">
           <button
             type="button"
-            className={`${styles.segmentButton} ${!config.isHouseholdMode ? styles.segmentButtonActive : ''}`}
+            className={`${styles.segmentButton} ${!isHouseholdMode ? styles.segmentButtonActive : ''}`}
             onClick={() => handleHouseholdModeToggle(false)}
             role="radio"
-            aria-checked={!config.isHouseholdMode}
+            aria-checked={!isHouseholdMode}
           >
             Per Capita (Default)
           </button>
           <button
             type="button"
-            className={`${styles.segmentButton} ${config.isHouseholdMode ? styles.segmentButtonActive : ''}`}
+            className={`${styles.segmentButton} ${isHouseholdMode ? styles.segmentButtonActive : ''}`}
             onClick={() => handleHouseholdModeToggle(true)}
             role="radio"
-            aria-checked={Boolean(config.isHouseholdMode)}
-            disabled={!config.officialHouseholdSize}
-            title={!config.officialHouseholdSize ? 'Official verified average household size required' : undefined}
+            aria-checked={isHouseholdMode}
+            disabled={!averageHouseholdSize}
+            title={!averageHouseholdSize ? 'Official verified average household size required' : undefined}
           >
             Total Household
           </button>
         </div>
         <span className={styles.helperNote}>
-          {config.isHouseholdMode
-            ? `Scaled by verified avg size (${config.officialHouseholdSize ?? 'N/A'} persons)`
+          {isHouseholdMode
+            ? `Scaled by verified avg size (${averageHouseholdSize ?? 'N/A'} persons)`
             : '₹/person/month per NSSO/HCES convention'}
         </span>
       </div>

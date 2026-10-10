@@ -4,8 +4,8 @@
  * and transparent fallback to offline deterministic demo fixtures.
  */
 
-import { BackendConnectionStatus } from '../../types';
-import { AnalysisResponse } from './scenarioService';
+import { BackendConnectionStatus, AnalysisResponse } from '../../types';
+
 
 const DEFAULT_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 

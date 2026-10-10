@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, assert } from 'vitest';
 import { isSafeUrl } from '../url-utils';
 
 describe('Evidence Feature Tests — Verification & Safety', () => {

@@ -173,3 +173,29 @@ export interface EvidencePanelSlotProps {
   onClose?: () => void;
 }
 
+
+/**
+ * Request payload for the /scenarios/analyze live backend endpoint.
+ */
+export interface AnalysisRequest {
+  scenarioId: string;
+  customText?: string;
+  isAiOff: boolean;
+  state?: string;
+  sector?: string;
+  expenditureClass?: string;
+}
+
+/**
+ * Response payload from the /scenarios/analyze live backend endpoint.
+ * Combines scenario metadata, topological graph dependencies, and calculated persona impact.
+ */
+export interface AnalysisResponse {
+  scenario: EventScenario;
+  graph: KnowledgeGraphData;
+  persona: PersonaImpactSummary;
+  isAiOff: boolean;
+  analyzedAt: string;
+  isLiveBackend: boolean;
+  dataSourceLabel: string;
+}

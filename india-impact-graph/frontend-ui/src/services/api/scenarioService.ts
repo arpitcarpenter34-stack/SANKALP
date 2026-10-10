@@ -7,10 +7,10 @@
 
 import {
   EventScenario,
-  KnowledgeGraphData,
   PersonaImpactSummary,
   HouseholdPersonaConfig,
   BackendConnectionStatus,
+  AnalysisResponse,
 } from '../../types';
 import {
   MOCK_SCENARIOS,
@@ -19,15 +19,7 @@ import {
 } from './mockData';
 import { apiClient } from './apiClient';
 
-export interface AnalysisResponse {
-  scenario: EventScenario;
-  graph: KnowledgeGraphData;
-  persona: PersonaImpactSummary;
-  isAiOff: boolean;
-  analyzedAt: string;
-  isLiveBackend: boolean;
-  dataSourceLabel: string;
-}
+
 
 export const scenarioService = {
   /** Check connectivity to the FastAPI backend */

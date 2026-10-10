@@ -21,6 +21,11 @@ export const HouseholdImpactPanel: React.FC<HouseholdImpactSlotProps> = ({
     title: string;
   } | null>(null);
 
+  // Maintain local UI state for display mode, which shouldn't pollute the canonical config
+  const [isHouseholdMode, setIsHouseholdMode] = useState<boolean>(
+    data?.isHouseholdConversion || false
+  );
+
   return (
     <div className={styles.impactContainer}>
       {/* 1. Demographic Persona Archetype Selector */}
@@ -37,6 +42,9 @@ export const HouseholdImpactPanel: React.FC<HouseholdImpactSlotProps> = ({
         <PersonaSelector
           config={selectedPersona}
           onChange={onPersonaChange}
+          isHouseholdMode={isHouseholdMode}
+          averageHouseholdSize={data?.averageHouseholdSize}
+          onToggleHouseholdMode={setIsHouseholdMode}
         />
       </div>
 
@@ -55,12 +63,12 @@ export const HouseholdImpactPanel: React.FC<HouseholdImpactSlotProps> = ({
           data={data}
           isAiOff={isAiOff}
           isLoading={isLoading}
-          isHouseholdMode={selectedPersona.isHouseholdMode}
+          isHouseholdMode={isHouseholdMode}
         />
       </div>
 
       {/* 3. Itemized Basket Breakdown Table */}
-      {data?.items && data.items.length > 0 ? (
+      {data?.itemBreakdown && data.itemBreakdown.length > 0 ? (
         <div className={styles.panelCard}>
           <div className={styles.cardHeader}>
             <h2 className={styles.cardTitle}>
@@ -72,7 +80,7 @@ export const HouseholdImpactPanel: React.FC<HouseholdImpactSlotProps> = ({
           </div>
 
           <ItemBreakdownTable
-            items={data.items}
+            items={data.itemBreakdown}
             onSelectReceipt={(receipt, title) =>
               setActiveReceipt({ receipt, title })
             }

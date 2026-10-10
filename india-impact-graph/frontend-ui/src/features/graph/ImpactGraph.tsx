@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useCallback } from 'react';
 import type {
   GraphCanvasSlotProps,
+  KnowledgeGraphData,
   PropagationPathCategory,
 } from '../../types/contracts';
 import { computeDeterministicLayout } from './graph-layout';
@@ -56,7 +57,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
 
     if (isPathFilterActive) {
       for (const e of rawEdges) {
-        if (e.propagation_path === selectedPath) {
+        if (e.pathCategory === selectedPath) {
           pathEdges.add(e.id);
           pathNodes.add(e.from);
           pathNodes.add(e.to);
@@ -129,15 +130,15 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
 
     // 4. Incomplete path warning detection
     let warning: string | null = null;
-    if (data?.incompletePaths && data.incompletePaths.length > 0) {
+    if ((data as KnowledgeGraphData & { incompletePaths?: { path: string; reason?: string }[] })?.incompletePaths && (data as KnowledgeGraphData & { incompletePaths?: { path: string; reason?: string }[] }).incompletePaths!.length > 0) {
       if (isPathFilterActive) {
-        const match = data.incompletePaths.find((p) => p.path === selectedPath);
+        const match = (data as KnowledgeGraphData & { incompletePaths?: { path: string; reason?: string }[] }).incompletePaths!.find((p) => p.path === selectedPath);
         if (match) {
           warning = match.reason || `Propagation path ${selectedPath} is incomplete in the supplied data.`;
         }
       } else {
         // If 'all' is selected, report any unverified or broken chain
-        warning = data.incompletePaths[0].reason || 'One or more propagation chains are incomplete in the supplied data.';
+        warning = (data as KnowledgeGraphData & { incompletePaths?: { path: string; reason?: string }[] }).incompletePaths![0].reason || 'One or more propagation chains are incomplete in the supplied data.';
       }
     }
 

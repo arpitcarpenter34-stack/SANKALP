@@ -59,7 +59,7 @@ export const EvidenceDrawer: React.FC<EvidencePanelSlotProps> = ({
 
         <div className={styles.drawerContent}>
           {receipt ? (
-            <SourceReceiptCard receipt={receipt} title={receipt.source_title} />
+            <SourceReceiptCard receipt={receipt} title={receipt.sourceTitle} />
           ) : (
             <div className={styles.emptyEvidence}>
               <p>No verifiable receipt metadata provided for this entity.</p>

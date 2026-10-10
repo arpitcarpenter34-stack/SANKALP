@@ -1,9 +1,9 @@
 import React from 'react';
-import type { ItemImpactRow, SourceReceipt } from '../../types/contracts';
+import type { PersonaItemImpact, SourceReceipt } from '../../types/contracts';
 import styles from './impact.module.css';
 
 export interface ItemBreakdownTableProps {
-  items: ItemImpactRow[];
+  items: PersonaItemImpact[];
   onSelectReceipt?: (receipt: SourceReceipt, title: string) => void;
 }
 
@@ -35,7 +35,7 @@ export const ItemBreakdownTable: React.FC<ItemBreakdownTableProps> = ({
         </thead>
         <tbody>
           {items.map((row) => {
-            const isCalculated = row.status === 'calculated';
+            const isCalculated = row.dataStatus === 'available';
 
             return (
               <tr
@@ -45,36 +45,32 @@ export const ItemBreakdownTable: React.FC<ItemBreakdownTableProps> = ({
                 <td style={{ fontWeight: 600 }}>{row.itemName}</td>
 
                 <td>
-                  {isCalculated && typeof row.spendingInr === 'number'
-                    ? `₹${row.spendingInr.toFixed(2)}`
+                  {/* Not in canonical contract yet */}
+                  —
+                </td>
+
+                <td>
+                  {typeof row.budgetSharePct === 'number'
+                    ? `${row.budgetSharePct.toFixed(1)}%`
                     : '—'}
                 </td>
 
                 <td>
-                  {typeof row.expenditureWeightPct === 'number'
-                    ? `${row.expenditureWeightPct.toFixed(1)}%`
-                    : '—'}
-                </td>
-
-                <td>
-                  {isCalculated && typeof row.upstreamShockPct === 'number'
-                    ? `+${row.upstreamShockPct.toFixed(1)}%`
-                    : '—'}
+                  {/* Not in canonical contract yet */}
+                  —
                 </td>
 
                 <td>
                   {isCalculated &&
-                  typeof row.passThroughLow === 'number' &&
-                  typeof row.passThroughHigh === 'number'
-                    ? `${row.passThroughLow.toFixed(2)} - ${row.passThroughHigh.toFixed(2)}`
+                  row.passThroughFactor
+                    ? `${row.passThroughFactor.low.toFixed(2)} - ${row.passThroughFactor.high.toFixed(2)}`
                     : <span className={styles.unavailBadge}>Data not available</span>}
                 </td>
 
                 <td style={{ fontWeight: isCalculated ? 700 : 400, color: isCalculated ? 'var(--primary-teal)' : undefined }}>
                   {isCalculated &&
-                  typeof row.monthlyImpactLowInr === 'number' &&
-                  typeof row.monthlyImpactHighInr === 'number'
-                    ? `+₹${row.monthlyImpactLowInr.toFixed(2)} to +₹${row.monthlyImpactHighInr.toFixed(2)}`
+                  row.estimatedMonthlyImpactInr
+                    ? `+₹${row.estimatedMonthlyImpactInr.low.toFixed(2)} to +₹${row.estimatedMonthlyImpactInr.high.toFixed(2)}`
                     : <span className={styles.unavailBadge}>Data not available</span>}
                 </td>
 
@@ -97,7 +93,7 @@ export const ItemBreakdownTable: React.FC<ItemBreakdownTableProps> = ({
                     </button>
                   ) : row.receipt ? (
                     <span style={{ fontSize: '11px', color: 'var(--muted-text)' }}>
-                      {row.receipt.verification_status}
+                      {row.receipt.verificationStatus}
                     </span>
                   ) : (
                     <span style={{ fontSize: '11px', color: 'var(--muted-text)' }}>

@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+import { describe, it, assert } from 'vitest';
 import { computeDeterministicLayout } from '../graph-layout';
 import { sampleCrudeShockGraph } from '../fixtures/mockGraphData';
 
@@ -9,7 +8,7 @@ describe('Graph Feature Tests — Layout & Traversal', () => {
     assert.strictEqual(res1.nodes.length, 0);
     assert.strictEqual(res1.edges.length, 0);
 
-    const res2 = computeDeterministicLayout({ nodes: [], edges: [] });
+    const res2 = computeDeterministicLayout({ nodes: [], edges: [], availablePaths: [] });
     assert.strictEqual(res2.nodes.length, 0);
     assert.strictEqual(res2.edges.length, 0);
   });
@@ -64,7 +63,7 @@ describe('Graph Feature Tests — Layout & Traversal', () => {
   });
 
   it('Path Filter Test: correctly isolates Path A (food_cost) propagation links', () => {
-    const foodCostEdges = sampleCrudeShockGraph.edges.filter((e) => e.propagation_path === 'food_cost');
+    const foodCostEdges = sampleCrudeShockGraph.edges.filter((e) => e.pathCategory === 'food_cost');
     assert.strictEqual(foodCostEdges.length, 4);
 
     const edgeIds = new Set(foodCostEdges.map((e) => e.id));

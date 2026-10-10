@@ -28,9 +28,8 @@ export const MonthlyImpactCard: React.FC<MonthlyImpactCardProps> = ({
   // Unavailable data state: NEVER substitute ₹0.00
   if (
     !data ||
-    data.totalImpactLowInr === null ||
-    data.totalImpactHighInr === null ||
-    typeof data.totalImpactLowInr !== 'number'
+    !data.totalMonthlyImpactRangeInr ||
+    typeof data.totalMonthlyImpactRangeInr.low !== 'number'
   ) {
     return (
       <div className={styles.unavailableState} role="status">
@@ -43,11 +42,11 @@ export const MonthlyImpactCard: React.FC<MonthlyImpactCardProps> = ({
   }
 
   // Calculate scaled range if household mode is active and size is verified
-  const scale = isHouseholdMode && data.officialAvgHouseholdSize ? data.officialAvgHouseholdSize : 1.0;
-  const displayLow = (data.totalImpactLowInr * scale).toFixed(2);
-  const displayHigh = (data.totalImpactHighInr * scale).toFixed(2);
+  const scale = isHouseholdMode && data.averageHouseholdSize ? data.averageHouseholdSize : 1.0;
+  const displayLow = (data.totalMonthlyImpactRangeInr.low * scale).toFixed(2);
+  const displayHigh = (data.totalMonthlyImpactRangeInr.high * scale).toFixed(2);
   const unitLabel = isHouseholdMode
-    ? `₹ / household / month (Family of ~${data.officialAvgHouseholdSize})`
+    ? `₹ / household / month (Family of ~${data.averageHouseholdSize})`
     : '₹ / person / month (Per Capita)';
 
   return (
@@ -72,16 +71,16 @@ export const MonthlyImpactCard: React.FC<MonthlyImpactCardProps> = ({
       </div>
 
       {/* Coverage Transparency Block */}
-      {data.coverage ? (
+      {data.itemCoverage ? (
         <div className={styles.coverageBlock}>
           <strong>Coverage: </strong>
-          Impact calculated for {data.coverage.calculatedItemsCount} of{' '}
-          {data.coverage.totalCandidateItemsCount} candidate consumption items
-          {data.coverage.expenditureCoveragePct ? ` (covering ~${data.coverage.expenditureCoveragePct.toFixed(0)}% of monthly basket)` : ''}.
-          {data.coverage.uncalculatedItemNames && data.coverage.uncalculatedItemNames.length > 0 ? (
+          Impact calculated for {data.itemCoverage.calculatedItemsCount} of{' '}
+          {data.itemCoverage.totalCandidateItems} candidate consumption items
+          {data.itemCoverage.calculatedExpenditureSharePct ? ` (covering ~${data.itemCoverage.calculatedExpenditureSharePct.toFixed(0)}% of monthly basket)` : ''}.
+          {data.itemCoverage.uncalculatedItemsCount > 0 ? (
             <div style={{ marginTop: '4px', color: '#fde68a' }}>
               Uncalculated items due to unverified pass-through data:{' '}
-              {data.coverage.uncalculatedItemNames.join(', ')}.
+              {data.itemCoverage.uncalculatedItemsCount} item(s).
             </div>
           ) : null}
         </div>

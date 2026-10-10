@@ -40,11 +40,11 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({ edge, onSelect }) => {
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="button"
-      aria-label={`Connection: ${edge.from} to ${edge.to} (${edge.relation_type}, ${edge.kind})`}
+      aria-label={`Connection: ${edge.from} to ${edge.to} (${edge.relationType}, ${edge.kind})`}
       aria-pressed={edge.isSelected}
       id={`edge-${edge.id}`}
     >
-      <title>{`${edge.relation_type} [${edge.kind}]`}</title>
+      <title>{`${edge.relationType} [${edge.kind}]`}</title>
 
       {/* Invisible broad stroke for effortless mouse/touch interaction */}
       <path d={edge.pathD} className={styles.edgeHitArea} />
@@ -62,7 +62,7 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({ edge, onSelect }) => {
         y={edge.midY - 7}
         className={styles.edgeLabelText}
       >
-        {edge.relation_type.replace(/_/g, ' ')}
+        {edge.relationType.replace(/_/g, ' ')}
       </text>
     </g>
   );

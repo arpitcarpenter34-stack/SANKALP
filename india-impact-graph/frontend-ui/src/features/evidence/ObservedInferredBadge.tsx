@@ -1,5 +1,6 @@
 import React from 'react';
-import type { EdgeKind, VerificationStatus } from '../../types/contracts';
+import type { VerificationStatus } from '../../types/contracts';
+import type { EdgeKind } from '../graph/graph-types';
 import styles from './evidence.module.css';
 
 export interface ObservedInferredBadgeProps {

@@ -1,15 +1,15 @@
 import type {
-  GraphNodeData,
-  GraphEdgeData,
+  KnowledgeGraphNode,
+  KnowledgeGraphEdge,
   NodeType,
-  EdgeKind,
-  PropagationPathCategory,
 } from '../../types/contracts';
+
+export type EdgeKind = 'observed' | 'inferred';
 
 /**
  * UI Adapter: Augmented Node with viewport coordinates & interaction state
  */
-export interface UIGraphNode extends GraphNodeData {
+export interface UIGraphNode extends KnowledgeGraphNode {
   x: number;
   y: number;
   radius: number;
@@ -21,7 +21,7 @@ export interface UIGraphNode extends GraphNodeData {
 /**
  * UI Adapter: Augmented Edge with SVG path data & interaction state
  */
-export interface UIGraphEdge extends GraphEdgeData {
+export interface UIGraphEdge extends KnowledgeGraphEdge {
   sourceX: number;
   sourceY: number;
   targetX: number;
