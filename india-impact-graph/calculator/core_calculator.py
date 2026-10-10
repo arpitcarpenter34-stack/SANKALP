@@ -70,6 +70,18 @@ class HouseholdImpactCalculator:
                 message="Missing required input fields (baseline, share, or shock)."
             )
 
+        if baseline_receipt is None:
+            return ImpactResult(
+                item_id=item_id,
+                status="Data not available",
+                low_impact=None,
+                high_impact=None,
+                currency="INR",
+                calculation_basis="unknown",
+                receipts=receipts,
+                message="Missing required baseline receipt provenance."
+            )
+
         if pass_through_data is None:
             return ImpactResult(
                 item_id=item_id,
@@ -114,7 +126,8 @@ class HouseholdImpactCalculator:
             return ImpactResult(item_id, "Invalid input", None, None, "INR", "unknown", receipts, "Household size must be positive.")
 
         # Define calculation basis
-        if hh_size > Decimal('1'):
+        is_household_level = household_size is not None
+        if is_household_level:
             basis = "INR/household/month"
             total_baseline = baseline * hh_size
         else:

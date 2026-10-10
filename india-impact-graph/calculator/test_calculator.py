@@ -92,14 +92,19 @@ class TestHouseholdImpactCalculator(unittest.TestCase):
 
     # 11. Per-capita vs household basis output
     def test_calculation_basis_label(self):
-        # Per capita (default / size = 1)
+        # Per capita (default / size = None)
         res1 = self.calc.calculate_item_impact("diesel", 1000, 10, 10, self.dummy_pt, self.dummy_receipt)
         self.assertEqual(res1.calculation_basis, "INR/person/month")
-        
+
         # Household total (size = 4)
         res2 = self.calc.calculate_item_impact("diesel", 1000, 10, 10, self.dummy_pt, self.dummy_receipt, household_size=4)
         self.assertEqual(res2.calculation_basis, "INR/household/month")
         self.assertEqual(res2.low_impact, Decimal('16.00')) # 4x the per capita impact
+
+        # Household total (explicit size = 1)
+        res3 = self.calc.calculate_item_impact("diesel", 1000, 10, 10, self.dummy_pt, self.dummy_receipt, household_size=1)
+        self.assertEqual(res3.calculation_basis, "INR/household/month")
+        self.assertEqual(res3.low_impact, Decimal('4.00'))
 
     # 12. Receipt integrity
     def test_receipt_integrity(self):
@@ -107,6 +112,11 @@ class TestHouseholdImpactCalculator(unittest.TestCase):
         self.assertIn("baseline", result.receipts)
         self.assertIn("pass_through", result.receipts)
         self.assertEqual(result.receipts["baseline"].source_title, "Synthetic Test Data")
+
+        # Missing baseline receipt
+        res_missing_rec = self.calc.calculate_item_impact("diesel", 1000, 10, 10, self.dummy_pt, None)
+        self.assertEqual(res_missing_rec.status, "Data not available")
+        self.assertIsNone(res_missing_rec.low_impact)
 
     # 13. Determinism
     def test_determinism(self):
