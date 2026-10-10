@@ -41,6 +41,7 @@ build/
 dist/
 *.egg-info/
 .pytest_cache/
+.pytest_temp/
 
 # Node.js / JavaScript
 node_modules/
