@@ -1,0 +1,107 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sm {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+.md {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 12px;
+}
+
+.lg {
+  height: 42px;
+  padding: 0 18px;
+  font-size: 13px;
+}
+
+/* Primary Cyan Action */
+.primary {
+  background: var(--accent-cyan);
+  color: var(--bg-canvas);
+  border-color: var(--accent-cyan);
+}
+.primary:hover:not(:disabled) {
+  background: var(--accent-cyan-hover);
+  border-color: var(--accent-cyan-hover);
+  box-shadow: 0 0 12px rgba(0, 210, 180, 0.35);
+}
+.primary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Secondary Obsidian Terminal */
+.secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+.secondary:hover:not(:disabled) {
+  background: var(--bg-elevated);
+  border-color: var(--border-active);
+  color: var(--accent-cyan);
+}
+.secondary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Ghost Button */
+.ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+.ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+/* Danger Button */
+.danger {
+  background: rgba(244, 63, 94, 0.12);
+  color: var(--accent-rose);
+  border-color: rgba(244, 63, 94, 0.3);
+}
+.danger:hover:not(:disabled) {
+  background: rgba(244, 63, 94, 0.2);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+}

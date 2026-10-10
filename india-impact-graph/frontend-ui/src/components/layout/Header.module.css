@@ -1,0 +1,211 @@
+.header {
+  height: 64px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-xl);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.brandIcon {
+  width: 36px;
+  height: 36px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 18px;
+}
+
+.iconPulse {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 6px;
+  height: 6px;
+  background: var(--accent-cyan);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 6px var(--accent-cyan);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.brandTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.centerSection {
+  display: flex;
+  align-items: center;
+}
+
+.telemetryStrip {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.telemetryItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.telemetryLabel {
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.telemetryValue {
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.separator {
+  color: var(--border-medium);
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.controlsGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* AI Engine Toggle Button */
+.aiToggle {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-medium);
+}
+
+.aiOn {
+  background: rgba(0, 210, 180, 0.1);
+  color: var(--accent-cyan);
+  border-color: rgba(0, 210, 180, 0.4);
+}
+.aiOn .toggleIndicator {
+  background: var(--accent-cyan);
+  box-shadow: 0 0 6px var(--accent-cyan);
+}
+
+.aiOff {
+  background: rgba(100, 116, 139, 0.15);
+  color: var(--text-muted);
+  border-color: var(--border-medium);
+}
+.aiOff .toggleIndicator {
+  background: var(--text-muted);
+}
+
+.toggleIndicator {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+}
+
+.backendStatusBtn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-medium);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.backendStatusBtn:hover {
+  border-color: var(--accent-cyan);
+}
+
+.backendDot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+}
+
+.backendDotLive {
+  background: var(--accent-emerald);
+  box-shadow: 0 0 6px var(--accent-emerald);
+}
+
+.backendDotDemo {
+  background: var(--accent-amber);
+  box-shadow: 0 0 6px var(--accent-amber);
+}
+
+.backendText {
+  color: var(--text-secondary);
+}
+
+
+@media (max-width: 1024px) {
+  .header {
+    height: auto;
+    padding: var(--space-md);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+  .centerSection {
+    order: 3;
+    width: 100%;
+  }
+}

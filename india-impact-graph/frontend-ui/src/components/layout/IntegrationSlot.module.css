@@ -1,0 +1,152 @@
+.slotContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.slotPlaceholder {
+  background: var(--bg-card);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  position: relative;
+  transition: border-color var(--transition-fast);
+}
+
+.slotPlaceholder:hover {
+  border-color: var(--accent-cyan);
+}
+
+.graph_canvas {
+  min-height: 440px;
+  background-image: radial-gradient(rgba(0, 210, 180, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.evidence_panel {
+  min-height: 220px;
+}
+
+.household_impact {
+  min-height: 240px;
+}
+
+.slotHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(11, 15, 25, 0.6);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.slotTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.slotCoordinate {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-cyan);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.slotName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.slotBody {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  max-width: 360px;
+}
+
+.wireframeGrid {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.6;
+}
+
+.wireNode {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--accent-cyan);
+  border-radius: var(--radius-sm);
+  background: var(--bg-canvas);
+}
+
+.wireLine {
+  width: 48px;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--accent-cyan),
+    var(--accent-cyan) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.emptyNotice {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.contractHint {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.contractHint code {
+  color: var(--accent-amber);
+  background: rgba(245, 158, 11, 0.1);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.slotSpinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-medium);
+  border-top-color: var(--accent-cyan);
+  border-radius: var(--radius-full);
+  animation: spin 700ms linear infinite;
+}
+
+.loadingText {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-cyan);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
