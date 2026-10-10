@@ -1,0 +1,99 @@
+persona_id,state,sector,expenditure_class,survey_source,survey_year,mpce_value_inr,household_size_conversion_status,verified_status,notes
+andhra_pradesh_rural_all,Andhra Pradesh,Rural,All,HCES FactSheet Statement 7,2023-24,5327,Per Capita (Not Household Total),[VERIFIED],Page 11
+andhra_pradesh_urban_all,Andhra Pradesh,Urban,All,HCES FactSheet Statement 7,2023-24,7182,Per Capita (Not Household Total),[VERIFIED],Page 11
+arunachal_pradesh_rural_all,Arunachal Pradesh,Rural,All,HCES FactSheet Statement 7,2023-24,5995,Per Capita (Not Household Total),[VERIFIED],Page 11
+arunachal_pradesh_urban_all,Arunachal Pradesh,Urban,All,HCES FactSheet Statement 7,2023-24,9832,Per Capita (Not Household Total),[VERIFIED],Page 11
+assam_rural_all,Assam,Rural,All,HCES FactSheet Statement 7,2023-24,3793,Per Capita (Not Household Total),[VERIFIED],Page 11
+assam_urban_all,Assam,Urban,All,HCES FactSheet Statement 7,2023-24,6794,Per Capita (Not Household Total),[VERIFIED],Page 11
+bihar_rural_all,Bihar,Rural,All,HCES FactSheet Statement 7,2023-24,3670,Per Capita (Not Household Total),[VERIFIED],Page 11
+bihar_urban_all,Bihar,Urban,All,HCES FactSheet Statement 7,2023-24,5080,Per Capita (Not Household Total),[VERIFIED],Page 11
+chhattisgarh_rural_all,Chhattisgarh,Rural,All,HCES FactSheet Statement 7,2023-24,2739,Per Capita (Not Household Total),[VERIFIED],Page 11
+chhattisgarh_urban_all,Chhattisgarh,Urban,All,HCES FactSheet Statement 7,2023-24,4927,Per Capita (Not Household Total),[VERIFIED],Page 11
+delhi_rural_all,Delhi,Rural,All,HCES FactSheet Statement 7,2023-24,7400,Per Capita (Not Household Total),[VERIFIED],Page 11
+delhi_urban_all,Delhi,Urban,All,HCES FactSheet Statement 7,2023-24,8534,Per Capita (Not Household Total),[VERIFIED],Page 11
+goa_rural_all,Goa,Rural,All,HCES FactSheet Statement 7,2023-24,8048,Per Capita (Not Household Total),[VERIFIED],Page 11
+goa_urban_all,Goa,Urban,All,HCES FactSheet Statement 7,2023-24,9726,Per Capita (Not Household Total),[VERIFIED],Page 11
+gujarat_rural_all,Gujarat,Rural,All,HCES FactSheet Statement 7,2023-24,4116,Per Capita (Not Household Total),[VERIFIED],Page 11
+gujarat_urban_all,Gujarat,Urban,All,HCES FactSheet Statement 7,2023-24,7175,Per Capita (Not Household Total),[VERIFIED],Page 11
+haryana_rural_all,Haryana,Rural,All,HCES FactSheet Statement 7,2023-24,5377,Per Capita (Not Household Total),[VERIFIED],Page 11
+haryana_urban_all,Haryana,Urban,All,HCES FactSheet Statement 7,2023-24,8428,Per Capita (Not Household Total),[VERIFIED],Page 11
+himachal_pradesh_rural_all,Himachal Pradesh,Rural,All,HCES FactSheet Statement 7,2023-24,5825,Per Capita (Not Household Total),[VERIFIED],Page 11
+himachal_pradesh_urban_all,Himachal Pradesh,Urban,All,HCES FactSheet Statement 7,2023-24,9223,Per Capita (Not Household Total),[VERIFIED],Page 11
+jharkhand_rural_all,Jharkhand,Rural,All,HCES FactSheet Statement 7,2023-24,2946,Per Capita (Not Household Total),[VERIFIED],Page 11
+jharkhand_urban_all,Jharkhand,Urban,All,HCES FactSheet Statement 7,2023-24,5393,Per Capita (Not Household Total),[VERIFIED],Page 11
+karnataka_rural_all,Karnataka,Rural,All,HCES FactSheet Statement 7,2023-24,4903,Per Capita (Not Household Total),[VERIFIED],Page 11
+karnataka_urban_all,Karnataka,Urban,All,HCES FactSheet Statement 7,2023-24,8076,Per Capita (Not Household Total),[VERIFIED],Page 11
+kerala_rural_all,Kerala,Rural,All,HCES FactSheet Statement 7,2023-24,6611,Per Capita (Not Household Total),[VERIFIED],Page 11
+kerala_urban_all,Kerala,Urban,All,HCES FactSheet Statement 7,2023-24,7783,Per Capita (Not Household Total),[VERIFIED],Page 11
+madhya_pradesh_rural_all,Madhya Pradesh,Rural,All,HCES FactSheet Statement 7,2023-24,3441,Per Capita (Not Household Total),[VERIFIED],Page 11
+madhya_pradesh_urban_all,Madhya Pradesh,Urban,All,HCES FactSheet Statement 7,2023-24,5538,Per Capita (Not Household Total),[VERIFIED],Page 11
+maharashtra_rural_all,Maharashtra,Rural,All,HCES FactSheet Statement 7,2023-24,4145,Per Capita (Not Household Total),[VERIFIED],Page 11
+maharashtra_urban_all,Maharashtra,Urban,All,HCES FactSheet Statement 7,2023-24,7363,Per Capita (Not Household Total),[VERIFIED],Page 11
+manipur_rural_all,Manipur,Rural,All,HCES FactSheet Statement 7,2023-24,4531,Per Capita (Not Household Total),[VERIFIED],Page 11
+manipur_urban_all,Manipur,Urban,All,HCES FactSheet Statement 7,2023-24,5945,Per Capita (Not Household Total),[VERIFIED],Page 11
+meghalaya_rural_all,Meghalaya,Rural,All,HCES FactSheet Statement 7,2023-24,3852,Per Capita (Not Household Total),[VERIFIED],Page 11
+meghalaya_urban_all,Meghalaya,Urban,All,HCES FactSheet Statement 7,2023-24,7839,Per Capita (Not Household Total),[VERIFIED],Page 11
+mizoram_rural_all,Mizoram,Rural,All,HCES FactSheet Statement 7,2023-24,5963,Per Capita (Not Household Total),[VERIFIED],Page 11
+mizoram_urban_all,Mizoram,Urban,All,HCES FactSheet Statement 7,2023-24,8709,Per Capita (Not Household Total),[VERIFIED],Page 11
+nagaland_rural_all,Nagaland,Rural,All,HCES FactSheet Statement 7,2023-24,5155,Per Capita (Not Household Total),[VERIFIED],Page 11
+nagaland_urban_all,Nagaland,Urban,All,HCES FactSheet Statement 7,2023-24,8022,Per Capita (Not Household Total),[VERIFIED],Page 11
+odisha_rural_all,Odisha,Rural,All,HCES FactSheet Statement 7,2023-24,3357,Per Capita (Not Household Total),[VERIFIED],Page 11
+odisha_urban_all,Odisha,Urban,All,HCES FactSheet Statement 7,2023-24,5825,Per Capita (Not Household Total),[VERIFIED],Page 11
+punjab_rural_all,Punjab,Rural,All,HCES FactSheet Statement 7,2023-24,5817,Per Capita (Not Household Total),[VERIFIED],Page 11
+punjab_urban_all,Punjab,Urban,All,HCES FactSheet Statement 7,2023-24,7359,Per Capita (Not Household Total),[VERIFIED],Page 11
+rajasthan_rural_all,Rajasthan,Rural,All,HCES FactSheet Statement 7,2023-24,4510,Per Capita (Not Household Total),[VERIFIED],Page 11
+rajasthan_urban_all,Rajasthan,Urban,All,HCES FactSheet Statement 7,2023-24,6574,Per Capita (Not Household Total),[VERIFIED],Page 11
+sikkim_rural_all,Sikkim,Rural,All,HCES FactSheet Statement 7,2023-24,9377,Per Capita (Not Household Total),[VERIFIED],Page 11
+sikkim_urban_all,Sikkim,Urban,All,HCES FactSheet Statement 7,2023-24,13927,Per Capita (Not Household Total),[VERIFIED],Page 11
+tamil_nadu_rural_all,Tamil Nadu,Rural,All,HCES FactSheet Statement 7,2023-24,5701,Per Capita (Not Household Total),[VERIFIED],Page 11
+tamil_nadu_urban_all,Tamil Nadu,Urban,All,HCES FactSheet Statement 7,2023-24,8165,Per Capita (Not Household Total),[VERIFIED],Page 11
+telangana_rural_all,Telangana,Rural,All,HCES FactSheet Statement 7,2023-24,5435,Per Capita (Not Household Total),[VERIFIED],Page 11
+telangana_urban_all,Telangana,Urban,All,HCES FactSheet Statement 7,2023-24,8978,Per Capita (Not Household Total),[VERIFIED],Page 11
+tripura_rural_all,Tripura,Rural,All,HCES FactSheet Statement 7,2023-24,6259,Per Capita (Not Household Total),[VERIFIED],Page 11
+tripura_urban_all,Tripura,Urban,All,HCES FactSheet Statement 7,2023-24,8034,Per Capita (Not Household Total),[VERIFIED],Page 11
+uttar_pradesh_rural_all,Uttar Pradesh,Rural,All,HCES FactSheet Statement 7,2023-24,3481,Per Capita (Not Household Total),[VERIFIED],Page 11
+uttar_pradesh_urban_all,Uttar Pradesh,Urban,All,HCES FactSheet Statement 7,2023-24,5395,Per Capita (Not Household Total),[VERIFIED],Page 11
+uttarakhand_rural_all,Uttarakhand,Rural,All,HCES FactSheet Statement 7,2023-24,5003,Per Capita (Not Household Total),[VERIFIED],Page 11
+uttarakhand_urban_all,Uttarakhand,Urban,All,HCES FactSheet Statement 7,2023-24,7486,Per Capita (Not Household Total),[VERIFIED],Page 11
+west_bengal_rural_all,West Bengal,Rural,All,HCES FactSheet Statement 7,2023-24,3620,Per Capita (Not Household Total),[VERIFIED],Page 11
+west_bengal_urban_all,West Bengal,Urban,All,HCES FactSheet Statement 7,2023-24,5775,Per Capita (Not Household Total),[VERIFIED],Page 11
+andaman_and_n_islands_rural_all,Andaman & N Islands,Rural,All,HCES FactSheet Statement 7,2023-24,7771,Per Capita (Not Household Total),[VERIFIED],Page 11
+andaman_and_n_islands_urban_all,Andaman & N Islands,Urban,All,HCES FactSheet Statement 7,2023-24,10453,Per Capita (Not Household Total),[VERIFIED],Page 11
+chandigarh_rural_all,Chandigarh,Rural,All,HCES FactSheet Statement 7,2023-24,8857,Per Capita (Not Household Total),[VERIFIED],Page 11
+chandigarh_urban_all,Chandigarh,Urban,All,HCES FactSheet Statement 7,2023-24,13425,Per Capita (Not Household Total),[VERIFIED],Page 11
+dadra_and_nagar_haveli_and_daman_and_diu_rural_all,Dadra & Nagar Haveli and Daman & Diu,Rural,All,HCES FactSheet Statement 7,2023-24,4311,Per Capita (Not Household Total),[VERIFIED],Page 11
+dadra_and_nagar_haveli_and_daman_and_diu_urban_all,Dadra & Nagar Haveli and Daman & Diu,Urban,All,HCES FactSheet Statement 7,2023-24,6837,Per Capita (Not Household Total),[VERIFIED],Page 11
+jammu_and_kashmir_rural_all,Jammu & Kashmir,Rural,All,HCES FactSheet Statement 7,2023-24,4774,Per Capita (Not Household Total),[VERIFIED],Page 11
+jammu_and_kashmir_urban_all,Jammu & Kashmir,Urban,All,HCES FactSheet Statement 7,2023-24,6327,Per Capita (Not Household Total),[VERIFIED],Page 11
+ladakh_rural_all,Ladakh,Rural,All,HCES FactSheet Statement 7,2023-24,5010,Per Capita (Not Household Total),[VERIFIED],Page 11
+ladakh_urban_all,Ladakh,Urban,All,HCES FactSheet Statement 7,2023-24,7533,Per Capita (Not Household Total),[VERIFIED],Page 11
+lakshadweep_rural_all,Lakshadweep,Rural,All,HCES FactSheet Statement 7,2023-24,6350,Per Capita (Not Household Total),[VERIFIED],Page 11
+lakshadweep_urban_all,Lakshadweep,Urban,All,HCES FactSheet Statement 7,2023-24,6377,Per Capita (Not Household Total),[VERIFIED],Page 11
+puducherry_rural_all,Puducherry,Rural,All,HCES FactSheet Statement 7,2023-24,7598,Per Capita (Not Household Total),[VERIFIED],Page 11
+puducherry_urban_all,Puducherry,Urban,All,HCES FactSheet Statement 7,2023-24,8637,Per Capita (Not Household Total),[VERIFIED],Page 11
+all-india_rural_all,All-India,Rural,All,HCES FactSheet Statement 7,2023-24,4122,Per Capita (Not Household Total),[VERIFIED],Page 11
+all-india_urban_all,All-India,Urban,All,HCES FactSheet Statement 7,2023-24,6996,Per Capita (Not Household Total),[VERIFIED],Page 11
+all_india_rural_0-5,All-India,Rural,0-5%,HCES FactSheet Figure 1R,2023-24,1677,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_5-10,All-India,Rural,5-10%,HCES FactSheet Figure 1R,2023-24,2126,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_10-20,All-India,Rural,10-20%,HCES FactSheet Figure 1R,2023-24,2473,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_20-30,All-India,Rural,20-30%,HCES FactSheet Figure 1R,2023-24,2833,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_30-40,All-India,Rural,30-40%,HCES FactSheet Figure 1R,2023-24,3162,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_40-50,All-India,Rural,40-50%,HCES FactSheet Figure 1R,2023-24,3498,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_50-60,All-India,Rural,50-60%,HCES FactSheet Figure 1R,2023-24,3866,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_60-70,All-India,Rural,60-70%,HCES FactSheet Figure 1R,2023-24,4304,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_70-80,All-India,Rural,70-80%,HCES FactSheet Figure 1R,2023-24,4885,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_80-90,All-India,Rural,80-90%,HCES FactSheet Figure 1R,2023-24,5763,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_90-95,All-India,Rural,90-95%,HCES FactSheet Figure 1R,2023-24,6929,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_rural_95-100,All-India,Rural,95-100%,HCES FactSheet Figure 1R,2023-24,10137,Per Capita (Not Household Total),[VERIFIED],Page 5
+all_india_urban_0-5,All-India,Urban,0-5%,HCES FactSheet Figure 1U,2023-24,2376,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_5-10,All-India,Urban,5-10%,HCES FactSheet Figure 1U,2023-24,3093,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_10-20,All-India,Urban,10-20%,HCES FactSheet Figure 1U,2023-24,3687,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_20-30,All-India,Urban,20-30%,HCES FactSheet Figure 1U,2023-24,4353,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_30-40,All-India,Urban,30-40%,HCES FactSheet Figure 1U,2023-24,4979,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_40-50,All-India,Urban,40-50%,HCES FactSheet Figure 1U,2023-24,5622,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_50-60,All-India,Urban,50-60%,HCES FactSheet Figure 1U,2023-24,6334,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_60-70,All-India,Urban,60-70%,HCES FactSheet Figure 1U,2023-24,7199,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_70-80,All-India,Urban,70-80%,HCES FactSheet Figure 1U,2023-24,8353,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_80-90,All-India,Urban,80-90%,HCES FactSheet Figure 1U,2023-24,10139,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_90-95,All-India,Urban,90-95%,HCES FactSheet Figure 1U,2023-24,12817,Per Capita (Not Household Total),[VERIFIED],Page 6
+all_india_urban_95-100,All-India,Urban,95-100%,HCES FactSheet Figure 1U,2023-24,20310,Per Capita (Not Household Total),[VERIFIED],Page 6
