@@ -185,13 +185,16 @@ class ApiClient {
         throw new Error('Backend returned HTTP 200 but response body failed contract validation.');
       }
 
+      const isMock = rawData.scenario?.title === 'Backend Mock Scenario';
       this.lastAnalysisOperationLive = true;
       this.lastStatus = {
         isLive: true,
         endpointUrl: this.baseUrl,
         checkedAt: new Date().toLocaleTimeString('en-IN', { hour12: false }),
-        mode: 'live_backend',
-        label: 'LIVE FASTAPI BACKEND // REAL-TIME EXTRACTION VERIFIED',
+        mode: isMock ? 'partial_backend' : 'live_backend',
+        label: isMock 
+          ? 'FASTAPI BACKEND // PARTIAL DEMO DATA'
+          : 'LIVE FASTAPI BACKEND // REAL-TIME EXTRACTION VERIFIED',
         latencyMs: this.lastStatus.latencyMs,
       };
 

@@ -137,7 +137,7 @@ export interface BackendConnectionStatus {
   isLive: boolean;
   endpointUrl: string;
   checkedAt: string;
-  mode: 'live_backend' | 'offline_demo_engine';
+  mode: 'live_backend' | 'offline_demo_engine' | 'partial_backend';
   label: string;
   latencyMs?: number | null;
 }

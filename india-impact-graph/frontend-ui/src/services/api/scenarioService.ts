@@ -86,10 +86,11 @@ export const scenarioService = {
         })) as AnalysisResponse;
 
         if (liveResult && liveResult.graph && liveResult.persona) {
+          const isMock = liveResult.scenario?.title === 'Backend Mock Scenario';
           return {
             ...liveResult,
             isLiveBackend: true,
-            dataSourceLabel: 'LIVE FASTAPI BACKEND // REAL-TIME EXTRACTION',
+            dataSourceLabel: isMock ? 'FASTAPI BACKEND // PARTIAL DEMO DATA' : 'LIVE FASTAPI BACKEND // REAL-TIME EXTRACTION',
           };
         }
       } catch {
