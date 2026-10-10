@@ -285,3 +285,112 @@ def test_transaction_rollback_on_persistence_failure(client: TestClient, db_sess
     snippet_count = len(db_session.execute(select(EventEvidenceSnippetModel)).scalars().all())
     assert entity_count == 0
     assert snippet_count == 0
+
+
+def test_list_events_empty_database(client: TestClient):
+    """Verify GET /api/events returns HTTP 200 and empty list when no events are saved."""
+    response = client.get("/api/events")
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_list_events_multiple_deterministic_order(client: TestClient):
+    """Verify GET /api/events returns events in stable, deterministic event_id order with summary schema."""
+    event_c = {
+        "event_id": "c-wheat-shock",
+        "event_type": "commodity_price_shock",
+        "headline": "Wheat Export Restrictions Introduced",
+        "is_scenario": True,
+        "entities": [],
+        "evidence_snippets": [],
+    }
+    event_a = {
+        "event_id": "a-crude-shock",
+        "event_type": "commodity_price_shock",
+        "headline": "Crude Oil Spikes 12%",
+        "is_scenario": True,
+        "magnitude": {"direction": "increase", "value": 12.0, "unit": "%"},
+        "entities": [],
+        "evidence_snippets": [],
+    }
+    event_b = {
+        "event_id": "b-edible-oil-shock",
+        "event_type": "commodity_price_shock",
+        "headline": "Edible Oil Import Duty Adjusted",
+        "is_scenario": False,
+        "entities": [],
+        "evidence_snippets": [],
+    }
+
+    # Insert out of order
+    for ev in [event_c, event_a, event_b]:
+        res = client.post("/api/events", json=ev)
+        assert res.status_code == 201
+
+    # Fetch list
+    response = client.get("/api/events")
+    assert response.status_code == 200
+    items = response.json()
+    assert len(items) == 3
+
+    # Confirm alphabetical ascending sort by event_id
+    assert [item["event_id"] for item in items] == [
+        "a-crude-shock",
+        "b-edible-oil-shock",
+        "c-wheat-shock",
+    ]
+
+    # Confirm lightweight summary shape (does not include child collections)
+    first = items[0]
+    assert first["event_id"] == "a-crude-shock"
+    assert first["headline"] == "Crude Oil Spikes 12%"
+    assert first["magnitude"] == {"direction": "increase", "value": 12.0, "unit": "%"}
+    assert "entities" not in first
+    assert "evidence_snippets" not in first
+
+
+def test_list_events_trailing_slash(client: TestClient):
+    """Verify GET /api/events/ with trailing slash works properly."""
+    response = client.get("/api/events/")
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_cors_preflight_allowed_origin(client: TestClient):
+    """Verify CORS preflight request from allowed origin returns permitted headers without credentials."""
+    headers = {
+        "Origin": "http://localhost:3000",
+        "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Headers": "Content-Type",
+    }
+    response = client.options("/api/events", headers=headers)
+    assert response.status_code == 200
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:3000"
+    assert "POST" in response.headers.get("access-control-allow-methods", "")
+    assert "Content-Type" in response.headers.get("access-control-allow-headers", "")
+    assert response.headers.get("access-control-allow-credentials") is None
+
+
+def test_cors_preflight_disallowed_origin(client: TestClient):
+    """Verify CORS preflight from disallowed origin does not grant cross-origin access."""
+    headers = {
+        "Origin": "http://malicious-attacker-domain.org",
+        "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Headers": "Content-Type",
+    }
+    response = client.options("/api/events", headers=headers)
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_cors_null_origin_rejected(client: TestClient):
+    """Verify Origin: null is rejected to prevent sandbox and file URI bypass vulnerabilities."""
+    headers = {
+        "Origin": "null",
+        "Access-Control-Request-Method": "GET",
+    }
+    response = client.options("/api/events", headers=headers)
+    assert "access-control-allow-origin" not in response.headers
+
+    get_res = client.get("/api/events", headers={"Origin": "null"})
+    assert get_res.status_code == 200
+    assert "access-control-allow-origin" not in get_res.headers

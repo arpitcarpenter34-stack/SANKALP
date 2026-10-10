@@ -18,9 +18,32 @@ from app.schemas.event import (
     EvidenceSnippet,
     ExtractedEntity,
     FinancialEventExtraction,
+    FinancialEventSummary,
 )
 
 router = APIRouter(prefix="/api/events", tags=["events"])
+
+
+def model_to_summary(event_model: FinancialEventModel) -> FinancialEventSummary:
+    """Convert a FinancialEventModel ORM instance to a FinancialEventSummary Pydantic model."""
+    magnitude = None
+    if event_model.magnitude_direction is not None:
+        magnitude = EventMagnitude(
+            direction=event_model.magnitude_direction,
+            value=event_model.magnitude_value,
+            unit=event_model.magnitude_unit,
+        )
+
+    return FinancialEventSummary(
+        event_id=event_model.event_id,
+        event_type=event_model.event_type,
+        is_scenario=event_model.is_scenario,
+        headline=event_model.headline,
+        event_date=event_model.event_date,
+        geography=event_model.geography,
+        magnitude=magnitude,
+    )
+
 
 
 def model_to_schema(event_model: FinancialEventModel) -> FinancialEventExtraction:
@@ -186,6 +209,38 @@ def create_event_trailing_slash(
 ) -> FinancialEventExtraction:
     """Handle trailing slash path for POST /api/events/."""
     return create_event(event=event, db=db)
+
+
+@router.get(
+    "",
+    response_model=list[FinancialEventSummary],
+    status_code=status.HTTP_200_OK,
+    summary="List financial events",
+)
+def list_events(
+    db: Session = Depends(get_db),
+) -> list[FinancialEventSummary]:
+    """Retrieve a list of financial event summaries in deterministic event_id order.
+
+    Does not load child entities and evidence snippets, optimizing payload size
+    for dropdowns and overview listings. Returns an empty list if no events exist.
+    """
+    stmt = select(FinancialEventModel).order_by(FinancialEventModel.event_id.asc())
+    events = db.execute(stmt).scalars().all()
+    return [model_to_summary(event) for event in events]
+
+
+@router.get(
+    "/",
+    response_model=list[FinancialEventSummary],
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+def list_events_trailing_slash(
+    db: Session = Depends(get_db),
+) -> list[FinancialEventSummary]:
+    """Handle trailing slash path for GET /api/events/."""
+    return list_events(db=db)
 
 
 @router.get(

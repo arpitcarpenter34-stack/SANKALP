@@ -88,3 +88,25 @@ class FinancialEventExtraction(BaseModel):
     )
     geography: Optional[str] = None
     magnitude: Optional[EventMagnitude] = None
+
+
+class FinancialEventSummary(BaseModel):
+    """Summary representation of a financial event for listing and selection.
+
+    Excludes nested entities and evidence snippets to provide a lightweight payload
+    for UI dropdowns and overview catalogs while strictly conforming to event contract fields.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    event_id: str
+    event_type: EventType
+    is_scenario: bool
+    headline: Optional[str] = None
+    event_date: Optional[str] = Field(
+        default=None,
+        pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        description="Date of event in ISO-8601 format (YYYY-MM-DD)",
+    )
+    geography: Optional[str] = None
+    magnitude: Optional[EventMagnitude] = None
