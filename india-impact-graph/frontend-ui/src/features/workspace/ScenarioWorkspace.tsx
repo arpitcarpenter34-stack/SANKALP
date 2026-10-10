@@ -202,7 +202,7 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
             size="lg"
             onClick={handleTriggerAnalysis}
             isLoading={analysisState.status === 'loading'}
-            className={styles.analyzeButton}
+            className={`${styles.analyzeButton} ${analysisState.status === 'idle' ? styles.buttonReady : ''}`}
           >
             {analysisState.status === 'loading'
               ? 'Evaluating Transmission...'

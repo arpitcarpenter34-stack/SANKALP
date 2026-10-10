@@ -87,8 +87,11 @@
 /* Node Elements */
 .nodeGroup {
   cursor: pointer;
-  transition: opacity var(--transition-normal, 250ms ease), transform var(--transition-fast, 150ms ease);
+  transition: opacity var(--transition-normal), transform var(--transition-fast);
   outline: none;
+  animation: scaleInFade 0.4s var(--transition-normal) both;
+  /* Transform origin will be overridden inline or assumed center if possible, 
+     but SVG handles transform origins differently. Using scaleInFade for opacity mainly */
 }
 
 .nodeGroup:hover .nodeShape {
@@ -136,7 +139,9 @@
 /* Edge Elements */
 .edgeGroup {
   cursor: pointer;
-  transition: opacity var(--transition-normal, 250ms ease);
+  transition: opacity var(--transition-normal);
+  animation: scaleInFade 0.5s var(--transition-normal) both;
+  animation-delay: 0.1s;
 }
 
 .edgeHitArea {
@@ -160,6 +165,7 @@
 .edgeInferred {
   stroke: var(--uncertainty-amber, #f59e0b);
   stroke-dasharray: 6 4;
+  animation: dashOffset 20s linear infinite reverse;
 }
 
 .edgeSelected .edgeLine {

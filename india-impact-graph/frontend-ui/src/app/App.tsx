@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '../components/layout/AppLayout';
-import { IntegrationSlot } from '../components/layout/IntegrationSlot';
+
 import { ScenarioWorkspace } from '../features/workspace/ScenarioWorkspace';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -36,7 +36,6 @@ export const App: React.FC<AppProps> = ({
   const [selectedPath, setSelectedPath] = useState<PropagationPathCategory | 'all'>('all');
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
-  const [dataSourceLabel, setDataSourceLabel] = useState<string>('DETERMINISTIC DEMO FIXTURE // OFFLINE ENGINE');
 
   // Backend connection state
   const [backendStatus, setBackendStatus] = useState<BackendConnectionStatus>(apiClient.getStatus());
@@ -86,7 +85,6 @@ export const App: React.FC<AppProps> = ({
         simulateError
       );
 
-      setDataSourceLabel(response.dataSourceLabel);
       setAnalysisState({
         status: 'analyzed',
         selectedScenario: response.scenario,
@@ -174,12 +172,6 @@ export const App: React.FC<AppProps> = ({
     }
   }
 
-  // Filter preview edges based on selected path
-  const visibleEdges = (analysisState.graphData?.edges || []).filter((e) => {
-    if (selectedPath === 'all') return true;
-    return e.pathCategory === selectedPath;
-  });
-
   // Centerpiece Graph Panel for Center Column
   const centerPanel = (
     <Card
@@ -241,146 +233,35 @@ export const App: React.FC<AppProps> = ({
         </button>
       </div>
 
-      {/* Integration Slot for Laptop B's Graph Canvas */}
-      <IntegrationSlot
-        slotName="Interactive Knowledge Graph Viewport"
-        slotType="graph_canvas"
-        ownerLabel="Laptop B: Graph Canvas Slot"
-        isLoading={analysisState.status === 'loading'}
-        isEmpty={analysisState.status === 'idle'}
-        emptyNotice="Trigger 'Analyze Event' in the left workspace to project the multi-step transmission graph."
-      >
-        {analysisState.status === 'error' && (
-          <div className={styles.slotErrorContainer} role="alert">
-            <span className={styles.slotErrorText}>
-              ⚠️ {analysisState.errorMessage}
-            </span>
-            <button
-              type="button"
-              className={styles.slotRetryBtn}
-              onClick={() => handleAnalyze(analysisState.selectedScenario.id)}
-            >
-              ↻ Retry Transmission Evaluation
-            </button>
-          </div>
-        )}
+      {analysisState.status === 'error' && (
+        <div className={styles.slotErrorContainer} role="alert">
+          <span className={styles.slotErrorText}>
+            ⚠️ {analysisState.errorMessage}
+          </span>
+          <button
+            type="button"
+            className={styles.slotRetryBtn}
+            onClick={() => handleAnalyze(analysisState.selectedScenario.id)}
+          >
+            ↻ Retry Transmission Evaluation
+          </button>
+        </div>
+      )}
 
-        {analysisState.status === 'analyzed' && analysisState.graphData && (
-          CustomGraphCanvas ? (
-            <CustomGraphCanvas
-              data={analysisState.graphData}
-              selectedPath={selectedPath}
-              onSelectPath={setSelectedPath}
-              selectedNodeId={selectedNodeId}
-              onSelectNode={setSelectedNodeId}
-              selectedEdgeId={selectedEdgeId}
-              onSelectEdge={setSelectedEdgeId}
-              isLoading={false}
-            />
-          ) : (
-            <div className={styles.mockGraphPreview}>
-              <div className={styles.canvasHeader}>
-                <span className={styles.canvasCoordinates}>
-                  ENGINE: {dataSourceLabel}
-                </span>
-                <span className={styles.canvasPathLabel}>
-                  Active Filter:{' '}
-                  {selectedPath === 'all'
-                    ? 'All Channels'
-                    : selectedPath.toUpperCase()}
-                </span>
-              </div>
+      {/* Graph Canvas */}
+      {CustomGraphCanvas && analysisState.status !== 'error' && (
+        <CustomGraphCanvas
+          data={analysisState.graphData || null}
+          selectedPath={selectedPath}
+          onSelectPath={setSelectedPath}
+          selectedNodeId={selectedNodeId}
+          onSelectNode={setSelectedNodeId}
+          selectedEdgeId={selectedEdgeId}
+          onSelectEdge={setSelectedEdgeId}
+          isLoading={analysisState.status === 'loading'}
+        />
+      )}
 
-              {/* Visual Node Grid Placeholder matching Stitch Architecture */}
-              <div className={styles.nodeNetworkPreview}>
-                {analysisState.graphData.nodes.slice(0, 5).map((node) => {
-                  const isSelected = selectedNodeId === node.id;
-                  return (
-                    <div
-                      key={node.id}
-                      className={`${styles.nodePreviewCard} ${styles.nodePreviewCardClickable} ${
-                        isSelected ? styles.nodePreviewCardActive : ''
-                      }`}
-                      onClick={() => {
-                        setSelectedNodeId(node.id);
-                        setSelectedEdgeId(null);
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          setSelectedNodeId(node.id);
-                          setSelectedEdgeId(null);
-                        }
-                      }}
-                      title="Click node to inspect source evidence receipt"
-                    >
-                      <Badge
-                        variant={
-                          node.isObservedFact
-                            ? 'verified'
-                            : node.type === 'commodity'
-                            ? 'cyan'
-                            : 'inferred'
-                        }
-                        size="sm"
-                      >
-                        {node.type.toUpperCase()}
-                      </Badge>
-                      <div className={styles.nodeTitle}>{node.label}</div>
-                      <div className={styles.nodeMeta}>
-                        {node.budgetSharePct != null
-                          ? `Budget: ${node.budgetSharePct}%`
-                          : node.isObservedFact
-                          ? 'Observed Base'
-                          : 'Inferred Node'}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Edge Conduit Preview */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '8px',
-                  flexWrap: 'wrap',
-                  justifyContent: 'center',
-                  margin: '8px 0',
-                }}
-              >
-                {visibleEdges.map((edge) => {
-                  const isEdgeSelected = selectedEdgeId === edge.id;
-                  return (
-                    <button
-                      key={edge.id}
-                      type="button"
-                      className={`${styles.arrowConduit} ${styles.arrowConduitClickable} ${
-                        isEdgeSelected ? styles.arrowConduitActive : ''
-                      }`}
-                      onClick={() => {
-                        setSelectedEdgeId(edge.id);
-                        setSelectedNodeId(null);
-                      }}
-                      title="Click causal edge to inspect source receipt"
-                    >
-                      {edge.from} ➔ {edge.to} ({edge.relationType})
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className={styles.canvasFooterSlot}>
-                <span className={styles.canvasContractBadge}>
-                  ⚡ Laptop B Integration Slot: Ready for Cytoscape.js / D3 Canvas (Receives{' '}
-                  <code>GraphCanvasSlotProps</code>)
-                </span>
-              </div>
-            </div>
-          )
-        )}
-      </IntegrationSlot>
     </Card>
   );
 
@@ -469,88 +350,23 @@ export const App: React.FC<AppProps> = ({
           </div>
         </div>
 
-        <IntegrationSlot
-          slotName="Household Persona Impact Card"
-          slotType="household_impact"
-          ownerLabel="Laptop B: Impact Card Slot"
-          isLoading={analysisState.status === 'loading'}
-          isEmpty={analysisState.status === 'idle'}
-          emptyNotice="Select a persona archetype to view calculated monthly expenditure impact."
-        >
-          {analysisState.status === 'error' && (
-            <div className={styles.slotErrorContainer} role="alert">
-              <span className={styles.slotErrorText}>
-                ⚠️ Household impact calculation stalled due to evaluation error.
-              </span>
-            </div>
-          )}
+        {analysisState.status === 'error' && (
+          <div className={styles.slotErrorContainer} role="alert">
+            <span className={styles.slotErrorText}>
+              ⚠️ Household impact calculation stalled due to evaluation error.
+            </span>
+          </div>
+        )}
 
-          {analysisState.status === 'analyzed' && analysisState.personaData && (
-            CustomHouseholdImpact ? (
-              <CustomHouseholdImpact
-                data={analysisState.personaData}
+        {CustomHouseholdImpact && analysisState.status !== 'error' && (
+          <CustomHouseholdImpact
+            data={analysisState.personaData || null}
                 selectedPersona={personaConfig}
                 onPersonaChange={handlePersonaConfigChange}
                 isAiOff={isAiOff}
                 isLoading={false}
               />
-            ) : (
-              <div className={styles.personaPreviewCard}>
-                <div className={styles.personaArchetypeRow}>
-                  <span className={styles.archetypeTitle}>
-                    {analysisState.personaData.persona.state} //{' '}
-                    {analysisState.personaData.persona.sector} //{' '}
-                    {analysisState.personaData.persona.expenditureClass}
-                  </span>
-                  <Badge variant="cyan" size="sm">
-                    Baseline MPCE: ₹{analysisState.personaData.mpceBaselineInr}/mo
-                  </Badge>
-                </div>
-
-                <div className={styles.metricHeroContainer}>
-                  <div className={styles.metricLabel}>
-                    Estimated Monthly Impact Range:
-                  </div>
-                  <div className={styles.metricHeroValue}>
-                    {analysisState.personaData.totalMonthlyImpactRangeInr != null ? (
-                      <>
-                        +{analysisState.personaData.totalMonthlyImpactRangeInr.low} to +
-                        {analysisState.personaData.totalMonthlyImpactRangeInr.high}
-                        <span className={styles.metricUnit}> ₹/person/mo</span>
-                      </>
-                    ) : (
-                      <span style={{ fontSize: '18px', color: 'var(--accent-amber)' }}>
-                        No numerical estimate is produced — Data not available
-                      </span>
-                    )}
-                  </div>
-                  <div className={styles.metricSubtext}>
-                    Per Capita Basis // Baseline MPCE: ₹
-                    {analysisState.personaData.mpceBaselineInr}/month
-                  </div>
-                </div>
-
-                <div className={styles.coverageRow}>
-                  <span className={styles.coverageText}>
-                    Coverage:{' '}
-                    {analysisState.personaData.itemCoverage.calculatedItemsCount} of{' '}
-                    {analysisState.personaData.itemCoverage.totalCandidateItems} candidate items
-                    ({analysisState.personaData.itemCoverage.calculatedExpenditureSharePct}% basket share).
-                  </span>
-                </div>
-
-                {analysisState.personaData.itemCoverage.uncalculatedItemsCount > 0 && (
-                  <div className={styles.unavailableNotice}>
-                    ⚠️{' '}
-                    {analysisState.personaData.itemCoverage.uncalculatedItemsCount}{' '}
-                    unverified items strictly marked{' '}
-                    <strong>Data not available</strong> — No numerical estimate is produced.
-                  </div>
-                )}
-              </div>
-            )
-          )}
-        </IntegrationSlot>
+        )}
       </Card>
 
       {/* Evidence Receipts Drawer Slot */}
@@ -563,67 +379,25 @@ export const App: React.FC<AppProps> = ({
           </Badge>
         }
       >
-        <IntegrationSlot
-          slotName="Evidence Receipts Drawer"
-          slotType="evidence_panel"
-          ownerLabel="Laptop B: Evidence Drawer Slot"
-          isLoading={analysisState.status === 'loading'}
-          isEmpty={analysisState.status === 'idle'}
-          emptyNotice="Click any graph node, edge, or calculated item to inspect its source receipt."
-        >
-          {analysisState.status === 'error' && (
-            <div className={styles.slotErrorContainer} role="alert">
-              <span className={styles.slotErrorText}>
-                ⚠️ Evidence audit unavailable.
-              </span>
-            </div>
-          )}
+        {analysisState.status === 'error' && (
+          <div className={styles.slotErrorContainer} role="alert">
+            <span className={styles.slotErrorText}>
+              ⚠️ Evidence audit unavailable.
+            </span>
+          </div>
+        )}
 
-          {analysisState.status === 'analyzed' && activeEvidenceReceipt && (
-            CustomEvidencePanel ? (
-              <CustomEvidencePanel
-                receipt={activeEvidenceReceipt}
-                contextTitle={activeEvidenceTitle}
-                whatCouldBeWrong={activeCaveat}
-                onClose={() => {
-                  setSelectedNodeId(null);
-                  setSelectedEdgeId(null);
-                }}
-              />
-            ) : (
-              <div className={styles.evidenceDrawerPreview}>
-                <div className={styles.evidenceHeader}>
-                  <span className={styles.evidenceDataset}>
-                    {activeEvidenceReceipt.sourceTitle}
-                  </span>
-                  <Badge
-                    variant={
-                      activeEvidenceReceipt.verificationStatus === '[VERIFIED]'
-                        ? 'verified'
-                        : activeEvidenceReceipt.verificationStatus === '[INFERENCE]'
-                        ? 'inferred'
-                        : 'neutral'
-                    }
-                    size="sm"
-                  >
-                    {activeEvidenceReceipt.verificationStatus}
-                  </Badge>
-                </div>
-
-                <p className={styles.evidenceQuote}>
-                  Publisher: {activeEvidenceReceipt.publisher} ({activeEvidenceReceipt.vintageYear || 'Current'})
-                </p>
-
-                <div className={styles.evidenceCaveatBox}>
-                  <span className={styles.caveatLabel}>
-                    {activeEvidenceTitle}:
-                  </span>
-                  <p className={styles.caveatText}>{activeCaveat}</p>
-                </div>
-              </div>
-            )
-          )}
-        </IntegrationSlot>
+        {CustomEvidencePanel && analysisState.status !== 'error' && (
+          <CustomEvidencePanel
+            receipt={activeEvidenceReceipt || null}
+            contextTitle={activeEvidenceTitle}
+            whatCouldBeWrong={activeCaveat}
+            onClose={() => {
+              setSelectedNodeId(null);
+              setSelectedEdgeId(null);
+            }}
+          />
+        )}
       </Card>
     </>
   );

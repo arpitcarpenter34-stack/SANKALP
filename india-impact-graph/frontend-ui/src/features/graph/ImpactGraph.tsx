@@ -5,8 +5,10 @@ import type {
   PropagationPathCategory,
 } from '../../types/contracts';
 import { computeDeterministicLayout } from './graph-layout';
-import { GraphNode } from './GraphNode';
-import { GraphEdge } from './GraphEdge';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Environment, PerspectiveCamera, ContactShadows } from '@react-three/drei';
+import { GraphNode3D } from './GraphNode3D';
+import { GraphEdge3D } from './GraphEdge3D';
 import styles from './graph.module.css';
 
 const PATH_OPTIONS: { id: PropagationPathCategory | 'all'; label: string }[] = [
@@ -216,64 +218,62 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         </div>
       ) : null}
 
-      {/* SVG Canvas Viewport */}
-      <svg
-        className={styles.svgViewport}
-        viewBox="0 0 1000 560"
-        preserveAspectRatio="xMidYMid meet"
-        role="region"
-        aria-label="Interactive Financial Impact Knowledge Graph"
-      >
-        <defs>
-          {/* Arrowhead marker: Observed (Solid Teal) */}
-          <marker
-            id="arrow-observed"
-            viewBox="0 0 10 10"
-            refX="22"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#00d2b4" />
-          </marker>
+      {/* 3D Canvas Viewport */}
+      <div className={styles.svgViewport} role="region" aria-label="Interactive Financial Impact Knowledge Graph">
+        <Canvas>
+          <PerspectiveCamera makeDefault position={[0, 0, 15]} fov={50} />
+          <OrbitControls 
+            enablePan={true}
+            enableZoom={true}
+            enableRotate={true}
+            minDistance={5}
+            maxDistance={30}
+          />
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <Environment preset="city" />
+          
+          <group position={[-16, -9, 0]}>
+            {/* Render Edges first so nodes sit on top */}
+            {edges.map((edge) => {
+              const sourceNode = nodes.find(n => n.id === edge.from);
+              const targetNode = nodes.find(n => n.id === edge.to);
+              
+              if (!sourceNode || !targetNode) return null;
+              
+              // Scale coordinates to fit nicely in 3D space. 
+              // Original 1000x560 canvas, center it roughly
+              const sourcePos: [number, number, number] = [sourceNode.x / 30, (560 - sourceNode.y) / 30, 0];
+              const targetPos: [number, number, number] = [targetNode.x / 30, (560 - targetNode.y) / 30, 0];
 
-          {/* Arrowhead marker: Inferred (Amber) */}
-          <marker
-            id="arrow-inferred"
-            viewBox="0 0 10 10"
-            refX="22"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
-          </marker>
-        </defs>
+              return (
+                <GraphEdge3D
+                  key={edge.id}
+                  edge={edge}
+                  sourcePos={sourcePos}
+                  targetPos={targetPos}
+                  onSelect={(id) => onSelectEdge && onSelectEdge(id)}
+                />
+              );
+            })}
 
-        {/* Render Edges first so nodes sit on top */}
-        <g id="graph-edges">
-          {edges.map((edge) => (
-            <GraphEdge
-              key={edge.id}
-              edge={edge}
-              onSelect={(id) => onSelectEdge && onSelectEdge(id)}
-            />
-          ))}
-        </g>
-
-        {/* Render Nodes */}
-        <g id="graph-nodes">
-          {nodes.map((node) => (
-            <GraphNode
-              key={node.id}
-              node={node}
-              onSelect={(id) => onSelectNode && onSelectNode(id)}
-            />
-          ))}
-        </g>
-      </svg>
+            {/* Render Nodes */}
+            {nodes.map((node) => {
+              const position: [number, number, number] = [node.x / 30, (560 - node.y) / 30, Math.random() * 2 - 1]; // Slight Z variance for depth
+              return (
+                <GraphNode3D
+                  key={node.id}
+                  node={node}
+                  position={position}
+                  onSelect={(id) => onSelectNode && onSelectNode(id)}
+                />
+              );
+            })}
+          </group>
+          
+          <ContactShadows position={[0, -5, 0]} opacity={0.4} scale={50} blur={2} far={10} />
+        </Canvas>
+      </div>
 
       {/* Footer Bar with Visual Legend */}
       <div className={styles.footerBar}>

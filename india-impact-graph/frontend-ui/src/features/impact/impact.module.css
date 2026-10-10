@@ -12,6 +12,7 @@
   border: 1px solid var(--border-subtle, #1e293b);
   border-radius: var(--radius-lg, 12px);
   padding: 20px;
+  animation: slideInRight 0.4s var(--transition-normal) both;
 }
 
 .cardHeader {

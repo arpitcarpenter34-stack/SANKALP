@@ -1,13 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { scenarioService } from './scenarioService';
 import {
   calculatePersonaImpact,
   MOSPI_HCES_FACTSHEET_URL,
   MOSPI_HCES_FINAL_REPORT_URL,
 } from './mockData';
-import { isValidAnalysisPayload } from './apiClient';
+import { isValidAnalysisPayload, apiClient } from './apiClient';
 
 describe('scenarioService & Deterministic Engine (Phase 3.1 Corrective Audit)', () => {
+  beforeAll(() => {
+    apiClient.setForceOffline(true);
+  });
   it('retrieves pre-configured benchmark scenarios', async () => {
     const scenarios = await scenarioService.getScenarios();
     expect(scenarios.length).toBeGreaterThanOrEqual(3);

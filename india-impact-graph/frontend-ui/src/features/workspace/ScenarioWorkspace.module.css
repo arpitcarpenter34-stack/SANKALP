@@ -64,6 +64,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  animation: slideUpFadeIn 0.4s var(--transition-normal) both;
+  animation-delay: 0.1s;
 }
 
 .paramTitle {
@@ -107,6 +109,10 @@
 
 .analyzeButton {
   width: 100%;
+}
+
+.buttonReady {
+  animation: pulseGlow 2.5s infinite;
 }
 
 .successStatus {

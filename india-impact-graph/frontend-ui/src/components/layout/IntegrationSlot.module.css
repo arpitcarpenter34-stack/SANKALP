@@ -84,6 +84,7 @@
   align-items: center;
   gap: 12px;
   opacity: 0.6;
+  animation: pulseGlow 4s infinite;
 }
 
 .wireNode {
