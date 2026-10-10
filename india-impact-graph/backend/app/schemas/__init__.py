@@ -10,6 +10,22 @@ from app.schemas.event import (
     MagnitudeDirection,
 )
 
+from app.schemas.graph import (
+    ReceiptDefinition,
+    NodeType,
+    Node,
+    EdgeKind,
+    EdgeDirection,
+    ConfidenceLevel,
+    PropagationPath,
+    Edge,
+    ImpactKnowledgeGraph,
+    PathEdgeMetadata,
+    PathResultSchema,
+    EvidenceStatusEnum,
+    EvidenceResultSchema
+)
+
 __all__ = [
     "EntityType",
     "EventMagnitude",
@@ -18,4 +34,17 @@ __all__ = [
     "ExtractedEntity",
     "FinancialEventExtraction",
     "MagnitudeDirection",
+    "ReceiptDefinition",
+    "NodeType",
+    "Node",
+    "EdgeKind",
+    "EdgeDirection",
+    "ConfidenceLevel",
+    "PropagationPath",
+    "Edge",
+    "ImpactKnowledgeGraph",
+    "PathEdgeMetadata",
+    "PathResultSchema",
+    "EvidenceStatusEnum",
+    "EvidenceResultSchema"
 ]

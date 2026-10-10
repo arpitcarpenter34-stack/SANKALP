@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.api.events import router as events_router
+from app.api import api_router
 
 app = FastAPI(
     title="India Impact Graph API",
@@ -13,7 +13,7 @@ app = FastAPI(
     version="0.1.0",
 )
 
-app.include_router(events_router)
+app.include_router(api_router)
 
 
 @app.get("/api/health")
