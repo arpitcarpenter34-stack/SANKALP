@@ -9,6 +9,8 @@
 
 This repository hosts the official submission scaffold and documentation for **Team SANKALP** at **Hackwave 3.0 (Indore)**.
 
+
+
 Our product interpretation is **India Impact Graph**: an evidence-first system that converts macroeconomic events into an interactive dependency graph and calculates a transparent, receipt-backed monthly rupee impact range on an Indian household's budget.
 
 The complete project architecture, technical specifications, data schemas, CSV templates, and future implementation scaffold are located in the [`india-impact-graph/`](india-impact-graph/) directory.
@@ -48,3 +50,8 @@ The complete project architecture, technical specifications, data schemas, CSV t
 
 * **Current Phase:** `Phase 1: Architecture, Documentation & Repository Scaffolding`
 * **Application Implementation:** `Not started` (development will begin per [`docs/36_HOUR_BUILD_PLAN.md`](india-impact-graph/docs/36_HOUR_BUILD_PLAN.md)).
+
+
+
+team Sankalp
+
