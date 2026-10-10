@@ -49,6 +49,7 @@ npm-debug.log*
 .next/
 out/
 .cache/
+.vite/
 
 # Local raw data dumps
 india-impact-graph/data/raw/*
