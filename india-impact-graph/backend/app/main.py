@@ -7,6 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.api.events import router as events_router
+from app.api.graph import router as graph_router
 
 # Explicit allowlist of documented local frontend development origins
 ALLOWED_ORIGINS = [
@@ -35,6 +36,7 @@ app.add_middleware(
 )
 
 app.include_router(events_router)
+app.include_router(graph_router)
 
 
 @app.get("/api/health")
