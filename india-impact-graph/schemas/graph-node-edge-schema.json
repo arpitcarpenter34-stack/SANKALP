@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://india-impact-graph.org/schemas/graph-node-edge-schema.json",
+  "title": "ImpactKnowledgeGraphSchema",
+  "description": "Validation schema for nodes and edges within the India Impact Graph, enforcing typed entities, observed vs inferred relationship separation, and number-level provenance receipts.",
+  "type": "object",
+  "required": ["nodes", "edges"],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "label"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique node identifier."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "commodity",
+              "household_item",
+              "economic_indicator",
+              "sector",
+              "instrument_asset",
+              "persona"
+            ],
+            "description": "The 6 core node types defined by the MVP specification."
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for the node."
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief explanation of the entity."
+          },
+          "budget_share": {
+            "type": ["number", "null"],
+            "description": "Percentage share of monthly consumption expenditure in the persona basket (encodes node size in visualization)."
+          },
+          "receipt": {
+            "$ref": "#/$defs/ReceiptDefinition"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "from",
+          "to",
+          "relation_type",
+          "kind",
+          "confidence",
+          "evidence_text",
+          "receipt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique edge identifier (e.g., 'crude_oil_to_diesel')."
+          },
+          "from": {
+            "type": "string",
+            "description": "Source node identifier."
+          },
+          "to": {
+            "type": "string",
+            "description": "Destination node identifier."
+          },
+          "relation_type": {
+            "type": "string",
+            "description": "Semantic predicate (e.g., 'refines_into', 'increases_input_cost', 'drives_expectations_of')."
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["observed", "inferred"],
+            "description": "Observed = solid line, directly stated in input text or measured by dataset; Inferred = dashed line, structural link from curated base graph or economic logic."
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["positive", "negative", "ambiguous", "unspecified"],
+            "description": "Correlation/transmission direction (e.g., positive = higher crude -> higher diesel cost)."
+          },
+          "strength": {
+            "type": ["number", "null"],
+            "description": "Quantified elasticity or correlation strength (only if supported by historical study; otherwise null)."
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Confidence level based on evidence quality."
+          },
+          "evidence_text": {
+            "type": "string",
+            "description": "Explanatory snippet or rationale explaining why this relationship exists."
+          },
+          "propagation_path": {
+            "type": "string",
+            "enum": ["food_cost", "transport_cost", "financial_market", "other"],
+            "description": "Belongs to one of the three primary propagation paths if applicable."
+          },
+          "what_could_be_wrong": {
+            "type": "string",
+            "description": "Countervailing factors, policy interventions (e.g. excise duty cuts, price controls), or risks that could break this chain."
+          },
+          "receipt": {
+            "$ref": "#/$defs/ReceiptDefinition"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "ReceiptDefinition": {
+      "type": "object",
+      "required": ["source_title", "verification_status"],
+      "properties": {
+        "source_title": {
+          "type": "string",
+          "description": "Formal publication or database name (e.g., 'MoSPI HCES 2023-24', 'PPAC Price Report')."
+        },
+        "source_url": {
+          "type": ["string", "null"],
+          "description": "Direct URL or document reference."
+        },
+        "table_or_series_id": {
+          "type": ["string", "null"],
+          "description": "Specific table number or time-series code (e.g., 'Table 3.4', 'CPI-R-2024-CEREALS')."
+        },
+        "year_or_date": {
+          "type": ["string", "null"],
+          "description": "Data release date or vintage year (e.g., '2023-24', 'January 2026')."
+        },
+        "geography": {
+          "type": ["string", "null"],
+          "description": "Geographic boundary (e.g., 'All India', 'Madhya Pradesh', 'Global')."
+        },
+        "unit": {
+          "type": ["string", "null"],
+          "description": "Unit of measurement (e.g., 'INR/month', 'USD/barrel', '% share')."
+        },
+        "verification_status": {
+          "type": "string",
+          "enum": ["[VERIFIED]", "[VERIFY]", "[INFERENCE]", "[UNVERIFIED]"],
+          "description": "Data governance classification."
+        },
+        "formula_details": {
+          "type": ["string", "null"],
+          "description": "Explicit deterministic formula used if this is a derived calculation."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
