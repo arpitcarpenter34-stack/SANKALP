@@ -1,33 +1,40 @@
 :root {
-  /* Substrate Layers (Obsidian Intelligence) */
-  --bg-canvas: #0b0f19;
-  --bg-card: #111827;
-  --bg-card-subtle: #131b2c;
-  --bg-elevated: #1e293b;
-  --bg-overlay: #0f172a;
-  --bg-input: #080c14;
+  /* Grok-Inspired Deep Navy & Neon Layers */
+  --bg-canvas: #030b18;
+  --bg-panel: #071426;
+  --bg-card: #071426;
+  --bg-card-subtle: #0b1b32;
+  --bg-elevated: #0b1b32;
+  --bg-overlay: #020813;
+  --bg-input: #040e1d;
 
-  /* Structural Hairlines & Borders */
-  --border-subtle: #1e293b;
-  --border-medium: #334155;
-  --border-active: #475569;
-  --border-focus: #00d2b4;
+  /* Illuminated Borders */
+  --border-subtle: #0d2744;
+  --border-medium: #123c63;
+  --border-active: #1c5285;
+  --border-focus: #00d9ff;
+  --border-glow: rgba(0, 217, 255, 0.25);
 
-  /* Signal Emissives & Semantic Accents */
-  --accent-cyan: #00d2b4;
-  --accent-cyan-hover: #00b89e;
-  --accent-cyan-glow: rgba(0, 210, 180, 0.18);
-  --accent-amber: #f59e0b;
-  --accent-amber-glow: rgba(245, 158, 11, 0.18);
-  --accent-emerald: #10b981;
-  --accent-rose: #f43f5e;
-  --accent-slate: #64748b;
+  /* Electric & Neon Signals */
+  --accent-blue: #087cff;
+  --accent-cyan: #00d9ff;
+  --accent-cyan-hover: #00c2e5;
+  --accent-cyan-glow: rgba(0, 217, 255, 0.22);
+  --accent-teal: #00e2c0;
+  --accent-amber: #ffb323;
+  --accent-amber-glow: rgba(255, 179, 35, 0.22);
+  --accent-violet: #a855f7;
+  --accent-violet-glow: rgba(168, 85, 247, 0.25);
+  --accent-rose: #ff5268;
+  --accent-rose-glow: rgba(255, 82, 104, 0.25);
+  --accent-emerald: #10c994;
+  --accent-slate: #5b799e;
 
   /* Text Contrast Hierarchy */
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-inverse: #0b0f19;
+  --text-primary: #f4f8ff;
+  --text-secondary: #9ab1cf;
+  --text-muted: #5b799e;
+  --text-inverse: #030b18;
 
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -36,7 +43,8 @@
   /* Geometry & Spacing Rhythm */
   --radius-sm: 4px;
   --radius-md: 6px;
-  --radius-lg: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
   --radius-full: 9999px;
 
   --space-2xs: 2px;
@@ -44,8 +52,8 @@
   --space-sm: 8px;
   --space-md: 12px;
   --space-lg: 16px;
-  --space-xl: 24px;
-  --space-2xl: 32px;
+  --space-xl: 20px;
+  --space-2xl: 28px;
 
   /* Motion & Transitions */
   --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);

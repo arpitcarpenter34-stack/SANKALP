@@ -3,104 +3,66 @@
   display: flex;
   flex-direction: column;
   background-color: var(--bg-canvas);
-}
-
-.noticeStrip {
-  background: rgba(11, 15, 25, 0.8);
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 6px var(--space-xl);
-}
-
-.noticeContent {
-  max-width: 1800px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  font-family: var(--font-mono);
-  font-size: 11px;
-}
-
-.noticeLeft {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pulseIndicator {
-  width: 6px;
-  height: 6px;
-  background: var(--accent-cyan);
-  border-radius: var(--radius-full);
-  box-shadow: 0 0 6px var(--accent-cyan);
-}
-
-.noticeText {
-  color: var(--text-secondary);
-}
-
-.noticeText strong {
   color: var(--text-primary);
+  background-image: 
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(8, 124, 255, 0.08) 0%, transparent 80%),
+    radial-gradient(ellipse 40% 30% at 20% 40%, rgba(0, 217, 255, 0.04) 0%, transparent 60%);
+  background-attachment: fixed;
 }
 
-.noticeRight {
-  flex-shrink: 0;
-}
-
-/* Master 3-Column 12-Grid System */
+/* Master 3-Column System Matching the Grok Reference */
 .mainGrid {
-  max-width: 1800px;
+  max-width: 1920px;
   width: 100%;
   margin: 0 auto;
-  padding: var(--space-lg) var(--space-xl);
+  padding: 14px 18px;
   display: grid;
-  grid-template-columns: 3.2fr 5.8fr 3fr;
-  gap: var(--space-lg);
+  grid-template-columns: minmax(290px, 1.15fr) minmax(580px, 2.3fr) minmax(320px, 1.25fr);
+  gap: 14px;
   flex: 1;
+  align-items: start;
 }
 
 .leftColumn {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
-  animation: slideUpFadeIn 0.6s var(--transition-normal) both;
-  animation-delay: 0.1s;
+  gap: 14px;
+  animation: fadeIn 0.4s ease-out both;
 }
 
 .centerColumn {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
-  animation: slideUpFadeIn 0.6s var(--transition-normal) both;
-  animation-delay: 0.2s;
+  gap: 14px;
+  animation: fadeIn 0.4s ease-out both;
+  animation-delay: 0.05s;
 }
 
 .rightColumn {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
-  animation: slideUpFadeIn 0.6s var(--transition-normal) both;
-  animation-delay: 0.3s;
+  gap: 14px;
+  animation: fadeIn 0.4s ease-out both;
+  animation-delay: 0.1s;
 }
 
-/* Footer */
+/* Sleek Minimal Footer */
 .footer {
-  background: var(--bg-card);
+  background: var(--bg-panel);
   border-top: 1px solid var(--border-subtle);
-  padding: var(--space-md) var(--space-xl);
+  padding: 8px var(--space-xl);
   margin-top: auto;
 }
 
 .footerContainer {
-  max-width: 1800px;
+  max-width: 1920px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-md);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
+  color: var(--text-muted);
 }
 
 .footerLeft {
@@ -110,8 +72,8 @@
 }
 
 .footerBrand {
+  color: var(--text-secondary);
   font-weight: 600;
-  color: var(--text-primary);
 }
 
 .footerSep {
@@ -119,39 +81,38 @@
 }
 
 .footerRule {
-  color: var(--accent-cyan);
-}
-
-.footerCenter {
   color: var(--text-muted);
 }
 
-.footerRight {
-  flex-shrink: 0;
+.footerVersion {
+  color: var(--accent-cyan);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 217, 255, 0.08);
+  border: 1px solid rgba(0, 217, 255, 0.2);
 }
 
-/* Responsive Adaptations */
-@media (max-width: 1366px) {
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1400px) {
   .mainGrid {
-    grid-template-columns: 3.5fr 5fr 3.5fr;
-    padding: var(--space-md);
-    gap: var(--space-md);
+    grid-template-columns: 280px 1fr 310px;
+    padding: 10px;
+    gap: 10px;
   }
 }
 
 @media (max-width: 1100px) {
   .mainGrid {
     grid-template-columns: 1fr;
-  }
-  .leftColumn, .centerColumn, .rightColumn {
-    width: 100%;
-  }
-  .noticeContent {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .footerContainer {
-    flex-direction: column;
-    text-align: center;
   }
 }

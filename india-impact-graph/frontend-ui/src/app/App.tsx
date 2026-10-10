@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '../components/layout/AppLayout';
-
 import { ScenarioWorkspace } from '../features/workspace/ScenarioWorkspace';
-import { Card } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
 import { scenarioService } from '../services/api/scenarioService';
 import { apiClient } from '../services/api/apiClient';
-import { MOCK_SCENARIOS } from '../services/api/mockData';
+import { MOCK_SCENARIOS, getScenarioGraph, calculatePersonaImpact } from '../services/api/mockData';
 import {
   TransmissionAnalysisState,
   EventScenario,
@@ -40,7 +37,7 @@ export const App: React.FC<AppProps> = ({
   // Backend connection state
   const [backendStatus, setBackendStatus] = useState<BackendConnectionStatus>(apiClient.getStatus());
 
-  // Household Archetype Configuration (Laptop A Shell Control)
+  // Household Archetype Configuration
   const [personaConfig, setPersonaConfig] = useState<HouseholdPersonaConfig>({
     state: 'Madhya Pradesh',
     sector: 'Rural',
@@ -48,10 +45,14 @@ export const App: React.FC<AppProps> = ({
   });
 
   const [analysisState, setAnalysisState] = useState<TransmissionAnalysisState>({
-    status: 'idle',
+    status: 'analyzed',
     selectedScenario: MOCK_SCENARIOS[0],
-    graphData: null,
-    personaData: null,
+    graphData: getScenarioGraph(MOCK_SCENARIOS[0].id),
+    personaData: calculatePersonaImpact(MOCK_SCENARIOS[0].id, {
+      state: 'Madhya Pradesh',
+      sector: 'Rural',
+      expenditureClass: 'Middle',
+    }, false),
     isAiOff: false,
   });
 
@@ -104,14 +105,15 @@ export const App: React.FC<AppProps> = ({
 
   const handleResetToIdle = () => {
     setAnalysisState({
-      status: 'idle',
+      status: 'analyzed',
       selectedScenario: MOCK_SCENARIOS[0],
-      graphData: null,
-      personaData: null,
+      graphData: getScenarioGraph(MOCK_SCENARIOS[0].id),
+      personaData: calculatePersonaImpact(MOCK_SCENARIOS[0].id, personaConfig, isAiOff),
       isAiOff,
     });
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
+    setSelectedPath('all');
   };
 
   const handleToggleAi = () => {
@@ -141,10 +143,10 @@ export const App: React.FC<AppProps> = ({
     }
   };
 
-  // Determine active receipt to display in Evidence Drawer
+  // Determine active receipt to display in Evidence Panel
   let activeEvidenceReceipt: SourceReceipt | null = null;
-  let activeEvidenceTitle = 'Official Benchmark Provenance';
-  let activeCaveat = 'Official survey calibrated.';
+  let activeEvidenceTitle = 'Indian Energy Imports & Transport Share';
+  let activeCaveat = 'Higher global crude oil prices increase India\'s import bill, affecting fiscal balance and domestic fuel prices.';
 
   if (analysisState.graphData) {
     if (selectedEdgeId) {
@@ -162,77 +164,11 @@ export const App: React.FC<AppProps> = ({
         activeCaveat = node.description || 'Observed / inferred node metadata.';
       }
     }
-
-    if (!activeEvidenceReceipt && analysisState.selectedScenario) {
-      activeEvidenceReceipt = analysisState.selectedScenario.sourceReceipt;
-      activeEvidenceTitle = `Scenario Shock: ${analysisState.selectedScenario.title}`;
-      activeCaveat =
-        analysisState.selectedScenario.sourceReceipt.caveats?.[0] ||
-        'Calibrated macro vector.';
-    }
   }
 
   // Centerpiece Graph Panel for Center Column
   const centerPanel = (
-    <Card
-      title="Financial Impact Knowledge Graph"
-      subtitle="Multi-Step Macro-to-Micro Transmission Map"
-      headerAction={
-        <div className={styles.graphLegend}>
-          <span className={styles.legendSolid}>━━ Observed</span>
-          <span className={styles.legendDashed}>╍╍ Inferred</span>
-          <Badge
-            variant={analysisState.status === 'analyzed' ? 'cyan' : 'neutral'}
-            size="sm"
-          >
-            {analysisState.status === 'analyzed'
-              ? `${analysisState.graphData?.nodes.length || 0} Nodes Connected`
-              : 'Standby'}
-          </Badge>
-        </div>
-      }
-      className={styles.graphCard}
-    >
-      {/* Path Filter Tabs */}
-      <div className={styles.pathFilterBar} role="tablist" aria-label="Propagation Paths">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={selectedPath === 'all'}
-          className={`${styles.pathTab} ${selectedPath === 'all' ? styles.pathTabActive : ''}`}
-          onClick={() => setSelectedPath('all')}
-        >
-          All Channels
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={selectedPath === 'food_cost'}
-          className={`${styles.pathTab} ${selectedPath === 'food_cost' ? styles.pathTabActive : ''}`}
-          onClick={() => setSelectedPath('food_cost')}
-        >
-          Path A: Food Cost Chain
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={selectedPath === 'transport_cost'}
-          className={`${styles.pathTab} ${selectedPath === 'transport_cost' ? styles.pathTabActive : ''}`}
-          onClick={() => setSelectedPath('transport_cost')}
-        >
-          Path B: Transport &amp; Freight
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={selectedPath === 'financial_market'}
-          className={`${styles.pathTab} ${selectedPath === 'financial_market' ? styles.pathTabActive : ''}`}
-          onClick={() => setSelectedPath('financial_market')}
-        >
-          Path C: Financial Markets
-        </button>
-      </div>
-
+    <>
       {analysisState.status === 'error' && (
         <div className={styles.slotErrorContainer} role="alert">
           <span className={styles.slotErrorText}>
@@ -248,8 +184,7 @@ export const App: React.FC<AppProps> = ({
         </div>
       )}
 
-      {/* Graph Canvas */}
-      {CustomGraphCanvas && analysisState.status !== 'error' && (
+      {CustomGraphCanvas && (
         <CustomGraphCanvas
           data={analysisState.graphData || null}
           selectedPath={selectedPath}
@@ -261,144 +196,33 @@ export const App: React.FC<AppProps> = ({
           isLoading={analysisState.status === 'loading'}
         />
       )}
-
-    </Card>
+    </>
   );
 
-  // Right Column: Household Persona & Evidence Slots for Laptop B
+  // Right Column: Household Persona & Evidence Slots
   const rightPanel = (
     <>
-      {/* Household Persona Card Slot */}
-      <Card
-        title="Household Persona Impact"
-        subtitle="MoSPI HCES 2023–24 Calibration"
-        headerAction={
-          <Badge variant="verified" size="sm">
-            {personaConfig.state} ({personaConfig.sector})
-          </Badge>
-        }
-      >
-        {/* Archetype Controls (Sector & Expenditure Class) */}
-        <div className={styles.archetypeControls}>
-          <div className={styles.archetypeControlRow}>
-            <span className={styles.archetypeLabel}>Sector:</span>
-            <div className={styles.btnGroup}>
-              <button
-                type="button"
-                className={`${styles.archetypeBtn} ${
-                  personaConfig.sector === 'Rural' ? styles.archetypeBtnActive : ''
-                }`}
-                onClick={() =>
-                  handlePersonaConfigChange({ ...personaConfig, sector: 'Rural' })
-                }
-              >
-                Rural
-              </button>
-              <button
-                type="button"
-                className={`${styles.archetypeBtn} ${
-                  personaConfig.sector === 'Urban' ? styles.archetypeBtnActive : ''
-                }`}
-                onClick={() =>
-                  handlePersonaConfigChange({ ...personaConfig, sector: 'Urban' })
-                }
-              >
-                Urban
-              </button>
-            </div>
-          </div>
+      {CustomHouseholdImpact && (
+        <CustomHouseholdImpact
+          data={analysisState.personaData || null}
+          selectedPersona={personaConfig}
+          onPersonaChange={handlePersonaConfigChange}
+          isAiOff={isAiOff}
+          isLoading={analysisState.status === 'loading'}
+        />
+      )}
 
-          <div className={styles.archetypeControlRow}>
-            <span className={styles.archetypeLabel}>Class:</span>
-            <div className={styles.btnGroup}>
-              <button
-                type="button"
-                className={`${styles.archetypeBtn} ${
-                  personaConfig.expenditureClass === 'Low' ? styles.archetypeBtnActive : ''
-                }`}
-                onClick={() =>
-                  handlePersonaConfigChange({ ...personaConfig, expenditureClass: 'Low' })
-                }
-              >
-                Low (Q1)
-              </button>
-              <button
-                type="button"
-                className={`${styles.archetypeBtn} ${
-                  personaConfig.expenditureClass === 'Middle'
-                    ? styles.archetypeBtnActive
-                    : ''
-                }`}
-                onClick={() =>
-                  handlePersonaConfigChange({ ...personaConfig, expenditureClass: 'Middle' })
-                }
-              >
-                Middle (Q2–Q4)
-              </button>
-              <button
-                type="button"
-                className={`${styles.archetypeBtn} ${
-                  personaConfig.expenditureClass === 'High' ? styles.archetypeBtnActive : ''
-                }`}
-                onClick={() =>
-                  handlePersonaConfigChange({ ...personaConfig, expenditureClass: 'High' })
-                }
-              >
-                High (Q5)
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {analysisState.status === 'error' && (
-          <div className={styles.slotErrorContainer} role="alert">
-            <span className={styles.slotErrorText}>
-              ⚠️ Household impact calculation stalled due to evaluation error.
-            </span>
-          </div>
-        )}
-
-        {CustomHouseholdImpact && analysisState.status !== 'error' && (
-          <CustomHouseholdImpact
-            data={analysisState.personaData || null}
-                selectedPersona={personaConfig}
-                onPersonaChange={handlePersonaConfigChange}
-                isAiOff={isAiOff}
-                isLoading={false}
-              />
-        )}
-      </Card>
-
-      {/* Evidence Receipts Drawer Slot */}
-      <Card
-        title="Evidence Receipts &amp; Audit"
-        subtitle="Number-Level Source Verification"
-        headerAction={
-          <Badge variant="cyan" size="sm">
-            {selectedEdgeId ? 'Selected Edge' : selectedNodeId ? 'Selected Node' : 'Primary Source'}
-          </Badge>
-        }
-      >
-        {analysisState.status === 'error' && (
-          <div className={styles.slotErrorContainer} role="alert">
-            <span className={styles.slotErrorText}>
-              ⚠️ Evidence audit unavailable.
-            </span>
-          </div>
-        )}
-
-        {CustomEvidencePanel && analysisState.status !== 'error' && (
-          <CustomEvidencePanel
-            receipt={activeEvidenceReceipt || null}
-            contextTitle={activeEvidenceTitle}
-            whatCouldBeWrong={activeCaveat}
-            onClose={() => {
-              setSelectedNodeId(null);
-              setSelectedEdgeId(null);
-            }}
-          />
-        )}
-      </Card>
+      {CustomEvidencePanel && (
+        <CustomEvidencePanel
+          receipt={activeEvidenceReceipt || null}
+          contextTitle={activeEvidenceTitle}
+          whatCouldBeWrong={activeCaveat}
+          onClose={() => {
+            setSelectedNodeId(null);
+            setSelectedEdgeId(null);
+          }}
+        />
+      )}
     </>
   );
 

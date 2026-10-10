@@ -53,7 +53,7 @@ export const SourceReceiptCard: React.FC<SourceReceiptCardProps> = ({ receipt, t
 
       {receipt.formulaDetails ? (
         <div className={styles.formulaBox}>
-          <div style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--muted-text)', marginBottom: '4px' }}>
+          <div style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>
             Deterministic Calculation Formula
           </div>
           <div>{receipt.formulaDetails}</div>
@@ -72,7 +72,7 @@ export const SourceReceiptCard: React.FC<SourceReceiptCardProps> = ({ receipt, t
           </a>
         </div>
       ) : receipt.sourceUrl ? (
-        <div style={{ fontSize: '11px', color: 'var(--muted-text)' }}>
+        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
           Source Ref: {receipt.sourceUrl}
         </div>
       ) : null}

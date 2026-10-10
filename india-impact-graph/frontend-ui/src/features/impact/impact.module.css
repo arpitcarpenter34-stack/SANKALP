@@ -1,233 +1,268 @@
-/* Household Impact Stylesheet — Obsidian Intelligence */
-
-.impactContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 100%;
+.personaCard {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.panelCard {
-  background: var(--card-bg, #111827);
-  border: 1px solid var(--border-subtle, #1e293b);
-  border-radius: var(--radius-lg, 12px);
-  padding: 20px;
-  animation: slideInRight 0.4s var(--transition-normal) both;
-}
-
-.cardHeader {
+.header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-md);
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(8, 124, 255, 0.06) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.cardTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--primary-text, #f8fafc);
-  margin: 0;
+.headerIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 217, 255, 0.08);
+  border: 1px solid rgba(0, 217, 255, 0.25);
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-/* Persona Selector Controls */
-.selectorGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-}
-
-.fieldGroup {
+.headerText {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.fieldLabel {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--muted-text, #94a3b8);
-}
-
-.selectInput {
-  background: var(--elevated-bg, #1e293b);
-  color: var(--primary-text, #f8fafc);
-  border: 1px solid var(--border-subtle, #1e293b);
-  border-radius: var(--radius-sm, 4px);
-  padding: 8px 12px;
-  font-size: 13px;
-  outline: none;
-  cursor: pointer;
-  transition: border-color var(--transition-fast, 150ms ease);
-}
-
-.selectInput:focus-visible {
-  border-color: var(--focus-ring, #00d2b4);
-  box-shadow: 0 0 0 1px var(--focus-ring, #00d2b4);
-}
-
-.segmentedControl {
-  display: flex;
-  background: var(--elevated-bg, #1e293b);
-  border-radius: var(--radius-sm, 4px);
-  padding: 3px;
   gap: 2px;
 }
 
-.segmentButton {
-  flex: 1;
-  background: transparent;
-  color: var(--muted-text, #94a3b8);
-  border: none;
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: var(--radius-sm, 4px);
-  cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
-}
-
-.segmentButtonActive {
-  background: rgba(0, 210, 180, 0.15);
-  color: var(--primary-teal, #00d2b4);
-  font-weight: 600;
-}
-
-.helperNote {
-  font-size: 11px;
-  color: var(--muted-text, #94a3b8);
-  margin-top: 4px;
-}
-
-/* Monthly Impact Metric Card */
-.metricDisplayBox {
-  background: rgba(0, 210, 180, 0.04);
-  border: 1px solid rgba(0, 210, 180, 0.2);
-  border-radius: var(--radius-md, 8px);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  position: relative;
-}
-
-.impactValueRow {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.impactRangeText {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--primary-teal, #00d2b4);
-  font-family: var(--font-family-mono, monospace);
-  letter-spacing: -0.5px;
-}
-
-.impactUnitText {
+.title {
   font-size: 14px;
-  color: var(--muted-text, #94a3b8);
-  font-weight: 500;
-}
-
-.unavailableState {
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: var(--radius-md, 8px);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.unavailableText {
-  font-size: 24px;
   font-weight: 700;
-  color: var(--uncertainty-amber, #f59e0b);
-}
-
-.unavailableDesc {
-  font-size: 13px;
-  color: #fde68a;
-  line-height: 1.5;
+  color: var(--text-primary);
   margin: 0;
 }
 
-.coverageBlock {
-  font-size: 12px;
-  color: var(--muted-text, #94a3b8);
-  line-height: 1.5;
-  border-top: 1px solid var(--border-subtle, #1e293b);
-  padding-top: 12px;
+.subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
-.aiOffBadge {
-  display: inline-flex;
-  align-items: center;
+.body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 2. Sector Bar: Rural | Urban */
+.sectorBar {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 3px;
+}
+
+.sectorBtn {
+  flex: 1;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.sectorBtn:hover {
+  color: var(--text-primary);
+}
+
+.sectorBtnActive {
+  background: linear-gradient(135deg, #087cff 0%, #00aaff 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(8, 124, 255, 0.35);
+}
+
+/* 3. Class Fractile Selector */
+.classSection {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
-  padding: 4px 10px;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid #059669;
-  border-radius: var(--radius-full, 9999px);
+}
+
+.classLabel {
   font-size: 11px;
-  color: #34d399;
   font-weight: 600;
-  width: fit-content;
+  color: var(--text-secondary);
 }
 
-/* Item Breakdown Table */
-.tableWrapper {
-  overflow-x: auto;
-  margin-top: 10px;
+.classBar {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 3px;
 }
 
-.impactTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  text-align: left;
-}
-
-.impactTable th {
-  padding: 10px 12px;
-  background: var(--elevated-bg, #1e293b);
-  color: var(--muted-text, #94a3b8);
-  font-weight: 600;
-  text-transform: uppercase;
+.classBtn {
+  flex: 1;
+  padding: 6px 8px;
   font-size: 11px;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border-subtle, #1e293b);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
 }
 
-.impactTable td {
-  padding: 12px;
-  border-bottom: 1px solid var(--border-subtle, #1e293b);
-  color: var(--primary-text, #f8fafc);
-  font-family: var(--font-family-mono, monospace);
+.classBtn:hover {
+  color: var(--text-primary);
 }
 
-.tableRowUnavailable {
-  opacity: 0.5;
-  background: rgba(17, 24, 39, 0.4);
+.classBtnActive {
+  background: linear-gradient(135deg, #087cff 0%, #00aaff 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(8, 124, 255, 0.35);
 }
 
-.tableRowUnavailable td {
-  color: var(--muted-text, #94a3b8);
+/* 4. Large Metrics Row */
+.metricsRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
 }
 
-.unavailBadge {
-  display: inline-block;
-  padding: 2px 6px;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  color: #fde68a;
-  border-radius: 4px;
+.metricBox {
+  display: flex;
+  flex-direction: column;
+}
+
+.metricBoxRight {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.burdenValue {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent-rose);
+  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
+  line-height: 1.1;
+}
+
+.rupeeValue {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
+  line-height: 1.1;
+}
+
+.metricSub {
   font-size: 10px;
-  font-family: var(--font-family-sans, sans-serif);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* 5. Multicolor Horizontal Stacked Progress Bar */
+.stackedBarContainer {
+  padding-top: 2px;
+}
+
+.stackedBar {
+  display: flex;
+  height: 10px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.barFood {
+  background: #f97316;
+  transition: width 0.4s ease-out;
+}
+
+.barTransport {
+  background: #eab308;
+  transition: width 0.4s ease-out;
+}
+
+.barHousing {
+  background: #06b6d4;
+  transition: width 0.4s ease-out;
+}
+
+.barOther {
+  background: #a855f7;
+  transition: width 0.4s ease-out;
+}
+
+/* 6. Legend Grid */
+.legendGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 11px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.legendLabel {
+  color: var(--text-secondary);
+  flex: 1;
+  margin-left: 8px;
+}
+
+.legendPct {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.dotFood {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: #f97316;
+}
+
+.dotTransport {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: #eab308;
+}
+
+.dotHousing {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: #06b6d4;
+}
+
+.dotOther {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: #a855f7;
 }

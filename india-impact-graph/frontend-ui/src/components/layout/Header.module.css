@@ -1,211 +1,229 @@
 .header {
-  height: 64px;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border-subtle);
+  height: 62px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-medium);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-xl);
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
+/* 1. Left Section */
 .leftSection {
   display: flex;
   align-items: center;
-  gap: var(--space-lg);
-}
-
-.brandGroup {
-  display: flex;
-  align-items: center;
   gap: var(--space-md);
+  flex-shrink: 0;
 }
 
-.brandIcon {
-  width: 36px;
-  height: 36px;
-  background: var(--bg-canvas);
+.logoBadge {
+  width: 38px;
+  height: 38px;
+  background: radial-gradient(circle at center, rgba(0, 217, 255, 0.15) 0%, rgba(8, 124, 255, 0.08) 70%, #030b18 100%);
   border: 1px solid var(--border-medium);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  font-size: 18px;
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.18);
 }
 
-.iconPulse {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 6px;
-  height: 6px;
-  background: var(--accent-cyan);
-  border-radius: var(--radius-full);
-  box-shadow: 0 0 6px var(--accent-cyan);
+.logoSvg {
+  filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.5));
 }
 
-.titleRow {
+.brandText {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+  flex-direction: column;
+  gap: 1px;
 }
 
 .brandTitle {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
 .tagline {
   font-size: 11px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  margin: 0;
+  letter-spacing: 0.01em;
 }
 
-.centerSection {
+/* 2. Center Stepper */
+.stepperContainer {
   display: flex;
   align-items: center;
-}
-
-.telemetryStrip {
-  background: var(--bg-canvas);
+  gap: 10px;
+  background: rgba(3, 11, 24, 0.6);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 4px 12px;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-family: var(--font-mono);
-  font-size: 11px;
+  border-radius: var(--radius-full);
+  padding: 4px 14px;
 }
 
-.telemetryItem {
+.stepItem {
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.telemetryLabel {
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.telemetryValue {
-  color: var(--accent-cyan);
-  font-weight: 600;
-}
-
-.separator {
-  color: var(--border-medium);
-}
-
-.rightSection {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.controlsGroup {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-/* AI Engine Toggle Button */
-.aiToggle {
-  height: 30px;
-  padding: 0 10px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  border: 1px solid var(--border-medium);
-}
-
-.aiOn {
-  background: rgba(0, 210, 180, 0.1);
-  color: var(--accent-cyan);
-  border-color: rgba(0, 210, 180, 0.4);
-}
-.aiOn .toggleIndicator {
-  background: var(--accent-cyan);
-  box-shadow: 0 0 6px var(--accent-cyan);
-}
-
-.aiOff {
-  background: rgba(100, 116, 139, 0.15);
-  color: var(--text-muted);
-  border-color: var(--border-medium);
-}
-.aiOff .toggleIndicator {
-  background: var(--text-muted);
-}
-
-.toggleIndicator {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-}
-
-.backendStatusBtn {
-  height: 30px;
-  padding: 0 10px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-canvas);
-  border: 1px solid var(--border-medium);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.backendStatusBtn:hover {
-  border-color: var(--accent-cyan);
-}
-
-.backendDot {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-}
-
-.backendDotLive {
-  background: var(--accent-emerald);
-  box-shadow: 0 0 6px var(--accent-emerald);
-}
-
-.backendDotDemo {
-  background: var(--accent-amber);
-  box-shadow: 0 0 6px var(--accent-amber);
-}
-
-.backendText {
+  font-weight: 500;
   color: var(--text-secondary);
 }
 
+.stepNumber {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
 
-@media (max-width: 1024px) {
-  .header {
-    height: auto;
-    padding: var(--space-md);
-    flex-wrap: wrap;
-    gap: var(--space-md);
+.stepActive {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.stepActive .stepNumber {
+  background: var(--accent-cyan);
+  color: #030b18;
+  box-shadow: 0 0 8px rgba(0, 217, 255, 0.4);
+}
+
+.stepOutlined {
+  color: var(--accent-cyan);
+}
+
+.stepOutlined .stepNumber {
+  border: 1px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.stepMuted {
+  color: var(--text-muted);
+}
+
+.stepMuted .stepNumber {
+  border: 1px solid var(--text-muted);
+  color: var(--text-muted);
+}
+
+.stepArrow {
+  color: var(--border-medium);
+  font-size: 11px;
+}
+
+/* 3. Right Status Capsules */
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.pillCapsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 5px 12px;
+  height: 36px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.pillCapsule:hover {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.15);
+}
+
+.pillActive {
+  border-color: rgba(0, 217, 255, 0.35);
+}
+
+.pillMuted {
+  opacity: 0.7;
+}
+
+.greenPulseDot {
+  width: 7px;
+  height: 7px;
+  background: var(--accent-emerald);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 8px var(--accent-emerald);
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
   }
-  .centerSection {
-    order: 3;
-    width: 100%;
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.capsuleIcon {
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+}
+
+.pillTextCol {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.pillTopLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pillSubLabel {
+  font-size: 9px;
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+}
+
+.menuButton {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.menuButton:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-cyan);
+}
+
+@media (max-width: 1200px) {
+  .stepperContainer {
+    display: none;
   }
 }

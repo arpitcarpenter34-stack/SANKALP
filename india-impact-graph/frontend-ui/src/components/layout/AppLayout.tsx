@@ -1,5 +1,5 @@
+import React from 'react';
 import { Header } from './Header';
-import { Badge } from '../ui/Badge';
 import { BackendConnectionStatus } from '../../types';
 import styles from './AppLayout.module.css';
 
@@ -34,55 +34,31 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         onToggleForceOffline={onToggleForceOffline}
       />
 
-
-      {/* Sub-Header Notice / System State Strip */}
-      <div className={styles.noticeStrip}>
-        <div className={styles.noticeContent}>
-          <div className={styles.noticeLeft}>
-            <span className={styles.pulseIndicator} />
-            <span className={styles.noticeText}>
-              <strong>DEMO INTEGRITY STATE:</strong> Number calculations use deterministic HCES 2023–24 formulas.
-            </span>
-          </div>
-          <div className={styles.noticeRight}>
-            {isAiOff ? (
-              <Badge variant="verified" size="sm">
-                AI OFF: Deterministic Formula Baseline
-              </Badge>
-            ) : (
-              <Badge variant="cyan" size="sm">
-                AI Mode: Demo Explainer Slot (Numbers Deterministic)
-              </Badge>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 3-Column 12-Grid Master Dashboard */}
+      {/* 3-Column Grok-Themed Master Analytics Dashboard */}
       <main className={styles.mainGrid}>
-        {/* Left Column (3 cols) — Laptop A Owned */}
+        {/* Left Column: Scenario Input */}
         <aside className={styles.leftColumn} aria-label="Scenario & Input Workspace">
           {leftPanel}
         </aside>
 
-        {/* Center Column (6 cols) — Centerpiece Graph Slot for Laptop B */}
+        {/* Center Column: Dominant Financial Impact Graph Centerpiece */}
         <section className={styles.centerColumn} aria-label="Financial Impact Graph Centerpiece">
           {centerPanel}
         </section>
 
-        {/* Right Column (3 cols) — Persona Impact & Evidence Receipts for Laptop B */}
+        {/* Right Column: Household Persona Impact & Evidence Receipts */}
         <aside className={styles.rightColumn} aria-label="Household Impact & Evidence Receipts">
           {rightPanel}
         </aside>
       </main>
 
-      {/* Institutional Terminal Footer */}
+      {/* Sleek Minimal Status Bar */}
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
           <div className={styles.footerLeft}>
             <span className={styles.footerBrand}>India Impact Graph</span>
             <span className={styles.footerSep}>|</span>
-            <span className={styles.footerRule}>Evidence First. Data Before Numbers.</span>
+            <span className={styles.footerRule}>Evidence First • MoSPI HCES 2023–24 Deterministic Calibration</span>
           </div>
 
           <div className={styles.footerCenter}>
@@ -92,7 +68,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
           </div>
 
           <div className={styles.footerRight}>
-            <Badge variant="neutral" size="sm">v1.0.0-phase2-shell</Badge>
+            <span className={styles.footerVersion}>v2.0-grok-dark</span>
           </div>
         </div>
       </footer>

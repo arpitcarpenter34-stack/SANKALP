@@ -1,8 +1,4 @@
 import React, { useState } from 'react';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
-import { ScenarioSelector } from './ScenarioSelector';
 import { EventScenario, TransmissionAnalysisState } from '../../types';
 import styles from './ScenarioWorkspace.module.css';
 
@@ -19,12 +15,14 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
   onAnalyze,
   onResetToIdle,
 }) => {
+  const [activeTab, setActiveTab] = useState<'presets' | 'custom'>('presets');
   const [selectedId, setSelectedId] = useState<string>(analysisState.selectedScenario.id);
   const [customText, setCustomText] = useState<string>(
     analysisState.selectedScenario.fullArticleText || ''
   );
   const [validationError, setValidationError] = useState<string | null>(null);
   const [testSimulateError, setTestSimulateError] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   const activeScenario =
     selectedId === 'custom'
@@ -40,12 +38,31 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
         setCustomText(match.fullArticleText);
       }
     } else {
+      setActiveTab('custom');
       setCustomText('');
     }
   };
 
+  const handleTabSwitch = (tab: 'presets' | 'custom') => {
+    setActiveTab(tab);
+    setValidationError(null);
+    if (tab === 'custom') {
+      setSelectedId('custom');
+      if (activeScenario && customText === activeScenario.fullArticleText) {
+        setCustomText('');
+      }
+    } else {
+      if (selectedId === 'custom') {
+        setSelectedId(scenarios[0].id);
+        if (scenarios[0].fullArticleText) {
+          setCustomText(scenarios[0].fullArticleText);
+        }
+      }
+    }
+  };
+
   const handleTriggerAnalysis = () => {
-    if (selectedId === 'custom' && (!customText || customText.trim().length === 0)) {
+    if (activeTab === 'custom' && (!customText || customText.trim().length === 0)) {
       setValidationError('Please paste or type a financial news excerpt before running custom analysis.');
       return;
     }
@@ -58,200 +75,253 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
       setCustomText(activeScenario.fullArticleText);
       setValidationError(null);
     }
+    if (onResetToIdle) {
+      onResetToIdle();
+    }
   };
 
   return (
-    <Card
-      title="Scenario Dispatch Input"
-      subtitle="Macroeconomic Shock Ingestion"
-      headerAction={
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-          <Badge
-            variant={
-              analysisState.status === 'analyzed'
-                ? 'verified'
-                : analysisState.status === 'error'
-                ? 'risk'
-                : 'neutral'
-            }
-            size="sm"
-          >
-            {analysisState.status === 'analyzed'
-              ? 'Active Dispatch'
-              : analysisState.status === 'error'
-              ? 'Evaluation Error'
-              : 'Ready'}
-          </Badge>
+    <div className={styles.scenarioCard}>
+      {/* 1. Header with Icon */}
+      <div className={styles.header}>
+        <div className={styles.headerIcon}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d9ff" strokeWidth="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
         </div>
-      }
-    >
-      <div className={styles.workspaceBody}>
-        {/* Scenario Presets Selector */}
-        <ScenarioSelector
-          scenarios={scenarios}
-          selectedId={selectedId}
-          onSelect={handleScenarioChange}
-          disabled={analysisState.status === 'loading'}
-        />
+        <div className={styles.headerText}>
+          <h2 className={styles.title}>Scenario Input</h2>
+          <p className={styles.subtitle}>Analyze global events and see their impact on India</p>
+        </div>
+      </div>
 
-        {/* Text Area for Bulletin / Article */}
-        <div className={styles.inputGroup}>
-          <div className={styles.inputHeader}>
-            <label htmlFor="article-text" className={styles.inputLabel}>
-              {selectedId === 'custom'
-                ? 'Custom News Excerpt / Dispatch'
-                : 'Scenario Reference Text'}
+      <div className={styles.body}>
+        {/* 2. Preset Scenarios vs Custom News Segmented Control */}
+        <div className={styles.segmentBar} role="tablist" aria-label="Input Mode">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'presets'}
+            className={`${styles.segmentBtn} ${activeTab === 'presets' ? styles.segmentBtnActive : ''}`}
+            onClick={() => handleTabSwitch('presets')}
+          >
+            Preset Scenarios
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'custom'}
+            className={`${styles.segmentBtn} ${activeTab === 'custom' ? styles.segmentBtnActive : ''}`}
+            onClick={() => handleTabSwitch('custom')}
+          >
+            Custom News
+          </button>
+        </div>
+
+        {/* 3. Scenario Selector Dropdown */}
+        {activeTab === 'presets' ? (
+          <div className={styles.sectionGroup}>
+            <label htmlFor="benchmark-select" className={styles.sectionLabel}>
+              <span className={styles.sectionLabelBar} />
+              Select Benchmark Scenario
             </label>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {selectedId !== 'custom' && (
-                <button
-                  type="button"
-                  onClick={handleRestoreScenarioText}
-                  className={styles.resetButton}
-                  title="Reset to benchmark text"
-                >
-                  ↺ Reset Text
-                </button>
-              )}
-              <span className={styles.charCount}>
-                {customText.length} chars
+
+            <div className={styles.selectWrapper}>
+              <span className={styles.selectIcon} aria-hidden="true">
+                {selectedId === 'crude-oil-12pct' ? '🛢️' : selectedId === 'edible-oil-tariff' ? '🌻' : '🌾'}
+              </span>
+              <select
+                id="benchmark-select"
+                className={styles.styledSelect}
+                value={selectedId}
+                onChange={(e) => handleScenarioChange(e.target.value)}
+                disabled={analysisState.status === 'loading'}
+              >
+                {scenarios.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.title}
+                  </option>
+                ))}
+              </select>
+              <span className={styles.selectChevron}>▾</span>
+            </div>
+
+            {/* Badges Row */}
+            <div className={styles.badgeRow}>
+              <span className={styles.cyanBadge}>
+                ★ Magnitude: {activeScenario?.magnitude || '+12.0%'}
+              </span>
+              <span className={styles.amberBadge}>
+                ★ Hypothetical (Demo)
               </span>
             </div>
           </div>
+        ) : null}
 
-          <textarea
-            id="article-text"
-            className={`${styles.textarea} ${validationError ? styles.textareaError : ''}`}
-            value={customText}
-            onChange={(e) => {
-              setCustomText(e.target.value);
-              if (validationError) setValidationError(null);
-            }}
-            placeholder={
-              selectedId === 'custom'
-                ? 'Paste an excerpt from a financial news article (e.g. Brent crude surges to $92 on OPEC cuts)...'
-                : 'Benchmark scenario text...'
-            }
-            rows={5}
-            disabled={analysisState.status === 'loading'}
-            aria-invalid={!!validationError}
-            aria-describedby={validationError ? 'validation-msg' : undefined}
-          />
+        {/* 4. Scenario Reference Box or Custom News Textarea */}
+        <div className={styles.sectionGroup}>
+          <div className={styles.sectionHeaderBetween}>
+            <label htmlFor="article-text-box" className={styles.sectionLabel}>
+              <span className={styles.sectionLabelBar} />
+              {activeTab === 'custom' ? 'Custom Financial News Excerpt' : 'Scenario Reference'}
+            </label>
+            <button
+              type="button"
+              onClick={handleRestoreScenarioText}
+              className={styles.resetLink}
+              title="Reset to scenario defaults"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+              Reset
+            </button>
+          </div>
 
-          {validationError && (
-            <div id="validation-msg" className={styles.errorMessage} role="alert">
-              ⚠️ {validationError}
+          {activeTab === 'custom' ? (
+            <div className={styles.textareaWrapper}>
+              <textarea
+                id="article-text-box"
+                className={`${styles.styledTextarea} ${validationError ? styles.textareaError : ''}`}
+                value={customText}
+                onChange={(e) => {
+                  setCustomText(e.target.value);
+                  if (validationError) setValidationError(null);
+                }}
+                placeholder="Paste financial news dispatch (e.g. Brent crude escalates past $90/bbl as OPEC+ reduces output...)"
+                rows={4}
+                disabled={analysisState.status === 'loading'}
+              />
+              {validationError && (
+                <div className={styles.errorMessage} role="alert">
+                  ⚠️ {validationError}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className={styles.referenceCard}>
+              <p className={styles.referenceText}>
+                {isExpanded
+                  ? customText
+                  : customText.length > 180
+                  ? `${customText.slice(0, 180)}...`
+                  : customText}
+                {customText.length > 180 && (
+                  <button
+                    type="button"
+                    className={styles.readMoreBtn}
+                    onClick={() => setIsExpanded(!isExpanded)}
+                  >
+                    {isExpanded ? ' Show Less' : ' Read More'}
+                  </button>
+                )}
+              </p>
             </div>
           )}
         </div>
 
-        {/* Transmission Parameters Panel */}
-        <div className={styles.parametersBox}>
-          <div className={styles.paramTitle}>Macro Transmission Calibrations</div>
-          <div className={styles.paramGrid}>
-            <div className={styles.paramItem}>
-              <span className={styles.paramLabel}>
+        {/* 5. Macro Transmission Calibrations */}
+        <div className={styles.sectionGroup}>
+          <div className={styles.sectionLabel}>
+            <span className={styles.sectionLabelBar} />
+            Macro Transmission Calibrations
+          </div>
+
+          <div className={styles.calibrationList}>
+            <div className={styles.calibrationItem}>
+              <div className={styles.calibrationLeft}>
+                <span className={styles.calIcon}>⏱</span>
+                <span>
+                  {selectedId === 'edible-oil-tariff'
+                    ? 'Import Tariff Pass-through'
+                    : selectedId === 'wheat-procurement-spike'
+                    ? 'Mandi MSP+ Spread'
+                    : 'OMC: Diesel Pass-through'}
+                </span>
+              </div>
+              <span className={styles.calValue}>
                 {selectedId === 'edible-oil-tariff'
-                  ? 'Import Tariff Pass-Through:'
+                  ? '10–15 Days'
                   : selectedId === 'wheat-procurement-spike'
-                  ? 'Mandi MSP+ Spread:'
-                  : 'OMC Diesel Pass-Through:'}
-              </span>
-              <span className={styles.paramValue}>
-                {selectedId === 'edible-oil-tariff'
-                  ? '10–15 Days (Port to Mandi)'
-                  : selectedId === 'wheat-procurement-spike'
-                  ? 'Localized Rabi Lag'
-                  : '14–21 Days Wholesale Lag'}
+                  ? 'Localized Lag'
+                  : '14–21 Days'}
               </span>
             </div>
-            <div className={styles.paramItem}>
-              <span className={styles.paramLabel}>Target Geography:</span>
-              <span className={styles.paramValue}>Madhya Pradesh (Baseline)</span>
+
+            <div className={styles.calibrationItem}>
+              <div className={styles.calibrationLeft}>
+                <span className={styles.calIcon}>📍</span>
+                <span>Target Geography</span>
+              </div>
+              <span className={styles.calValue}>Madhya Pradesh (Baseline)</span>
             </div>
-            <div className={styles.paramItem}>
-              <span className={styles.paramLabel}>Policy Cushion:</span>
-              <span className={styles.paramValue}>
+
+            <div className={styles.calibrationItem}>
+              <div className={styles.calibrationLeft}>
+                <span className={styles.calIcon}>🛡</span>
+                <span>Policy Cushion</span>
+              </div>
+              <span className={styles.calValue}>
                 {selectedId === 'wheat-procurement-spike'
-                  ? 'PMGKAY Free Grain Buffer'
+                  ? 'PMGKAY Free Grain'
                   : selectedId === 'edible-oil-tariff'
-                  ? 'PDS Cooking Oil Quota'
+                  ? 'PDS Cooking Oil'
                   : 'State VAT Buffer'}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Error State Testing Option (for developer/tester validation) */}
-        <div className={styles.errorToggleRow}>
-          <label className={styles.toggleLabel}>
+        {/* 6. Error Simulation Checkbox */}
+        <div className={styles.checkboxRow}>
+          <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
               checked={testSimulateError}
               onChange={(e) => setTestSimulateError(e.target.checked)}
-              className={styles.checkbox}
+              className={styles.styledCheckbox}
             />
-            <span>Simulate transmission evaluation failure (Test error state)</span>
+            <span>Simulate transmission evaluation failure <span className={styles.testNote}>(test error state)</span></span>
           </label>
         </div>
 
-        {/* Action Button & Status */}
-        <div className={styles.actionRow}>
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={handleTriggerAnalysis}
-            isLoading={analysisState.status === 'loading'}
-            className={`${styles.analyzeButton} ${analysisState.status === 'idle' ? styles.buttonReady : ''}`}
-          >
-            {analysisState.status === 'loading'
-              ? 'Evaluating Transmission...'
-              : '⚡ Analyze Event Transmission'}
-          </Button>
-
-          {analysisState.status === 'analyzed' && (
-            <div className={styles.successStatus}>
-              <span className={styles.statusDot} />
-              <span>
-                Evaluated: {analysisState.graphData?.nodes.length || 0} Nodes //{' '}
-                {analysisState.graphData?.edges.length || 0} Causal Edges
-              </span>
-            </div>
+        {/* 7. Primary Action Button */}
+        <button
+          type="button"
+          className={`${styles.primaryAnalyzeBtn} ${analysisState.status === 'loading' ? styles.btnLoading : ''}`}
+          onClick={handleTriggerAnalysis}
+          disabled={analysisState.status === 'loading'}
+        >
+          {analysisState.status === 'loading' ? (
+            <span className={styles.btnContent}>
+              <span className={styles.spinner} />
+              Evaluating Transmission...
+            </span>
+          ) : (
+            <span className={styles.btnContent}>
+              <span className={styles.playIcon}>▶</span>
+              Analyze Event Transmission
+            </span>
           )}
+        </button>
 
-          {analysisState.status === 'error' && (
-            <div className={styles.errorBanner} role="alert">
-              <div className={styles.errorText}>
-                ⚠️ {analysisState.errorMessage || 'Transmission evaluation encountered an error.'}
-              </div>
-              {onResetToIdle && (
-                <button
-                  type="button"
-                  onClick={onResetToIdle}
-                  className={styles.retryButton}
-                >
-                  Dismiss / Return to Idle
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Receipt / Provenance Summary */}
-        {activeScenario && (
-          <div className={styles.receiptCard}>
-            <div className={styles.receiptHeader}>
-              <span className={styles.receiptTitle}>Source Receipt:</span>
-              <span className={styles.receiptSource}>
-                {activeScenario.sourceReceipt.publisher} ({activeScenario.sourceReceipt.vintageYear})
-              </span>
-            </div>
-            <p className={styles.receiptCaveat}>
-              {activeScenario.sourceReceipt.caveats?.[0] || 'Official survey calibrated.'}
-            </p>
+        {/* 8. Footer Notes */}
+        <div className={styles.footerNotes}>
+          <div className={styles.footerNoteItem}>
+            <span>⏱</span>
+            <span>Estimated analysis time: ~10 seconds</span>
           </div>
-        )}
+          <div className={styles.footerNoteItem}>
+            <span>ℹ</span>
+            <span>Evaluates 9 nodes and 7 causal edges</span>
+          </div>
+        </div>
       </div>
-    </Card>
+    </div>
   );
 };

@@ -1,215 +1,70 @@
-/* Obsidian Intelligence — Graph Module Stylesheet */
-
-.canvasContainer {
-  position: relative;
-  width: 100%;
-  background: var(--canvas-bg, #0b0f19);
-  border: 1px solid var(--border-subtle, #1e293b);
-  border-radius: var(--radius-lg, 12px);
-  overflow: hidden;
+.centerContainer {
   display: flex;
   flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.topBar {
+/* 1. Header */
+.graphCardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, rgba(8, 124, 255, 0.06) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border-subtle);
   flex-wrap: wrap;
   gap: 12px;
-  padding: 12px 18px;
-  background: rgba(17, 24, 39, 0.75);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border-subtle, #1e293b);
 }
 
-.pathButtons {
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.titleRow {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
 }
 
-.pathButton {
-  background: var(--card-bg, #111827);
-  color: var(--muted-text, #94a3b8);
-  border: 1px solid var(--border-subtle, #1e293b);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm, 4px);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
+.titleChevron {
+  color: var(--accent-cyan);
+  font-size: 16px;
+  font-weight: 700;
 }
 
-.pathButton:hover {
-  color: var(--primary-text, #f8fafc);
-  border-color: var(--border-card, #334155);
+.graphTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
-.pathButton:focus-visible {
-  outline: 2px solid var(--focus-ring, #00d2b4);
-  outline-offset: 2px;
+.graphSubtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
-.pathButtonActive {
-  background: rgba(0, 210, 180, 0.12);
-  color: var(--primary-teal, #00d2b4);
-  border-color: var(--primary-teal, #00d2b4);
-}
-
-.incompleteBanner {
+.headerRight {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  background: rgba(245, 158, 11, 0.1);
-  border-bottom: 1px solid var(--uncertainty-amber, #f59e0b);
-  color: #fde68a;
-  font-size: 13px;
-  line-height: 1.4;
+  gap: 14px;
 }
 
-.incompleteIcon {
-  color: var(--uncertainty-amber, #f59e0b);
-  font-weight: bold;
-  flex-shrink: 0;
-}
-
-.svgViewport {
-  width: 100%;
-  height: auto;
-  min-height: 480px;
-  display: block;
-  user-select: none;
-}
-
-/* Node Elements */
-.nodeGroup {
-  cursor: pointer;
-  transition: opacity var(--transition-normal), transform var(--transition-fast);
-  outline: none;
-  animation: scaleInFade 0.4s var(--transition-normal) both;
-  /* Transform origin will be overridden inline or assumed center if possible, 
-     but SVG handles transform origins differently. Using scaleInFade for opacity mainly */
-}
-
-.nodeGroup:hover .nodeShape {
-  filter: drop-shadow(0 0 8px rgba(0, 210, 180, 0.4));
-}
-
-.nodeGroup:focus-visible .nodeShape {
-  stroke: var(--focus-ring, #00d2b4) !important;
-  stroke-width: 3px !important;
-}
-
-.nodeShape {
-  transition: stroke var(--transition-fast, 150ms ease), stroke-width var(--transition-fast, 150ms ease);
-}
-
-.nodeSelected .nodeShape {
-  stroke: #ffffff !important;
-  stroke-width: 3.5px !important;
-  filter: drop-shadow(0 0 12px var(--primary-teal, #00d2b4));
-}
-
-.nodeDimmed {
-  opacity: 0.18;
-}
-
-.nodeLabel {
-  font-size: 11px;
-  font-weight: 600;
-  fill: var(--primary-text, #f8fafc);
-  text-anchor: middle;
-  pointer-events: none;
-  font-family: var(--font-family-sans, sans-serif);
-}
-
-.nodeTypeBadge {
-  font-size: 9px;
-  font-weight: 500;
-  fill: var(--muted-text, #94a3b8);
-  text-anchor: middle;
-  pointer-events: none;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Edge Elements */
-.edgeGroup {
-  cursor: pointer;
-  transition: opacity var(--transition-normal);
-  animation: scaleInFade 0.5s var(--transition-normal) both;
-  animation-delay: 0.1s;
-}
-
-.edgeHitArea {
-  fill: none;
-  stroke: transparent;
-  stroke-width: 18px;
-  cursor: pointer;
-}
-
-.edgeLine {
-  fill: none;
-  stroke-width: 2px;
-  transition: stroke-width var(--transition-fast, 150ms ease), stroke var(--transition-fast, 150ms ease);
-}
-
-.edgeObserved {
-  stroke: var(--primary-teal, #00d2b4);
-  stroke-dasharray: none;
-}
-
-.edgeInferred {
-  stroke: var(--uncertainty-amber, #f59e0b);
-  stroke-dasharray: 6 4;
-  animation: dashOffset 20s linear infinite reverse;
-}
-
-.edgeSelected .edgeLine {
-  stroke: #ffffff !important;
-  stroke-width: 3.5px !important;
-  filter: drop-shadow(0 0 8px rgba(0, 210, 180, 0.6));
-}
-
-.edgeHighlighted .edgeLine {
-  stroke-width: 2.8px;
-}
-
-.edgeDimmed {
-  opacity: 0.12;
-}
-
-.edgeLabelText {
-  font-size: 9px;
-  fill: #cbd5e1;
-  text-anchor: middle;
-  pointer-events: none;
-  font-family: var(--font-family-mono, monospace);
-  background: rgba(11, 15, 25, 0.8);
-}
-
-/* Legend & Footer */
-.footerBar {
+.headerLegend {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 18px;
-  background: rgba(17, 24, 39, 0.6);
-  border-top: 1px solid var(--border-subtle, #1e293b);
-  font-size: 11px;
-  color: var(--muted-text, #94a3b8);
-  flex-wrap: wrap;
   gap: 12px;
-}
-
-.legendList {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
 }
 
 .legendItem {
@@ -219,42 +74,452 @@
 }
 
 .legendLineObserved {
-  width: 20px;
+  width: 16px;
   height: 2px;
-  background: var(--primary-teal, #00d2b4);
+  background: var(--accent-cyan);
+  border-radius: 1px;
+  box-shadow: 0 0 6px rgba(0, 217, 255, 0.5);
 }
 
 .legendLineInferred {
-  width: 20px;
+  width: 16px;
   height: 2px;
-  background: repeating-linear-gradient(90deg, var(--uncertainty-amber, #f59e0b) 0px, var(--uncertainty-amber, #f59e0b) 4px, transparent 4px, transparent 8px);
+  background: repeating-linear-gradient(90deg, var(--accent-amber) 0px, var(--accent-amber) 4px, transparent 4px, transparent 8px);
 }
 
+.resetViewBtn {
+  background: rgba(3, 11, 24, 0.6);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.resetViewBtn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--text-primary);
+}
+
+/* 2. Channel Filter Bar */
+.channelFilterBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--bg-card-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.channelTab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.channelTab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.channelTabActive {
+  background: linear-gradient(135deg, #087cff 0%, #00aaff 100%);
+  color: #ffffff;
+  border-color: rgba(0, 217, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(8, 124, 255, 0.35);
+}
+
+.incompleteBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(255, 179, 35, 0.08);
+  border-bottom: 1px solid rgba(255, 179, 35, 0.3);
+  color: #fde68a;
+  font-size: 11px;
+}
+
+.incompleteIcon {
+  color: var(--accent-amber);
+}
+
+/* 3. SVG Viewport */
+.svgViewportWrapper {
+  width: 100%;
+  height: 480px;
+  background: #030b18;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.svgGraph {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Node Elements */
+.nodeGroup {
+  cursor: pointer;
+  transition: transform var(--transition-fast), opacity var(--transition-normal);
+  outline: none;
+}
+
+.nodeGroup:hover .nodeCircle {
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.5));
+}
+
+.nodeSelected .nodeCircle {
+  stroke: #ffffff !important;
+  stroke-width: 3.5px !important;
+  filter: drop-shadow(0 0 12px rgba(0, 217, 255, 0.8));
+}
+
+.nodeDimmed {
+  opacity: 0.16;
+}
+
+.nodeCircle {
+  transition: stroke var(--transition-fast), stroke-width var(--transition-fast);
+}
+
+.pulseRing {
+  animation: pulseAura 2.5s infinite;
+  transform-origin: center;
+}
+
+@keyframes pulseAura {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.8;
+  }
+}
+
+.nodeLabelText {
+  font-size: 11px;
+  font-weight: 600;
+  fill: #f4f8ff;
+  text-anchor: middle;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+}
+
+/* Edge Elements */
+.edgeGroup {
+  cursor: pointer;
+  transition: opacity var(--transition-normal);
+}
+
+.edgeHitArea {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 20px;
+  cursor: pointer;
+}
+
+.edgeDimmed {
+  opacity: 0.12;
+}
+
+.flowingDashed {
+  animation: dashMove 16s linear infinite reverse;
+}
+
+@keyframes dashMove {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 100; }
+}
+
+/* 4. Channels Section */
+.channelsSection {
+  padding: 12px 18px;
+  background: var(--bg-card-subtle);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionHeading {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.channelsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.channelCard {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.channelCard:hover {
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 217, 255, 0.15);
+}
+
+.channelCardActive {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 217, 255, 0.06);
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.2);
+}
+
+.channelIconBox {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.iconGold {
+  background: rgba(255, 179, 35, 0.12);
+  border: 1px solid rgba(255, 179, 35, 0.3);
+}
+
+.iconCyan {
+  background: rgba(0, 217, 255, 0.12);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+}
+
+.iconBlue {
+  background: rgba(8, 124, 255, 0.12);
+  border: 1px solid rgba(8, 124, 255, 0.3);
+}
+
+.iconViolet {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.channelMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.channelTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.channelSub {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.badgeCoral {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-rose);
+  background: rgba(255, 82, 104, 0.12);
+  border: 1px solid rgba(255, 82, 104, 0.3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  width: fit-content;
+  margin-top: 2px;
+}
+
+.badgeAmber {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-amber);
+  background: rgba(255, 179, 35, 0.12);
+  border: 1px solid rgba(255, 179, 35, 0.3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  width: fit-content;
+  margin-top: 2px;
+}
+
+.badgeBlue {
+  font-size: 9px;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  width: fit-content;
+  margin-top: 2px;
+}
+
+/* 5. Bottom Overview Row */
+.bottomOverviewRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pathOverviewGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.overviewTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pathStepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 10px;
+}
+
+.pathPill {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.pillShock {
+  border-color: rgba(255, 82, 104, 0.4);
+  color: var(--accent-rose);
+  font-weight: 600;
+}
+
+.pillHousehold {
+  border-color: rgba(168, 85, 247, 0.4);
+  color: var(--accent-violet);
+  font-weight: 600;
+}
+
+.stepperArrow {
+  color: var(--border-medium);
+  font-size: 9px;
+}
+
+.graphControlsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.controlHeader {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.controlButtons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ctrlBtn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 10px;
+  padding: 3px 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ctrlBtn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--text-primary);
+}
+
+/* States */
 .emptyState,
 .loadingState {
+  min-height: 480px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 480px;
-  color: var(--muted-text, #94a3b8);
-  text-align: center;
-  padding: 30px;
+  color: var(--text-secondary);
+  gap: 12px;
 }
 
-.stateIcon {
-  font-size: 32px;
-  margin-bottom: 12px;
-  color: var(--primary-teal, #00d2b4);
+.spinnerIcon {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 217, 255, 0.2);
+  border-top-color: var(--accent-cyan);
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .nodeGroup,
-  .nodeShape,
-  .edgeGroup,
-  .edgeLine,
-  .pathButton {
-    transition: none !important;
-    animation: none !important;
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.emptyIcon {
+  font-size: 28px;
+  color: var(--accent-cyan);
+}
+
+.stateText {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 1400px) {
+  .channelsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
