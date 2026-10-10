@@ -124,3 +124,22 @@ class EvidenceResultSchema(BaseModel):
     target_id: str
     target_type: str
     receipts: List[dict] # In evidence_service.py receipts have `_associated_node_id` etc., so using dict is safer.
+
+class PathFindingRequest(BaseModel):
+    graph: ImpactKnowledgeGraph
+    source_id: str
+    target_id: Optional[str] = None
+    max_depth: int = 5
+    limit: int = 3
+
+class NodeEvidenceRequest(BaseModel):
+    graph: ImpactKnowledgeGraph
+    node_id: str
+
+class EdgeEvidenceRequest(BaseModel):
+    graph: ImpactKnowledgeGraph
+    edge_id: str
+
+class PathEvidenceRequest(BaseModel):
+    graph: ImpactKnowledgeGraph
+    path: PathResultSchema

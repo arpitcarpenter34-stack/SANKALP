@@ -23,7 +23,11 @@ from app.schemas.graph import (
     PathEdgeMetadata,
     PathResultSchema,
     EvidenceStatusEnum,
-    EvidenceResultSchema
+    EvidenceResultSchema,
+    PathFindingRequest,
+    NodeEvidenceRequest,
+    EdgeEvidenceRequest,
+    PathEvidenceRequest
 )
 
 __all__ = [
@@ -46,5 +50,9 @@ __all__ = [
     "PathEdgeMetadata",
     "PathResultSchema",
     "EvidenceStatusEnum",
-    "EvidenceResultSchema"
+    "EvidenceResultSchema",
+    "PathFindingRequest",
+    "NodeEvidenceRequest",
+    "EdgeEvidenceRequest",
+    "PathEvidenceRequest"
 ]

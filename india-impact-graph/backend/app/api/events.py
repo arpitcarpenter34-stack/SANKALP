@@ -19,9 +19,12 @@ from app.schemas.event import (
     ExtractedEntity,
     FinancialEventExtraction,
 )
+from pydantic import BaseModel
+
+class EventExtractionRequest(BaseModel):
+    text: str
 
 router = APIRouter(prefix="/api/events", tags=["events"])
-
 
 def model_to_schema(event_model: FinancialEventModel) -> FinancialEventExtraction:
     """Convert a FinancialEventModel ORM instance to a FinancialEventExtraction Pydantic model."""
@@ -218,3 +221,32 @@ def get_event(
         )
 
     return model_to_schema(event_model)
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
+from event_extraction.event_extractor import FinancialEventExtractor, FakeDeterministicProvider, EventExtractionError
+
+@router.post(
+    "/extract",
+    response_model=FinancialEventExtraction,
+    status_code=status.HTTP_200_OK,
+    summary="Extract a financial event from text"
+)
+def extract_event(req: EventExtractionRequest) -> FinancialEventExtraction:
+    """Extract a financial event deterministically from text."""
+    provider = FakeDeterministicProvider()
+    extractor = FinancialEventExtractor(provider)
+    try:
+        raw_event = extractor.extract(req.text)
+        return FinancialEventExtraction(**raw_event)
+    except EventExtractionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
