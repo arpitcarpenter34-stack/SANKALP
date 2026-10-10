@@ -86,6 +86,55 @@ class FakeDeterministicProvider(EventExtractionProvider):
         return {}
 
 
+import os
+import json
+import urllib.request
+import urllib.error
+
+class LiveLLMProvider(EventExtractionProvider):
+    """
+    Genuine configurable LLM provider.
+    Reads LIVE_LLM_API_KEY and USE_LIVE_LLM from environment.
+    """
+    def extract_event(self, text: str) -> Dict[str, Any]:
+        use_live = os.environ.get("USE_LIVE_LLM", "false").lower() == "true"
+        if not use_live:
+            raise ExtractionProviderError("Live provider is disabled via configuration. Set USE_LIVE_LLM=true.")
+            
+        api_key = os.environ.get("LIVE_LLM_API_KEY")
+        if not api_key:
+            raise ExtractionProviderError("Configuration error: LIVE_LLM_API_KEY is missing.")
+
+        # Real network call using standard library
+        url = "https://api.openai.com/v1/chat/completions"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        }
+        data = {
+            "model": "gpt-4-turbo",
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a financial event extractor. Extract events to match the EventExtraction schema."
+                },
+                {"role": "user", "content": text}
+            ]
+        }
+        
+        req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as response:
+                resp_data = json.loads(response.read().decode("utf-8"))
+                content = resp_data["choices"][0]["message"]["content"]
+                return json.loads(content)
+        except urllib.error.URLError as e:
+            raise ExtractionProviderError(f"Network error while contacting LLM provider: {str(e)}")
+        except Exception as e:
+            raise ExtractionProviderError(f"Error parsing LLM response: {str(e)}")
+
+
 class FinancialEventExtractor:
     """
     Extracts and validates financial events using the provided LLM extraction interface.
