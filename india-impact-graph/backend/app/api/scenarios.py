@@ -88,7 +88,7 @@ def analyze_scenario(request: AnalysisRequest) -> Dict[str, Any]:
         shock_pct = Decimal(str(extracted.get("magnitude", {}).get("value", 10)))
         event_type = extracted.get("event_type", "macroeconomic_indicator_release")
         receipt_status = "[UNVERIFIED]"
-    elif "edible-oil" in request.scenarioId.lower():
+    elif "edible" in request.scenarioId.lower():
         scenario_id = "edible-oil-tariff"
         title = "Edible Oil Import Tariff: +8.5% (Synthetic Backup Scenario A)"
         summary = "Basic customs duty and agriculture infrastructure cess adjusted on edible oil imports."
