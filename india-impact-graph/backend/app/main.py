@@ -5,12 +5,15 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.api.events import router as events_router
 
 app = FastAPI(
     title="India Impact Graph API",
     description="Autonomous Financial Event Market Impact Graph API - HackWave 3.0",
     version="0.1.0",
 )
+
+app.include_router(events_router)
 
 
 @app.get("/api/health")
