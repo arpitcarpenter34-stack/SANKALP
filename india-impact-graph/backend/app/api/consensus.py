@@ -13,6 +13,7 @@ class ConsensusRequest(BaseModel):
     event_id: str
     claims: List[ArticleClaim]
 
+@router.post("", response_model=ConsensusResult, include_in_schema=False)
 @router.post("/", response_model=ConsensusResult)
 def evaluate_consensus(request: ConsensusRequest):
     """
@@ -20,5 +21,5 @@ def evaluate_consensus(request: ConsensusRequest):
     """
     if not request.claims:
         raise HTTPException(status_code=400, detail="Must provide at least one claim.")
-        
+
     return service.compare_claims(request.event_id, request.claims)

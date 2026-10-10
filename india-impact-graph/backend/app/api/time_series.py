@@ -76,13 +76,13 @@ def get_cpi_series(sector: Optional[str] = None):
     data = load_cpi_data()
     if not data:
         raise HTTPException(status_code=404, detail="CPI data not available")
-    
+
     if sector:
         data = [d for d in data if d.sector.lower() == sector.lower()]
-    
+
     if not data:
         raise HTTPException(status_code=404, detail="No observations found for given filters")
-        
+
     return CPISeriesResponse(
         series_name="CPI 2024 General Index",
         metadata={
@@ -99,7 +99,7 @@ def get_crude_oil_snapshots():
     data = load_ppac_data()
     if not data:
         raise HTTPException(status_code=404, detail="PPAC data not available")
-        
+
     return PPACSeriesResponse(
         series_name="PPAC Indian Basket Crude Oil",
         metadata={
