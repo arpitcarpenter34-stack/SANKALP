@@ -1,0 +1,254 @@
+/* Obsidian Intelligence — Graph Module Stylesheet */
+
+.canvasContainer {
+  position: relative;
+  width: 100%;
+  background: var(--canvas-bg, #0b0f19);
+  border: 1px solid var(--border-subtle, #1e293b);
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-subtle, #1e293b);
+}
+
+.pathButtons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pathButton {
+  background: var(--card-bg, #111827);
+  color: var(--muted-text, #94a3b8);
+  border: 1px solid var(--border-subtle, #1e293b);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.pathButton:hover {
+  color: var(--primary-text, #f8fafc);
+  border-color: var(--border-card, #334155);
+}
+
+.pathButton:focus-visible {
+  outline: 2px solid var(--focus-ring, #00d2b4);
+  outline-offset: 2px;
+}
+
+.pathButtonActive {
+  background: rgba(0, 210, 180, 0.12);
+  color: var(--primary-teal, #00d2b4);
+  border-color: var(--primary-teal, #00d2b4);
+}
+
+.incompleteBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(245, 158, 11, 0.1);
+  border-bottom: 1px solid var(--uncertainty-amber, #f59e0b);
+  color: #fde68a;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.incompleteIcon {
+  color: var(--uncertainty-amber, #f59e0b);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.svgViewport {
+  width: 100%;
+  height: auto;
+  min-height: 480px;
+  display: block;
+  user-select: none;
+}
+
+/* Node Elements */
+.nodeGroup {
+  cursor: pointer;
+  transition: opacity var(--transition-normal, 250ms ease), transform var(--transition-fast, 150ms ease);
+  outline: none;
+}
+
+.nodeGroup:hover .nodeShape {
+  filter: drop-shadow(0 0 8px rgba(0, 210, 180, 0.4));
+}
+
+.nodeGroup:focus-visible .nodeShape {
+  stroke: var(--focus-ring, #00d2b4) !important;
+  stroke-width: 3px !important;
+}
+
+.nodeShape {
+  transition: stroke var(--transition-fast, 150ms ease), stroke-width var(--transition-fast, 150ms ease);
+}
+
+.nodeSelected .nodeShape {
+  stroke: #ffffff !important;
+  stroke-width: 3.5px !important;
+  filter: drop-shadow(0 0 12px var(--primary-teal, #00d2b4));
+}
+
+.nodeDimmed {
+  opacity: 0.18;
+}
+
+.nodeLabel {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--primary-text, #f8fafc);
+  text-anchor: middle;
+  pointer-events: none;
+  font-family: var(--font-family-sans, sans-serif);
+}
+
+.nodeTypeBadge {
+  font-size: 9px;
+  font-weight: 500;
+  fill: var(--muted-text, #94a3b8);
+  text-anchor: middle;
+  pointer-events: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Edge Elements */
+.edgeGroup {
+  cursor: pointer;
+  transition: opacity var(--transition-normal, 250ms ease);
+}
+
+.edgeHitArea {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 18px;
+  cursor: pointer;
+}
+
+.edgeLine {
+  fill: none;
+  stroke-width: 2px;
+  transition: stroke-width var(--transition-fast, 150ms ease), stroke var(--transition-fast, 150ms ease);
+}
+
+.edgeObserved {
+  stroke: var(--primary-teal, #00d2b4);
+  stroke-dasharray: none;
+}
+
+.edgeInferred {
+  stroke: var(--uncertainty-amber, #f59e0b);
+  stroke-dasharray: 6 4;
+}
+
+.edgeSelected .edgeLine {
+  stroke: #ffffff !important;
+  stroke-width: 3.5px !important;
+  filter: drop-shadow(0 0 8px rgba(0, 210, 180, 0.6));
+}
+
+.edgeHighlighted .edgeLine {
+  stroke-width: 2.8px;
+}
+
+.edgeDimmed {
+  opacity: 0.12;
+}
+
+.edgeLabelText {
+  font-size: 9px;
+  fill: #cbd5e1;
+  text-anchor: middle;
+  pointer-events: none;
+  font-family: var(--font-family-mono, monospace);
+  background: rgba(11, 15, 25, 0.8);
+}
+
+/* Legend & Footer */
+.footerBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: rgba(17, 24, 39, 0.6);
+  border-top: 1px solid var(--border-subtle, #1e293b);
+  font-size: 11px;
+  color: var(--muted-text, #94a3b8);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legendList {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendLineObserved {
+  width: 20px;
+  height: 2px;
+  background: var(--primary-teal, #00d2b4);
+}
+
+.legendLineInferred {
+  width: 20px;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--uncertainty-amber, #f59e0b) 0px, var(--uncertainty-amber, #f59e0b) 4px, transparent 4px, transparent 8px);
+}
+
+.emptyState,
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
+  color: var(--muted-text, #94a3b8);
+  text-align: center;
+  padding: 30px;
+}
+
+.stateIcon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  color: var(--primary-teal, #00d2b4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nodeGroup,
+  .nodeShape,
+  .edgeGroup,
+  .edgeLine,
+  .pathButton {
+    transition: none !important;
+    animation: none !important;
+  }
+}
