@@ -45,7 +45,8 @@ def test_real_article_consensus_rbi_event():
                         "direction": "none",
                         "value": None
                     },
-                    "evidence_snippets": [record['headline']]
+                    "evidence_snippets": [record['headline']],
+                    "root_source": "RBI Press Release"
                 }
             )
         )
@@ -57,4 +58,8 @@ def test_real_article_consensus_rbi_event():
     # 5. Assert consensus matches expectations for identical policy reporting
     assert result.status == "AGREEMENT", "The sources report the same policy action, should reach AGREEMENT."
     assert result.source_count == 3, "Should count 3 independent publishers."
+    assert result.publisher_count == 3, "Should count 3 distinct publishers."
+    assert result.root_source_count == 1, "Should identify exactly 1 root source (RBI Press Release)."
+    assert result.source_lineage_status == "MULTI_PUBLISHER_SINGLE_ROOT", "Status should reflect multiple publishers reporting on a single root."
+    assert "Agreement among published reports" in result.consensus_scope
     assert "Consensus describes source reporting" in result.limitations, "Source lineage limitations must be disclosed."
