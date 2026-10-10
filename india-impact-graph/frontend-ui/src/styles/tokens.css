@@ -1,50 +1,67 @@
 :root {
-  /* Grok-Inspired Deep Navy & Neon Layers */
-  --bg-canvas: #030b18;
-  --bg-panel: #071426;
-  --bg-card: #071426;
-  --bg-card-subtle: #0b1b32;
-  --bg-elevated: #0b1b32;
-  --bg-overlay: #020813;
-  --bg-input: #040e1d;
+  /* BharatImpact Light Mint & Emerald Design Tokens */
+  --bg-canvas: #F3FAF5;
+  --bg-surface: #FFFFFF;
+  --bg-panel: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-subtle: #F7FCF9;
+  --bg-elevated: #FFFFFF;
+  --bg-overlay: rgba(23, 43, 58, 0.4);
+  --bg-input: #FFFFFF;
+  --bg-mint: #E8F5EC;
+  --bg-mint-hover: #DCF0E2;
+  --bg-mint-subtle: #F0F9F3;
 
-  /* Illuminated Borders */
-  --border-subtle: #0d2744;
-  --border-medium: #123c63;
-  --border-active: #1c5285;
-  --border-focus: #00d9ff;
-  --border-glow: rgba(0, 217, 255, 0.25);
+  /* Refined Light Borders */
+  --border-subtle: #E2ECE5;
+  --border-medium: #D1E3D7;
+  --border-active: #047857;
+  --border-focus: #059669;
+  --border-glow: rgba(4, 120, 87, 0.2);
 
-  /* Electric & Neon Signals */
-  --accent-blue: #087cff;
-  --accent-cyan: #00d9ff;
-  --accent-cyan-hover: #00c2e5;
-  --accent-cyan-glow: rgba(0, 217, 255, 0.22);
-  --accent-teal: #00e2c0;
-  --accent-amber: #ffb323;
-  --accent-amber-glow: rgba(255, 179, 35, 0.22);
-  --accent-violet: #a855f7;
-  --accent-violet-glow: rgba(168, 85, 247, 0.25);
-  --accent-rose: #ff5268;
-  --accent-rose-glow: rgba(255, 82, 104, 0.25);
-  --accent-emerald: #10c994;
-  --accent-slate: #5b799e;
+  /* Emerald, Teal & Accent Signals */
+  --accent-emerald: #047857;
+  --accent-emerald-hover: #065F46;
+  --accent-emerald-light: #E8F5EC;
+  --accent-teal: #0D9488;
+  --accent-teal-light: #E6FFFA;
+  --accent-cyan: #0284C7;
+  --accent-cyan-light: #E0F2FE;
+  --accent-cyan-hover: #0369A1;
+  --accent-cyan-glow: rgba(2, 132, 199, 0.15);
+  --accent-blue: #2563EB;
+  --accent-blue-light: #EFF6FF;
+  --accent-amber: #D97706;
+  --accent-amber-light: #FEF3C7;
+  --accent-amber-glow: rgba(217, 119, 6, 0.15);
+  --accent-rose: #E11D48;
+  --accent-rose-light: #FFE4E6;
+  --accent-rose-glow: rgba(225, 29, 72, 0.15);
+  --accent-slate: #5A7184;
 
-  /* Text Contrast Hierarchy */
-  --text-primary: #f4f8ff;
-  --text-secondary: #9ab1cf;
-  --text-muted: #5b799e;
-  --text-inverse: #030b18;
+  /* Typography Contrast Hierarchy */
+  --text-primary: #172B3A;
+  --text-secondary: #5A7184;
+  --text-muted: #8298A9;
+  --text-inverse: #FFFFFF;
+  --text-emerald: #047857;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(16, 24, 40, 0.06), 0 1px 2px -1px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(16, 24, 40, 0.07), 0 2px 4px -2px rgba(16, 24, 40, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(16, 24, 40, 0.08), 0 4px 6px -4px rgba(16, 24, 40, 0.03);
 
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 
   /* Geometry & Spacing Rhythm */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-full: 9999px;
 
   --space-2xs: 2px;

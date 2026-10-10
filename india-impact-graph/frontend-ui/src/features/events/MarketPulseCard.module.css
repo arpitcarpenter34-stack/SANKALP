@@ -1,0 +1,294 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #d8eadf;
+  border-radius: 14px;
+  padding: 18px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s ease;
+  min-height: 380px;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.06);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Instrument Switcher Tabs */
+.tabsContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.tabsContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.tabBtn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border: 1px solid #e2f0e8;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.tabBtn:hover {
+  background: #e8f5ec;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.tabBtnActive {
+  background: #e8f5ec !important;
+  color: #047857 !important;
+  font-weight: 600 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.08);
+}
+
+/* Metric Display Row */
+.metricRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.currentPrice {
+  font-size: 24px;
+  font-weight: 800;
+  color: #172b3a;
+  letter-spacing: -0.02em;
+}
+
+.unitLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  margin-left: 2px;
+}
+
+.changeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.changeUp {
+  color: #ef4444;
+}
+
+.changeDown {
+  color: #10b981;
+}
+
+/* SVG Chart Section */
+.chartContainer {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chartSvg {
+  width: 100%;
+  height: 100%;
+  min-height: 170px;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: #f1f5f9;
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.yLabel {
+  font-size: 10px;
+  fill: #94a3b8;
+  text-anchor: end;
+}
+
+.xLabel {
+  font-size: 10.5px;
+  fill: #64748b;
+  text-anchor: middle;
+}
+
+.chartLine {
+  fill: none;
+  stroke: #059669;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chartDot {
+  fill: #059669;
+  stroke: #ffffff;
+  stroke-width: 2;
+  cursor: pointer;
+  transition: r 0.15s ease, stroke-width 0.15s ease;
+}
+
+.chartDot:hover,
+.chartDotActive {
+  r: 5.5;
+  stroke-width: 2.5;
+  fill: #047857;
+}
+
+/* Callout Bubble (matching $82.4 / Oct 12 on reference chart) */
+.chartCallout {
+  pointer-events: none;
+}
+
+.calloutRect {
+  fill: #172b3a;
+  rx: 4;
+}
+
+.calloutText {
+  fill: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+/* Footer Metadata */
+.chartFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f8fafc;
+  font-size: 10.5px;
+  color: #94a3b8;
+}
+
+.sourceTag {
+  color: #64748b;
+}
+
+@media (max-width: 768px) {
+  .card {
+    min-height: 320px;
+  }
+}
+
+/* Unavailable Market Feed State */
+.unavailableBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px 16px;
+  background: #fefce8;
+  border: 1px dashed #fde047;
+  border-radius: 10px;
+  margin: 12px 0;
+  flex: 1;
+}
+
+.unavailableBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: #fef08a;
+  color: #854d0e;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.unavailableTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0 0 6px;
+}
+
+.unavailableText {
+  font-size: 12px;
+  color: #713f12;
+  margin: 0 0 14px;
+  max-width: 280px;
+  line-height: 1.45;
+}
+
+.switchFeedBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.switchFeedBtn:hover {
+  background: #065f46;
+}
+
+/* Provenance Note Banner */
+.provenanceBanner {
+  font-size: 10px;
+  color: #065f46;
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 6px;
+  padding: 5px 8px;
+  margin-top: 8px;
+  line-height: 1.35;
+}
+
+.loadingBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 180px;
+  color: #64748b;
+  font-size: 12px;
+  gap: 8px;
+}

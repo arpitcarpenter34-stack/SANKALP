@@ -1,0 +1,1204 @@
+/**
+ * BharatImpact — Impact Graph Master Stylesheet
+ * Strictly adheres to BharatImpact design tokens:
+ * - White and soft off-white surfaces (#FFFFFF, #FAFCFA, #F4F7F5)
+ * - Mint-green highlights and pale-green borders (#E6F4EA, #D1E7DD, #A7F3D0)
+ * - Emerald-green primary actions (#10B981, #059669, #047857)
+ * - Dark navy headings and primary text (#0F172A, #1E293B, #334155)
+ * - Category accents: Coral (#EF4444), Amber (#F59E0B), Blue (#3B82F6), Indigo (#6366F1), Teal (#0D9488), Gold (#EAB308)
+ */
+
+.container {
+  width: 100%;
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 1. Header & Controls                                                      */
+/* ------------------------------------------------------------------------- */
+
+.headerCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.headerIconBadge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.headerTitles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pageTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.pageSubtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.controlLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.selectInput {
+  height: 38px;
+  padding: 0 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 140px;
+}
+
+.selectInput:hover {
+  background: #ffffff;
+  border-color: #94a3b8;
+}
+
+.selectInput:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.runAnalysisBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 38px;
+  padding: 0 1.25rem;
+  background: #059669;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: auto;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+.runAnalysisBtn:hover {
+  background: #047857;
+  transform: translateY(-1px);
+}
+
+.runAnalysisBtn:active {
+  transform: translateY(0);
+}
+
+.runAnalysisBtnSpinning {
+  opacity: 0.85;
+  cursor: wait;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 2. Domain Pills Bar                                                       */
+/* ------------------------------------------------------------------------- */
+
+.domainPillsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+}
+
+.domainPillsRow::-webkit-scrollbar {
+  height: 4px;
+}
+
+.domainPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.domainPill:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.domainPillActive {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+  box-shadow: 0 0 0 1px #10b981;
+}
+
+.domainPillIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 3. Graph Toolbar                                                          */
+/* ------------------------------------------------------------------------- */
+
+.graphToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  flex-wrap: wrap;
+}
+
+.viewToggleGroup {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.viewToggleBtn {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.viewToggleBtnActive {
+  background: #059669;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(5, 150, 105, 0.15);
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  min-width: 260px;
+  position: relative;
+}
+
+.searchIcon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  color: #1e293b;
+  width: 100%;
+}
+
+.searchInput:focus {
+  outline: none;
+}
+
+.searchClearBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0 2px;
+}
+
+.searchResultsDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.searchResultItem {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.searchResultItem:hover {
+  background: #f8fafc;
+  color: #059669;
+}
+
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.toolBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 32px;
+  padding: 0 0.65rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.toolBtn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.scaleBadge {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #059669;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  min-width: 44px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 4. Graph Canvas & Workspace Layout                                        */
+/* ------------------------------------------------------------------------- */
+
+.graphWorkspace {
+  position: relative;
+  display: flex;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.canvasContainer {
+  position: relative;
+  flex: 1;
+  min-height: 720px;
+  height: 760px;
+  background: #fafcfa;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  user-select: none;
+}
+
+.canvasContainerFullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  border-radius: 0;
+}
+
+.canvasSvg {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.canvasSvgDragging {
+  cursor: grabbing;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 5. Left Floating Legend                                                   */
+/* ------------------------------------------------------------------------- */
+
+.floatingLegend {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  font-size: 0.76rem;
+  color: #334155;
+  z-index: 20;
+  max-width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  pointer-events: auto;
+}
+
+.legendSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.legendTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.74rem;
+  color: #475569;
+}
+
+.legendLineObserved {
+  width: 20px;
+  height: 2px;
+  background: #10b981;
+  position: relative;
+}
+
+.legendLineObserved::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: -3px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid #10b981;
+}
+
+.legendLineInferred {
+  width: 20px;
+  height: 2px;
+  border-top: 2px dashed #3b82f6;
+  position: relative;
+}
+
+.legendLineInferred::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: -3px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid #3b82f6;
+}
+
+.legendLinePotential {
+  width: 20px;
+  height: 2px;
+  border-top: 2px dashed #94a3b8;
+  position: relative;
+}
+
+.legendLinePotential::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: -3px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid #94a3b8;
+}
+
+.legendDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 6. Node Details Panel (Right Card)                                        */
+/* ------------------------------------------------------------------------- */
+
+.detailsPanel {
+  width: 340px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+  max-height: 760px;
+}
+
+.detailsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.15rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.detailsTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.detailsCloseBtn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.detailsCloseBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.detailsContent {
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.nodeCardHero {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.nodeHeroIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.nodeHeroText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.nodeHeroTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.nodeCategoryBadge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.impactStatRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+}
+
+.impactStatLabel {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.impactStatValue {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.updatedTimestamp {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-top: -0.5rem;
+}
+
+.detailsTabs {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 0.25rem;
+}
+
+.detailsTabBtn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.detailsTabBtnActive {
+  color: #059669;
+  border-bottom-color: #059669;
+}
+
+.tabBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.summaryText {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #334155;
+  margin: 0;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.metaLabel {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.metaVal {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.sectorPillsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.sectorPill {
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: #f1f5f9;
+  color: #334155;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.detailedAnalysisActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.detailedAnalysisActionBtn:hover {
+  background: #047857;
+}
+
+.connectionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.connectionGroupTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.connectionChip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.connectionChip:hover {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.evidenceBox {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+}
+
+.evidenceBadge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.newsItem {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.newsHeadline {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.35;
+  margin: 0 0 0.2rem;
+}
+
+.newsMeta {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 7. Below-Graph Analytics (4 Cards)                                        */
+/* ------------------------------------------------------------------------- */
+
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.analyticsCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.cardFilterSelect {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Card 1: Key Impact Metrics */
+.metricsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.metricRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.metricLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.metricIcon {
+  color: #059669;
+  font-size: 1rem;
+  margin-top: 1px;
+}
+
+.metricTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.metricTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.25;
+}
+
+.metricSubtitle {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.metricValue {
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.metricValueUp {
+  color: #ef4444;
+}
+
+.metricValueDown {
+  color: #dc2626;
+}
+
+.metricValueGreen {
+  color: #059669;
+}
+
+/* Card 2: Price Chart */
+.chartToggleBar {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.chartToggleBtn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chartToggleBtnActiveA {
+  background: #059669;
+  border-color: #059669;
+  color: #ffffff;
+}
+
+.chartToggleBtnActiveB {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.chartWrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+}
+
+.chartSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.chartTooltip {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #ffffff;
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  pointer-events: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.chartLegend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.legendDotGreen {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.legendDotBlue {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3b82f6;
+}
+
+/* Card 3: Affected Sectors */
+.sectorsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sectorRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  transition: all 0.15s ease;
+}
+
+.sectorRow:hover {
+  transform: translateX(2px);
+}
+
+.sectorLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e293b;
+  min-width: 130px;
+}
+
+.sectorRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  max-width: 140px;
+}
+
+.severityTrack {
+  flex: 1;
+  height: 7px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.severityFill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.sectorPercentage {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Card 4: Pathway Insights */
+.insightsTabs {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.insightsTabBtn {
+  flex: 1;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.insightsTabBtnActive {
+  background: #059669;
+  color: #ffffff;
+}
+
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.insightItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #334155;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.insightItem:hover {
+  background: #f8fafc;
+}
+
+.insightNumber {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.insightItem:hover .insightNumber {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 8. Bottom Branding Footer                                                 */
+/* ------------------------------------------------------------------------- */
+
+.footerBranding {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.footerLogoText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.footerBrandName {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.footerBrandTagline {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Responsive Breakpoints                                                    */
+/* ------------------------------------------------------------------------- */
+
+@media (max-width: 1280px) {
+  .analyticsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .graphWorkspace {
+    flex-direction: column;
+  }
+  .detailsPanel {
+    width: 100%;
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  .analyticsGrid {
+    grid-template-columns: 1fr;
+  }
+  .headerCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .headerControls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .canvasContainer {
+    height: 580px;
+    min-height: 520px;
+  }
+}

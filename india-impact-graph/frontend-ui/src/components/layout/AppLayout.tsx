@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Header } from './Header';
+import { Sidebar } from './Sidebar';
 import { BackendConnectionStatus } from '../../types';
 import styles from './AppLayout.module.css';
 
@@ -9,9 +10,16 @@ export interface AppLayoutProps {
   activeScenarioTitle?: string;
   backendStatus?: BackendConnectionStatus;
   onToggleForceOffline?: () => void;
-  leftPanel: React.ReactNode;
-  centerPanel: React.ReactNode;
-  rightPanel: React.ReactNode;
+  onOpenAiAssistant?: () => void;
+  activeSidebarTab?: string;
+  onSelectSidebarTab?: (tab: string) => void;
+  activeNavTab?: string;
+  onSelectNavTab?: (tab: string) => void;
+  // Flexible children or slotted panels
+  children?: React.ReactNode;
+  leftPanel?: React.ReactNode;
+  centerPanel?: React.ReactNode;
+  rightPanel?: React.ReactNode;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({
@@ -20,55 +28,77 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   activeScenarioTitle,
   backendStatus,
   onToggleForceOffline,
+  onOpenAiAssistant,
+  activeSidebarTab = 'overview',
+  onSelectSidebarTab,
+  activeNavTab = 'dashboard',
+  onSelectNavTab,
+  children,
   leftPanel,
   centerPanel,
   rightPanel,
 }) => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+
   return (
     <div className={styles.appContainer}>
+      {/* 1. Top Header */}
       <Header
         isAiOff={isAiOff}
         onToggleAi={onToggleAi}
         activeScenarioTitle={activeScenarioTitle}
         backendStatus={backendStatus}
         onToggleForceOffline={onToggleForceOffline}
+        onOpenAiAssistant={onOpenAiAssistant}
+        activeNavTab={activeNavTab}
+        onSelectNavTab={onSelectNavTab}
+        activeSidebarTab={activeSidebarTab}
       />
 
-      {/* 3-Column Grok-Themed Master Analytics Dashboard */}
-      <main className={styles.mainGrid}>
-        {/* Left Column: Scenario Input */}
-        <aside className={styles.leftColumn} aria-label="Scenario & Input Workspace">
-          {leftPanel}
-        </aside>
+      {/* 2. Main Body with Sidebar + Content */}
+      <div className={styles.bodyWrapper}>
+        <Sidebar
+          activeTab={activeSidebarTab}
+          onSelectTab={onSelectSidebarTab}
+          backendStatus={backendStatus}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        />
 
-        {/* Center Column: Dominant Financial Impact Graph Centerpiece */}
-        <section className={styles.centerColumn} aria-label="Financial Impact Graph Centerpiece">
-          {centerPanel}
-        </section>
+        <main className={styles.mainContent} role="main" aria-label="BharatImpact Dashboard">
+          {children ? (
+            children
+          ) : (
+            <div className={styles.legacyGrid}>
+              {leftPanel && <aside className={styles.legacyLeft}>{leftPanel}</aside>}
+              {centerPanel && <section className={styles.legacyCenter}>{centerPanel}</section>}
+              {rightPanel && <aside className={styles.legacyRight}>{rightPanel}</aside>}
+            </div>
+          )}
+        </main>
+      </div>
 
-        {/* Right Column: Household Persona Impact & Evidence Receipts */}
-        <aside className={styles.rightColumn} aria-label="Household Impact & Evidence Receipts">
-          {rightPanel}
-        </aside>
-      </main>
-
-      {/* Sleek Minimal Status Bar */}
+      {/* 3. Sleek Footer */}
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
           <div className={styles.footerLeft}>
-            <span className={styles.footerBrand}>India Impact Graph</span>
-            <span className={styles.footerSep}>|</span>
-            <span className={styles.footerRule}>Evidence First • MoSPI HCES 2023–24 Deterministic Calibration</span>
+            <span className={styles.footerBrand}>BharatImpact</span>
+            <span className={styles.footerSep}>•</span>
+            <span className={styles.footerRule}>
+              MoSPI HCES 2023–24 FactSheet &amp; Final Report Calibrated Engine
+            </span>
           </div>
 
           <div className={styles.footerCenter}>
             <span className={styles.footerNote}>
-              PS 5: Autonomous Financial Event Market Impact Graph // Team SANKALP // Hackwave 3.0
+              Autonomous Financial Event Market Impact Graph // Team SANKALP
             </span>
           </div>
 
           <div className={styles.footerRight}>
-            <span className={styles.footerVersion}>v2.0-grok-dark</span>
+            <span className={styles.footerVersion}>
+              {backendStatus?.isLive ? 'Live API Connected' : 'Deterministic Mode'}
+            </span>
           </div>
         </div>
       </footer>

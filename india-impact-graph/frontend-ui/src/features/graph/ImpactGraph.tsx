@@ -2,16 +2,25 @@ import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import type {
   GraphCanvasSlotProps,
   KnowledgeGraphData,
-  PropagationPathCategory,
 } from '../../types/contracts';
 import { computeDeterministicLayout } from './graph-layout';
 import styles from './graph.module.css';
 
-const PATH_OPTIONS: { id: PropagationPathCategory | 'all'; label: string }[] = [
-  { id: 'all', label: 'All Channels' },
-  { id: 'food_cost', label: 'Path A: Food Cost Chain' },
-  { id: 'transport_cost', label: 'Path B: Transport & Freight' },
-  { id: 'financial_market', label: 'Path C: Financial Markets' },
+const STAGE_COLUMNS = [
+  { index: 0, label: 'Global Events', bg: '#FEE2E2', border: '#FECACA', text: '#991B1B' },
+  { index: 1, label: 'Global Commodities', bg: '#E0F2FE', border: '#BAE6FD', text: '#0369A1' },
+  { index: 2, label: 'Indian Economy', bg: '#E0E7FF', border: '#C7D2FE', text: '#3730A3' },
+  { index: 3, label: 'Sectors', bg: '#D1FAE5', border: '#A7F3D0', text: '#065F46' },
+  { index: 4, label: 'Household & Investment', bg: '#DCFCE7', border: '#BBF7D0', text: '#166534' },
+];
+
+const DOMAIN_FILTERS = [
+  { id: 'all', label: 'All domains' },
+  { id: 'petrol', label: 'Petrol & Diesel', icon: '⛽' },
+  { id: 'lpg', label: 'LPG / CNG', icon: '🔥' },
+  { id: 'semiconductors', label: 'Semiconductors', icon: '💻' },
+  { id: 'food', label: 'Food & Agriculture', icon: '🌾' },
+  { id: 'currency', label: 'Currency & Markets', icon: '📈' },
 ];
 
 export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
@@ -25,6 +34,8 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
   isLoading = false,
 }) => {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [activeView, setActiveView] = useState<'transmission' | 'sector'>('transmission');
+  const [activeDomain, setActiveDomain] = useState<string>('all');
 
   // Handle Escape key to clear selections
   const handleGlobalKeyDown = useCallback(
@@ -42,12 +53,26 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [handleGlobalKeyDown]);
 
-  // Compute deterministic coordinates
+  // Compute deterministic layout
   const { nodes: rawNodes, edges: rawEdges } = useMemo(() => {
-    return computeDeterministicLayout(data, { width: 1000, height: 500, paddingX: 110, paddingY: 55 });
+    return computeDeterministicLayout(data, { width: 1000, height: 420, paddingX: 110, paddingY: 80 });
   }, [data]);
 
-  // Compute highlighted & dimmed states
+  // Handle domain filter selection
+  const handleDomainSelect = (domainId: string) => {
+    setActiveDomain(domainId);
+    if (domainId === 'all') {
+      if (onSelectPath) onSelectPath('all');
+    } else if (domainId === 'petrol' || domainId === 'lpg') {
+      if (onSelectPath) onSelectPath('transport_cost');
+    } else if (domainId === 'food') {
+      if (onSelectPath) onSelectPath('food_cost');
+    } else if (domainId === 'currency' || domainId === 'semiconductors') {
+      if (onSelectPath) onSelectPath('financial_market');
+    }
+  };
+
+  // Compute augmented nodes & edges
   const { nodes, edges, activeIncompleteWarning } = useMemo(() => {
     const isPathFilterActive = selectedPath !== 'all';
 
@@ -86,8 +111,18 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         }
       }
 
+      // Bezier curve connecting card edges
+      const cardHalfW = 75;
+      const srcX = e.sourceX + cardHalfW;
+      const srcY = e.sourceY;
+      const tgtX = e.targetX - cardHalfW;
+      const tgtY = e.targetY;
+      const dx = Math.max(25, (tgtX - srcX) * 0.45);
+      const curvedPathD = `M ${srcX} ${srcY} C ${srcX + dx} ${srcY}, ${tgtX - dx} ${tgtY}, ${tgtX} ${tgtY}`;
+
       return {
         ...e,
+        pathD: curvedPathD,
         isSelected,
         isHighlighted,
         isDimmed,
@@ -133,8 +168,6 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         if (match) {
           warning = match.reason || `Propagation path ${selectedPath} is incomplete in official statistics.`;
         }
-      } else {
-        warning = typedData.incompletePaths[0].reason || 'One or more propagation chains are unverified in official statistics.';
       }
     }
 
@@ -149,123 +182,121 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
     if (onSelectPath) onSelectPath('all');
     if (onSelectNode) onSelectNode(null);
     if (onSelectEdge) onSelectEdge(null);
+    setActiveDomain('all');
     setZoomLevel(1);
   };
 
-  // Helper to render distinct SVG icons for nodes
-  const renderNodeIcon = (nodeId: string, nodeType: string) => {
-    if (nodeId.includes('crude') || nodeId.includes('shock')) {
-      // Oil drum / barrel icon
-      return (
-        <g fill="#ff5268" transform="translate(-10, -10)">
-          <path d="M4 4h12v12H4z" fill="none" stroke="#ff5268" strokeWidth="1.8" />
-          <ellipse cx="10" cy="4" rx="6" ry="2" fill="#ff5268" opacity="0.3" stroke="#ff5268" strokeWidth="1.5" />
-          <ellipse cx="10" cy="16" rx="6" ry="2" fill="#ff5268" opacity="0.3" stroke="#ff5268" strokeWidth="1.5" />
-          <line x1="4" y1="10" x2="16" y2="10" stroke="#ff5268" strokeWidth="1.5" />
-        </g>
-      );
+  // Node details helper
+  const getNodeDetails = (nodeId: string, nodeLabel: string) => {
+    const id = nodeId.toLowerCase();
+    if (id.includes('crude_oil')) {
+      return {
+        title: 'Crude Oil',
+        delta: '+22% Brent price',
+        iconBg: '#E0F2FE',
+        iconBorder: '#BAE6FD',
+        deltaColor: '#0369A1',
+        icon: '🛢️',
+      };
     }
-    if (nodeId.includes('household') || nodeType === 'persona') {
-      // House / Home icon
-      return (
-        <g stroke="#a855f7" strokeWidth="1.8" fill="none" transform="translate(-10, -10)">
-          <path d="M3 9l7-6 7 6v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
-          <polyline points="7 19 7 12 13 12 13 19" />
-        </g>
-      );
+    if (id.includes('diesel')) {
+      return {
+        title: 'Petrol & Diesel',
+        delta: '+12% Retail prices',
+        iconBg: '#D1FAE5',
+        iconBorder: '#A7F3D0',
+        deltaColor: '#047857',
+        icon: '⛽',
+      };
     }
-    if (nodeId.includes('freight') || nodeId.includes('transport') || nodeId.includes('logistics')) {
-      // Delivery truck icon
-      return (
-        <g stroke="#00d9ff" strokeWidth="1.6" fill="none" transform="translate(-10, -8)">
-          <rect x="1" y="3" width="11" height="9" rx="1" />
-          <path d="M12 6h4l3 3v3h-7V6z" />
-          <circle cx="4.5" cy="14.5" r="1.8" />
-          <circle cx="16.5" cy="14.5" r="1.8" />
-        </g>
-      );
+    if (id.includes('petrol')) {
+      return {
+        title: 'Petrol & Diesel',
+        delta: '+12% Retail prices',
+        iconBg: '#D1FAE5',
+        iconBorder: '#A7F3D0',
+        deltaColor: '#047857',
+        icon: '⛽',
+      };
     }
-    if (nodeId.includes('diesel') || nodeId.includes('petrol') || nodeId.includes('fuel')) {
-      // Fuel pump dispenser icon
-      return (
-        <g stroke="#00d9ff" strokeWidth="1.6" fill="none" transform="translate(-9, -9)">
-          <rect x="2" y="2" width="10" height="14" rx="2" />
-          <path d="M5 6h4" />
-          <path d="M12 5l3 3v5a2 2 0 0 1-2 2" />
-        </g>
-      );
+    if (id.includes('freight') || id.includes('transport')) {
+      return {
+        title: 'Transport & Freight',
+        delta: '+10% Logistics costs',
+        iconBg: '#D1FAE5',
+        iconBorder: '#A7F3D0',
+        deltaColor: '#047857',
+        icon: '🚚',
+      };
     }
-    if (nodeId.includes('rate') || nodeId.includes('exchange') || nodeId.includes('rbi')) {
-      // Rupee symbol ₹
-      return (
-        <text
-          x="0"
-          y="5"
-          fill="#00d9ff"
-          fontSize="16"
-          fontWeight="700"
-          textAnchor="middle"
-          fontFamily="system-ui, sans-serif"
-        >
-          ₹
-        </text>
-      );
+    if (id.includes('food') || id.includes('mandi')) {
+      return {
+        title: 'Food Prices',
+        delta: '+6% Food inflation',
+        iconBg: '#DCFCE7',
+        iconBorder: '#BBF7D0',
+        deltaColor: '#047857',
+        icon: '🛒',
+      };
     }
-    if (nodeId.includes('food') || nodeId.includes('wheat') || nodeId.includes('mandi')) {
-      // Grain / wheat icon
-      return (
-        <g stroke="#ffb323" strokeWidth="1.6" fill="none" transform="translate(-8, -10)">
-          <path d="M8 2v16M8 6c2-2 4 0 4 2s-2 2-4 2M8 10c-2-2-4 0-4 2s2 2 4 2M8 14c2-2 4 0 4 2s-2 2-4 2" />
-        </g>
-      );
+    if (id.includes('household')) {
+      return {
+        title: 'Household Budget',
+        delta: '+4.3% Monthly expenses',
+        iconBg: '#DCFCE7',
+        iconBorder: '#BBF7D0',
+        deltaColor: '#047857',
+        icon: '🏠',
+      };
     }
-    if (nodeId.includes('energy_prices') || nodeId.includes('cpi')) {
-      // Stacked coins / economy icon
-      return (
-        <g stroke="#00d9ff" strokeWidth="1.6" fill="none" transform="translate(-9, -9)">
-          <ellipse cx="9" cy="4" rx="7" ry="2.5" />
-          <path d="M2 4v4c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V4" />
-          <path d="M2 8v4c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V8" />
-        </g>
-      );
+    if (id.includes('rate') || id.includes('rbi') || id.includes('market') || id.includes('cpi')) {
+      return {
+        title: 'Indian Markets',
+        delta: '-3% Auto & IT stocks',
+        iconBg: '#E0F2FE',
+        iconBorder: '#BAE6FD',
+        deltaColor: '#E11D48',
+        icon: '📊',
+      };
     }
-    if (nodeId.includes('import') || nodeId.includes('refin')) {
-      // Refinery / Factory landmark icon
-      return (
-        <g stroke="#00d9ff" strokeWidth="1.6" fill="none" transform="translate(-9, -9)">
-          <path d="M2 16V6l5 4V6l5 4V3h4v13H2z" />
-        </g>
-      );
+    if (id.includes('commute')) {
+      return {
+        title: 'Conveyance & Transport',
+        delta: '+8% Fuel expense',
+        iconBg: '#E0F2FE',
+        iconBorder: '#BAE6FD',
+        deltaColor: '#0284C7',
+        icon: '🛵',
+      };
     }
-    // Default supply / ship icon
-    return (
-      <g stroke="#00d9ff" strokeWidth="1.6" fill="none" transform="translate(-9, -8)">
-        <path d="M2 13l2 3h10l2-3H2z" />
-        <path d="M6 13V6h6v7" />
-        <line x1="9" y1="3" x2="9" y2="6" />
-      </g>
-    );
+
+    return {
+      title: nodeLabel,
+      delta: 'Active node',
+      iconBg: '#F3FAF5',
+      iconBorder: '#D1E3D7',
+      deltaColor: '#5A7184',
+      icon: '🔹',
+    };
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <div className={styles.centerContainer}>
         <div className={styles.loadingState}>
           <div className={styles.spinnerIcon} />
-          <p className={styles.stateText}>Synthesizing financial event market impact topology...</p>
+          <p className={styles.stateText}>Synthesizing economic impact transmission topology...</p>
         </div>
       </div>
     );
   }
 
-  // Empty state
   if (!data || !data.nodes || data.nodes.length === 0) {
     return (
       <div className={styles.centerContainer}>
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>◇</div>
-          <p className={styles.stateText}>No financial event graph active. Select an event scenario to load dependency graph.</p>
+          <p className={styles.stateText}>No economic impact graph active. Select an event scenario to load dependency graph.</p>
         </div>
       </div>
     );
@@ -273,63 +304,78 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
 
   return (
     <div className={styles.centerContainer}>
-      {/* 1. Header with Title, Legend & Reset View */}
+      {/* 1. Header with Title & View/Zoom Controls */}
       <div className={styles.graphCardHeader}>
         <div className={styles.headerLeft}>
-          <div className={styles.titleRow}>
-            <span className={styles.titleChevron}>›</span>
-            <h2 className={styles.graphTitle}>Financial Impact Knowledge Graph</h2>
-          </div>
-          <p className={styles.graphSubtitle}>Multi-Step Transmission from Global Shock to Household Impact</p>
+          <h2 className={styles.graphTitle}>Economic Impact Graph</h2>
+          <p className={styles.graphSubtitle}>From global events to your household and investments</p>
         </div>
 
         <div className={styles.headerRight}>
-          <div className={styles.headerLegend}>
-            <div className={styles.legendItem}>
-              <span className={styles.legendLineObserved} />
-              <span>Observed</span>
-            </div>
-            <div className={styles.legendItem}>
-              <span className={styles.legendLineInferred} />
-              <span>Inferred</span>
-            </div>
+          {/* View Switcher: Transmission Flow vs Sector View */}
+          <div className={styles.viewSwitcher}>
+            <span className={styles.viewLabel}>View:</span>
+            <button
+              type="button"
+              className={`${styles.viewBtn} ${activeView === 'transmission' ? styles.viewBtnActive : ''}`}
+              onClick={() => setActiveView('transmission')}
+            >
+              Transmission Flow
+            </button>
+            <button
+              type="button"
+              className={`${styles.viewBtn} ${activeView === 'sector' ? styles.viewBtnActive : ''}`}
+              onClick={() => setActiveView('sector')}
+            >
+              Sector View
+            </button>
           </div>
 
-          <button
-            type="button"
-            className={styles.resetViewBtn}
-            onClick={handleResetView}
-            title="Reset viewport and channel filters"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-              <path d="M3 3v5h5" />
-            </svg>
-            Reset View
-          </button>
+          {/* Zoom and Fit Controls */}
+          <div className={styles.zoomControls}>
+            <button
+              type="button"
+              className={styles.ctrlIconBtn}
+              onClick={() => setZoomLevel((z) => Math.max(0.7, z - 0.1))}
+              title="Zoom Out"
+              aria-label="Zoom Out"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className={styles.ctrlIconBtn}
+              onClick={() => setZoomLevel((z) => Math.min(1.4, z + 0.1))}
+              title="Zoom In"
+              aria-label="Zoom In"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className={styles.fitViewBtn}
+              onClick={handleResetView}
+              title="Fit View"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+              </svg>
+              <span>Fit View</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* 2. Channel Filter Tabs */}
-      <div className={styles.channelFilterBar} role="tablist" aria-label="Propagation Paths">
-        {PATH_OPTIONS.map((opt) => {
-          const isActive = selectedPath === opt.id;
-          return (
-            <button
-              key={opt.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              className={`${styles.channelTab} ${isActive ? styles.channelTabActive : ''}`}
-              onClick={() => onSelectPath && onSelectPath(opt.id)}
-            >
-              {opt.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Incomplete Path Warning Banner */}
+      {/* Incomplete Path Warning Banner if any */}
       {activeIncompleteWarning ? (
         <div className={styles.incompleteBanner} role="alert">
           <span className={styles.incompleteIcon}>⚠️</span>
@@ -337,190 +383,216 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         </div>
       ) : null}
 
-      {/* 3. Deep Navy Neon SVG Canvas */}
-      <div className={styles.svgViewportWrapper} role="region" aria-label="Interactive Knowledge Graph">
+      {/* 2. Interactive SVG Graph Canvas */}
+      <div className={styles.svgViewportWrapper} role="region" aria-label="Interactive Economic Impact Graph">
         <svg
-          viewBox="0 0 1000 500"
+          viewBox="0 0 1000 420"
           className={styles.svgGraph}
           style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}
         >
           <defs>
-            {/* Subtle Blue Grid */}
-            <pattern id="grok-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(18, 60, 99, 0.25)" strokeWidth="1" />
-              <circle cx="40" cy="40" r="1" fill="rgba(0, 217, 255, 0.3)" />
-            </pattern>
-
-            {/* Glowing Halos */}
-            <filter id="glow-cyan" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="6" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-            <filter id="glow-coral" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="8" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-            <filter id="glow-violet" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="8" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-
             {/* Directed Arrowheads */}
-            <marker id="arrow-observed" viewBox="0 0 10 10" refX="26" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 1 L 9 5 L 0 9 z" fill="#00d9ff" />
+            <marker
+              id="arrow-observed"
+              viewBox="0 0 10 10"
+              refX="10"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#047857" />
             </marker>
-            <marker id="arrow-inferred" viewBox="0 0 10 10" refX="26" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 1 L 9 5 L 0 9 z" fill="#ffb323" />
+
+            <marker
+              id="arrow-inferred"
+              viewBox="0 0 10 10"
+              refX="10"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#0D9488" />
             </marker>
-            <marker id="arrow-selected" viewBox="0 0 10 10" refX="26" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" />
+
+            <marker
+              id="arrow-selected"
+              viewBox="0 0 10 10"
+              refX="10"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#047857" />
             </marker>
+
+            {/* Subtle Drop Shadow for Cards */}
+            <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" floodColor="#101828" floodOpacity="0.08" />
+            </filter>
           </defs>
 
-          {/* Background Grid */}
-          <rect width="1000" height="500" fill="url(#grok-grid)" />
+          {/* Background Canvas Tint */}
+          <rect width="1000" height="420" fill="#FAFCFA" />
 
-          {/* Edges Layer */}
-          <g className={styles.edgesLayer}>
-            {edges.map((edge) => {
-              const isSelected = edge.isSelected;
-              const isHighlighted = edge.isHighlighted;
-              const isDimmed = edge.isDimmed;
-              
-              const isObserved = edge.kind === 'observed';
-              const markerEnd = isSelected ? 'url(#arrow-selected)' : isObserved ? 'url(#arrow-observed)' : 'url(#arrow-inferred)';
-              const edgeColor = isSelected ? '#ffffff' : isObserved ? '#00d9ff' : '#ffb323';
-
+          {/* 5 Column Stage Header Badges */}
+          <g className={styles.stageHeadersLayer}>
+            {STAGE_COLUMNS.map((col) => {
+              const xPos = 110 + col.index * 195;
+              const w = 150;
               return (
-                <g 
-                  key={edge.id} 
-                  className={`${styles.edgeGroup} ${isDimmed ? styles.edgeDimmed : ''}`}
-                  onClick={() => onSelectEdge && onSelectEdge(edge.id)}
-                >
-                  {/* Invisible Hit Area */}
-                  <path d={edge.pathD} className={styles.edgeHitArea} />
-                  
-                  {/* Outer Glow Path for highlighted / selected edges */}
-                  {(isSelected || isHighlighted) && (
-                    <path
-                      d={edge.pathD}
-                      fill="none"
-                      stroke={edgeColor}
-                      strokeWidth={6}
-                      opacity={0.3}
-                      strokeLinecap="round"
-                    />
-                  )}
-
-                  {/* Visible Edge Line */}
-                  <path 
-                    d={edge.pathD} 
-                    fill="none"
-                    stroke={edgeColor}
-                    strokeWidth={isSelected ? 3.5 : isHighlighted ? 2.8 : 2}
-                    strokeDasharray={isObserved ? undefined : '6 4'}
-                    markerEnd={markerEnd}
-                    className={!isObserved ? styles.flowingDashed : undefined}
+                <g key={col.index} transform={`translate(${xPos - w / 2}, 16)`}>
+                  <rect
+                    width={w}
+                    height="24"
+                    rx="6"
+                    fill={col.bg}
+                    stroke={col.border}
+                    strokeWidth="1"
                   />
-
-                  {/* Edge Relation Label on Hover/Select */}
-                  {(isSelected || isHighlighted) && (
-                    <g transform={`translate(${edge.midX}, ${edge.midY - 8})`}>
-                      <rect
-                        x="-48"
-                        y="-10"
-                        width="96"
-                        height="18"
-                        rx="4"
-                        fill="#030b18"
-                        stroke={edgeColor}
-                        strokeWidth="1"
-                        opacity="0.9"
-                      />
-                      <text
-                        x="0"
-                        y="3"
-                        fill="#f4f8ff"
-                        fontSize="9"
-                        fontWeight="600"
-                        textAnchor="middle"
-                        fontFamily="var(--font-mono)"
-                      >
-                        {edge.relationType.replace(/_/g, ' ')}
-                      </text>
-                    </g>
-                  )}
+                  <text
+                    x={w / 2}
+                    y="16"
+                    textAnchor="middle"
+                    fill={col.text}
+                    fontSize="11"
+                    fontWeight="600"
+                    fontFamily="var(--font-sans)"
+                  >
+                    {col.label}
+                  </text>
                 </g>
               );
             })}
           </g>
 
-          {/* Nodes Layer */}
+          {/* Edges Layer (Bezier curves) */}
+          <g className={styles.edgesLayer}>
+            {edges.map((edge) => {
+              const isSelected = edge.isSelected;
+              const isHighlighted = edge.isHighlighted;
+              const isDimmed = edge.isDimmed;
+              const isObserved = edge.kind === 'observed';
+
+              const edgeColor = isSelected ? '#047857' : isObserved ? '#047857' : '#0D9488';
+              const markerEnd = isSelected
+                ? 'url(#arrow-selected)'
+                : isObserved
+                ? 'url(#arrow-observed)'
+                : 'url(#arrow-inferred)';
+
+              return (
+                <g
+                  key={edge.id}
+                  className={`${styles.edgeGroup} ${isDimmed ? styles.edgeDimmed : ''}`}
+                  onClick={() => onSelectEdge && onSelectEdge(edge.id)}
+                >
+                  {/* Invisible Hit Area */}
+                  <path d={edge.pathD} className={styles.edgeHitArea} />
+
+                  {/* Highlight Aura */}
+                  {(isSelected || isHighlighted) && (
+                    <path
+                      d={edge.pathD}
+                      fill="none"
+                      stroke={edgeColor}
+                      strokeWidth={5}
+                      opacity={0.25}
+                      strokeLinecap="round"
+                    />
+                  )}
+
+                  {/* Main Edge Line */}
+                  <path
+                    d={edge.pathD}
+                    fill="none"
+                    stroke={edgeColor}
+                    strokeWidth={isSelected ? 2.8 : isHighlighted ? 2.4 : 1.8}
+                    strokeDasharray={isObserved ? undefined : '5 4'}
+                    markerEnd={markerEnd}
+                  />
+                </g>
+              );
+            })}
+          </g>
+
+          {/* Nodes Layer (Rendered as Cards) */}
           <g className={styles.nodesLayer}>
             {nodes.map((node) => {
               const isSelected = node.isSelected;
               const isHighlighted = node.isHighlighted;
               const isDimmed = node.isDimmed;
 
-              // Determine visual archetype
-              const isShock = node.id.includes('crude') || node.id.includes('shock') || (node.type === 'commodity' && node.x < 150);
-              const isHousehold = node.id.includes('household') || node.type === 'persona';
-              const isCenterRefinery = node.id.includes('import') || node.id.includes('diesel') || node.x > 450 && node.x < 550;
+              const cardW = 150;
+              const cardH = 46;
+              const cardX = node.x - cardW / 2;
+              const cardY = node.y - cardH / 2;
 
-              const nodeRadius = isShock || isHousehold ? 32 : isCenterRefinery ? 28 : 25;
-              const mainStroke = isShock ? '#ff5268' : isHousehold ? '#a855f7' : '#00d9ff';
-              const mainFill = isShock ? '#160914' : isHousehold ? '#180a29' : '#06172d';
-              const filterGlow = isShock ? 'url(#glow-coral)' : isHousehold ? 'url(#glow-violet)' : 'url(#glow-cyan)';
+              const details = getNodeDetails(node.id, node.label);
 
               return (
-                <g 
-                  key={node.id} 
+                <g
+                  key={node.id}
                   className={`${styles.nodeGroup} ${isDimmed ? styles.nodeDimmed : ''} ${isSelected ? styles.nodeSelected : ''}`}
-                  transform={`translate(${node.x}, ${node.y})`}
+                  transform={`translate(${cardX}, ${cardY})`}
                   onClick={() => onSelectNode && onSelectNode(node.id)}
                 >
-                  {/* Outer Pulsing Halo Rings for Source Shock & Household Destination */}
-                  {(isShock || isHousehold || isCenterRefinery) && (
-                    <circle 
-                      r={nodeRadius + 8} 
-                      fill="none" 
-                      stroke={mainStroke} 
-                      strokeWidth="1.2"
-                      opacity="0.45"
-                      className={styles.pulseRing}
-                    />
-                  )}
-
-                  {/* Selected / Highlighted Aura */}
-                  {(isSelected || isHighlighted) && (
-                    <circle 
-                      r={nodeRadius + 6} 
-                      fill="none" 
-                      stroke="#ffffff" 
-                      strokeWidth="2"
-                      filter={filterGlow}
-                    />
-                  )}
-
-                  {/* Core Node Circle */}
-                  <circle 
-                    r={nodeRadius} 
-                    fill={mainFill}
-                    stroke={isSelected ? '#ffffff' : mainStroke} 
-                    strokeWidth={isSelected ? 3.5 : isCenterRefinery ? 2.5 : 2}
-                    filter={isSelected ? filterGlow : undefined}
-                    className={styles.nodeCircle}
+                  {/* Card Background */}
+                  <rect
+                    width={cardW}
+                    height={cardH}
+                    rx="8"
+                    fill="#FFFFFF"
+                    stroke={isSelected ? '#047857' : isHighlighted ? '#10B981' : '#D1E3D7'}
+                    strokeWidth={isSelected ? 2.5 : isHighlighted ? 2 : 1}
+                    filter="url(#card-shadow)"
+                    className={styles.nodeCardRect}
                   />
 
-                  {/* Icon inside Node */}
-                  {renderNodeIcon(node.id, node.type)}
-
-                  {/* Node Label below */}
-                  <text 
-                    y={nodeRadius + 18} 
-                    className={styles.nodeLabelText}
+                  {/* Left Icon Container */}
+                  <rect
+                    x="8"
+                    y="8"
+                    width="30"
+                    height="30"
+                    rx="6"
+                    fill={details.iconBg}
+                    stroke={details.iconBorder}
+                    strokeWidth="1"
+                  />
+                  <text
+                    x="23"
+                    y="28"
+                    fontSize="14"
+                    textAnchor="middle"
                   >
-                    {node.label}
+                    {details.icon}
+                  </text>
+
+                  {/* Node Label Text */}
+                  <text
+                    x="45"
+                    y="22"
+                    fill="#172B3A"
+                    fontSize="11.5"
+                    fontWeight="700"
+                    fontFamily="var(--font-sans)"
+                  >
+                    {details.title.length > 15 ? `${details.title.slice(0, 14)}…` : details.title}
+                  </text>
+
+                  {/* Node Delta / Subtitle */}
+                  <text
+                    x="45"
+                    y="36"
+                    fill={details.deltaColor}
+                    fontSize="9.5"
+                    fontWeight="600"
+                    fontFamily="var(--font-sans)"
+                  >
+                    {details.delta}
                   </text>
                 </g>
               );
@@ -529,127 +601,55 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         </svg>
       </div>
 
-      {/* 4. Key Transmission Channels (4 Cards in a row) */}
-      <div className={styles.channelsSection}>
-        <div className={styles.sectionHeading}>Key Transmission Channels</div>
-        <div className={styles.channelsGrid}>
-          {/* Channel 1: Food Cost Chain */}
-          <button
-            type="button"
-            className={`${styles.channelCard} ${selectedPath === 'food_cost' ? styles.channelCardActive : ''}`}
-            onClick={() => onSelectPath && onSelectPath(selectedPath === 'food_cost' ? 'all' : 'food_cost')}
-          >
-            <div className={`${styles.channelIconBox} ${styles.iconGold}`}>🌾</div>
-            <div className={styles.channelMeta}>
-              <div className={styles.channelTitle}>Food Cost Chain</div>
-              <div className={styles.channelSub}>3 nodes • 2 paths</div>
-              <span className={styles.badgeCoral}>+ High Impact</span>
-            </div>
-          </button>
+      {/* 3. Legend Bar below Canvas */}
+      <div className={styles.legendRow}>
+        <div className={styles.legendLeft}>
+          <div className={styles.legendItem}>
+            <span className={styles.observedArrow}>→</span>
+            <span className={styles.legendText}>Observed relationship</span>
+          </div>
 
-          {/* Channel 2: Transport & Freight */}
-          <button
-            type="button"
-            className={`${styles.channelCard} ${selectedPath === 'transport_cost' ? styles.channelCardActive : ''}`}
-            onClick={() => onSelectPath && onSelectPath(selectedPath === 'transport_cost' ? 'all' : 'transport_cost')}
-          >
-            <div className={`${styles.channelIconBox} ${styles.iconCyan}`}>🚚</div>
-            <div className={styles.channelMeta}>
-              <div className={styles.channelTitle}>Transport &amp; Freight</div>
-              <div className={styles.channelSub}>4 nodes • 3 paths</div>
-              <span className={styles.badgeAmber}>★ Medium</span>
-            </div>
-          </button>
+          <div className={styles.legendItem}>
+            <span className={styles.inferredArrow}>- - →</span>
+            <span className={styles.legendText}>Inferred relationship</span>
+          </div>
+        </div>
 
-          {/* Channel 3: Financial Markets */}
-          <button
-            type="button"
-            className={`${styles.channelCard} ${selectedPath === 'financial_market' ? styles.channelCardActive : ''}`}
-            onClick={() => onSelectPath && onSelectPath(selectedPath === 'financial_market' ? 'all' : 'financial_market')}
-          >
-            <div className={`${styles.channelIconBox} ${styles.iconBlue}`}>📊</div>
-            <div className={styles.channelMeta}>
-              <div className={styles.channelTitle}>Financial Markets</div>
-              <div className={styles.channelSub}>3 nodes • 2 paths</div>
-              <span className={styles.badgeBlue}>★ Low</span>
-            </div>
-          </button>
-
-          {/* Channel 4: Energy & Fuel */}
-          <button
-            type="button"
-            className={`${styles.channelCard} ${styles.channelCardEnergy}`}
-            onClick={() => onSelectPath && onSelectPath('transport_cost')}
-          >
-            <div className={`${styles.channelIconBox} ${styles.iconViolet}`}>⛽</div>
-            <div className={styles.channelMeta}>
-              <div className={styles.channelTitle}>Energy &amp; Fuel</div>
-              <div className={styles.channelSub}>4 nodes • 3 paths</div>
-              <span className={styles.badgeCoral}>+ High Impact</span>
-            </div>
-          </button>
+        <div className={styles.legendBadges}>
+          <span className={styles.badgeEvent}>Global event</span>
+          <span className={styles.badgeCommodity}>Commodity</span>
+          <span className={styles.badgeSector}>Sector</span>
+          <span className={styles.badgeHousehold}>Household</span>
+          <span className={styles.badgeInvestment}>Investment</span>
         </div>
       </div>
 
-      {/* 5. Bottom Stepper Overview & Graph Controls */}
-      <div className={styles.bottomOverviewRow}>
-        <div className={styles.pathOverviewGroup}>
-          <div className={styles.overviewTitle}>
-            <span className={styles.titleChevron}>›</span> Transmission Path Overview
-          </div>
-          <div className={styles.pathStepper}>
-            <span className={`${styles.pathPill} ${styles.pillShock}`}>Global Shock +12%</span>
-            <span className={styles.stepperArrow}>➔</span>
-            <span className={styles.pathPill}>Energy Prices</span>
-            <span className={styles.stepperArrow}>➔</span>
-            <span className={styles.pathPill}>Shipping &amp; Freight</span>
-            <span className={styles.stepperArrow}>➔</span>
-            <span className={styles.pathPill}>INR Exchange Rate</span>
-            <span className={styles.stepperArrow}>➔</span>
-            <span className={styles.pathPill}>Domestic Fuel Prices</span>
-            <span className={styles.stepperArrow}>➔</span>
-            <span className={styles.pathPill}>Transport &amp; Logistics</span>
-            <span className={styles.stepperArrow}>➔</span>
-            <span className={`${styles.pathPill} ${styles.pillHousehold}`}>Household Impact</span>
-          </div>
+      {/* 4. Domain Filter Pills Bar */}
+      <div className={styles.domainBar}>
+        <span className={styles.domainLabel}>Explore domains:</span>
+        <div className={styles.domainPills}>
+          {DOMAIN_FILTERS.map((df) => {
+            const isActive = activeDomain === df.id;
+            return (
+              <button
+                key={df.id}
+                type="button"
+                className={`${styles.domainPill} ${isActive ? styles.domainPillActive : ''}`}
+                onClick={() => handleDomainSelect(df.id)}
+              >
+                {df.icon && <span className={styles.pillIcon}>{df.icon}</span>}
+                <span>{df.label}</span>
+              </button>
+            );
+          })}
         </div>
-
-        <div className={styles.graphControlsGroup}>
-          <div className={styles.controlHeader}>Graph Controls</div>
-          <div className={styles.controlButtons}>
-            <button
-              type="button"
-              className={styles.ctrlBtn}
-              onClick={() => setZoomLevel((z) => Math.min(1.5, z + 0.1))}
-              title="Zoom In"
-            >
-              🔍+ Zoom In
-            </button>
-            <button
-              type="button"
-              className={styles.ctrlBtn}
-              onClick={() => setZoomLevel((z) => Math.max(0.7, z - 0.1))}
-              title="Zoom Out"
-            >
-              🔍- Zoom Out
-            </button>
-            <button
-              type="button"
-              className={styles.ctrlBtn}
-              onClick={() => setZoomLevel(1)}
-              title="Fit View"
-            >
-              ⊡ Fit View
-            </button>
-            <button
-              type="button"
-              className={styles.ctrlBtn}
-              title="Interactive Drag"
-            >
-              ✋ Drag
-            </button>
-          </div>
-        </div>
+        <button
+          type="button"
+          className={styles.domainArrowBtn}
+          aria-label="Next domains"
+        >
+          ›
+        </button>
       </div>
     </div>
   );

@@ -1,0 +1,374 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 4px 0 24px;
+}
+
+/* Page Header */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pageHeaderLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: 820px;
+}
+
+.pageHeaderIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #e8f5ec;
+  border: 1px solid #c8e6d2;
+  color: #047857;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.08);
+}
+
+.pageTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: #172b3a;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Header Action Controls */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.autoRefreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.25);
+}
+
+.autoRefreshBtn:hover {
+  background: #065f46;
+  box-shadow: 0 2px 6px rgba(4, 120, 87, 0.35);
+}
+
+.refreshSpin {
+  animation: spinAnim 0.8s linear infinite;
+}
+
+@keyframes spinAnim {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.periodSelectWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.periodSelect {
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid #d8eadf;
+  border-radius: 8px;
+  padding: 8px 30px 8px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #172b3a;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.periodSelect:hover,
+.periodSelect:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+}
+
+.periodSelectArrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #64748b;
+  font-size: 10px;
+}
+
+/* Horizontal Category Filter Bar */
+.categoryBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 4px;
+  scrollbar-width: none;
+}
+
+.categoryBar::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #d8eadf;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.categoryPill:hover {
+  background: #f7fcf9;
+  border-color: #10b981;
+  color: #047857;
+}
+
+.categoryPillActive {
+  background: #e8f5ec !important;
+  color: #047857 !important;
+  font-weight: 700 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 1px 4px rgba(4, 120, 87, 0.1);
+}
+
+.categoryIcon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* Date Range Pill & Dropdown */
+.dateRangeWrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: auto;
+}
+
+.dateRangeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #d8eadf;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.dateRangeBtn:hover {
+  border-color: #10b981;
+  color: #047857;
+}
+
+.dateRangePopover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #ffffff;
+  border: 1px solid #d8eadf;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 240px;
+}
+
+.dateField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dateLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.dateInput {
+  border: 1px solid #d8eadf;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #172b3a;
+  outline: none;
+}
+
+.dateInput:focus {
+  border-color: #10b981;
+}
+
+.dateActionsRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.dateActionBtn {
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #d8eadf;
+  background: #ffffff;
+}
+
+.dateApplyBtn {
+  background: #047857;
+  color: #ffffff;
+  border-color: #047857;
+}
+
+/* Upper 3-Column Grid */
+.upperGrid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 0.9fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* Lower 2-Column Grid */
+.lowerGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* Status Banner / Refresh Toast */
+.refreshToast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #e8f5ec;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: #047857;
+  font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+  .upperGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .upperGrid > :nth-child(3) {
+    grid-column: span 2;
+  }
+  .lowerGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .upperGrid {
+    grid-template-columns: 1fr;
+  }
+  .upperGrid > :nth-child(3) {
+    grid-column: span 1;
+  }
+  .dateRangeWrapper {
+    margin-left: 0;
+  }
+}
+
+.refreshToastError {
+  background: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #b91c1c !important;
+}
+
+.toastRetryBtn {
+  margin-left: 10px;
+  padding: 3px 10px;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.emptyStateBanner {
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  color: #475569;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.resetAllFiltersBtn {
+  padding: 6px 16px;
+  background: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.resetAllFiltersBtn:hover {
+  background: #065f46;
+}

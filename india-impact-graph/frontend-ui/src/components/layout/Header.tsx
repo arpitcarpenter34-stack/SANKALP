@@ -8,140 +8,229 @@ export interface HeaderProps {
   activeScenarioTitle?: string;
   backendStatus?: BackendConnectionStatus;
   onToggleForceOffline?: () => void;
+  onOpenAiAssistant?: () => void;
+  activeNavTab?: string;
+  onSelectNavTab?: (tab: string) => void;
+  activeSidebarTab?: string;
 }
+
+const TOP_NAV_TABS = [
+  { id: 'dashboard', label: 'Dashboard', icon: 'home' },
+  { id: 'impact-graph', label: 'Impact Graph', icon: 'network' },
+  { id: 'news', label: 'News', icon: 'news' },
+  { id: 'household', label: 'Household', icon: 'household' },
+  { id: 'sip-forecasts', label: 'SIP & Forecasts', icon: 'chart' },
+];
 
 export const Header: React.FC<HeaderProps> = ({
   isAiOff,
   onToggleAi,
+  activeScenarioTitle,
   backendStatus,
   onToggleForceOffline,
+  onOpenAiAssistant,
+  activeNavTab = 'dashboard',
+  onSelectNavTab,
+  activeSidebarTab = 'overview',
 }) => {
+  const [globalSearch, setGlobalSearch] = React.useState<string>('');
+  const renderNavIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'home':
+        return (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        );
+      case 'network':
+        return (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="6" height="6" rx="1" />
+            <rect x="16" y="16" width="6" height="6" rx="1" />
+            <rect x="2" y="16" width="6" height="6" rx="1" />
+            <path d="M5 8v8" />
+            <path d="M5 12h11" />
+            <path d="M16 12v4" />
+          </svg>
+        );
+      case 'news':
+        return (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
+            <path d="M18 14h-8" />
+            <path d="M15 18h-5" />
+            <path d="M10 6h8v4h-8V6Z" />
+          </svg>
+        );
+      case 'household':
+        return (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        );
+      case 'chart':
+        return (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <header className={styles.header}>
       {/* 1. Left Brand & Tagline */}
       <div className={styles.leftSection}>
         <div className={styles.logoBadge} aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={styles.logoSvg}>
-            <circle cx="12" cy="5" r="3" stroke="#00d9ff" strokeWidth="2" fill="#030b18" />
-            <circle cx="5" cy="18" r="3" stroke="#00d9ff" strokeWidth="2" fill="#030b18" />
-            <circle cx="19" cy="18" r="3" stroke="#00d9ff" strokeWidth="2" fill="#030b18" />
-            <line x1="10.2" y1="7.5" x2="6.8" y2="15.5" stroke="#00d9ff" strokeWidth="1.8" />
-            <line x1="13.8" y1="7.5" x2="17.2" y2="15.5" stroke="#00d9ff" strokeWidth="1.8" />
-            <line x1="8" y1="18" x2="16" y2="18" stroke="#00d9ff" strokeWidth="1.8" />
-            <circle cx="12" cy="13" r="1.5" fill="#00d9ff" />
+          <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+            <circle cx="6" cy="14" r="3.5" fill="#047857" />
+            <circle cx="18" cy="7" r="4.5" fill="#10B981" />
+            <circle cx="21" cy="20" r="3.5" fill="#059669" />
+            <line x1="9" y1="12" x2="14" y2="9" stroke="#047857" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="9" y1="16" x2="18" y2="19" stroke="#047857" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="18" y1="11" x2="20" y2="17" stroke="#10B981" strokeWidth="2.2" strokeLinecap="round" />
           </svg>
         </div>
         <div className={styles.brandText}>
-          <h1 className={styles.brandTitle}>India Impact Graph</h1>
-          <p className={styles.tagline}>From Global News to Your Household Budget</p>
+          <h1 className={styles.brandTitle}>BharatImpact</h1>
+          <p className={styles.tagline}>
+            Global events → Indian economy → your household
+            {activeScenarioTitle ? ` (${activeScenarioTitle})` : ''}
+          </p>
         </div>
       </div>
 
-      {/* 2. Center 4-Step Macro Transmission Stepper */}
-      <nav className={styles.stepperContainer} aria-label="Transmission Flow Steps">
-        <div className={`${styles.stepItem} ${styles.stepActive}`}>
-          <span className={styles.stepNumber}>1</span>
-          <span className={styles.stepLabel}>Global Shock</span>
+      {/* 2. Center: Global Search Bar when on global-events, or Nav Tabs */}
+      {activeSidebarTab === 'global-events' ? (
+        <div className={styles.globalSearchBox}>
+          <span className={styles.searchIcon} aria-hidden="true">🔍</span>
+          <input
+            type="text"
+            className={styles.globalSearchInput}
+            placeholder="Search global events, sectors, countries..."
+            value={globalSearch}
+            onChange={(e) => setGlobalSearch(e.target.value)}
+            aria-label="Search global events, sectors, countries"
+          />
         </div>
-        <span className={styles.stepArrow} aria-hidden="true">➔</span>
+      ) : (
+        <nav className={styles.centerNav} aria-label="Primary View Switcher">
+          {TOP_NAV_TABS.map((tab) => {
+            const isActive = activeNavTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                className={`${styles.navTab} ${isActive ? styles.navTabActive : ''}`}
+                onClick={() => onSelectNavTab && onSelectNavTab(tab.id)}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                <span className={styles.tabIcon} aria-hidden="true">
+                  {renderNavIcon(tab.icon)}
+                </span>
+                <span className={styles.tabLabel}>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      )}
 
-        <div className={`${styles.stepItem} ${styles.stepActive}`}>
-          <span className={styles.stepNumber}>2</span>
-          <span className={styles.stepLabel}>Transmission</span>
-        </div>
-        <span className={styles.stepArrow} aria-hidden="true">➔</span>
-
-        <div className={`${styles.stepItem} ${styles.stepOutlined}`}>
-          <span className={styles.stepNumber}>3</span>
-          <span className={styles.stepLabel}>India Impact</span>
-        </div>
-        <span className={styles.stepArrow} aria-hidden="true">➔</span>
-
-        <div className={`${styles.stepItem} ${styles.stepMuted}`}>
-          <span className={styles.stepNumber}>4</span>
-          <span className={styles.stepLabel}>Household Effect</span>
-        </div>
-      </nav>
-
-      {/* 3. Right Status Capsules */}
+      {/* 3. Right Actions */}
       <div className={styles.rightSection}>
-        {/* Demo Mode Capsule */}
+        {activeSidebarTab === 'global-events' ? (
+          <>
+            {/* Reporting Date & Last checked timestamp */}
+            <div className={styles.reportingDateCol}>
+              <div className={styles.dateRow}>
+                <span aria-hidden="true">🕒</span>
+                <span>Oct 12, 2024</span>
+              </div>
+              <span className={styles.lastUpdatedText}>
+                {backendStatus?.checkedAt ? `Checked: ${backendStatus.checkedAt}` : 'Baseline Archive'}
+              </span>
+            </div>
+
+            {/* Truthful Connection Status Indicator */}
+            <div className={styles.liveDataCapsule} title={backendStatus?.label || 'Application mode status'}>
+              <span className={styles.wifiIcon} aria-hidden="true">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+                  <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                  <line x1="12" y1="20" x2="12.01" y2="20" strokeWidth="2.5" />
+                </svg>
+              </span>
+              <span>
+                {backendStatus?.isLive
+                  ? 'Live Engine'
+                  : backendStatus?.latencyMs !== null && backendStatus?.latencyMs !== undefined
+                  ? 'API Connected'
+                  : 'Deterministic Mode'}
+              </span>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* AI Assistant Button */}
+            <button
+              type="button"
+              className={styles.aiAssistantBtn}
+              onClick={onOpenAiAssistant || onToggleAi}
+              title={`Open BharatImpact AI Economic Assistant (AI ${isAiOff ? 'Bypassed' : 'Active'})`}
+            >
+              <span className={styles.aiSparkleIcon} aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                </svg>
+              </span>
+              <span className={styles.aiBtnLabel}>AI Assistant</span>
+            </button>
+
+            {/* Live/Demo Toggle Pill */}
+            <button
+              type="button"
+              className={styles.statusPill}
+              onClick={onToggleForceOffline}
+              title={
+                backendStatus?.isLive
+                  ? 'FastAPI Connected. Click to toggle offline demo mode.'
+                  : 'Deterministic Demo Mode. Click to recheck live backend.'
+              }
+            >
+              <span className={backendStatus?.isLive ? styles.greenDot : styles.amberDot} />
+              <span className={styles.statusPillLabel}>
+                {backendStatus?.isLive ? 'Live' : 'Demo'}
+              </span>
+            </button>
+          </>
+        )}
+
+        {/* Notification Bell with Badge 3 (matching screenshot) */}
         <button
           type="button"
-          className={styles.pillCapsule}
-          onClick={onToggleForceOffline}
-          title={
-            backendStatus?.isLive
-              ? 'Connected to Live FastAPI Engine. Click to toggle offline demo mode.'
-              : 'Running in Deterministic Demo Mode. Click to toggle live connection check.'
-          }
+          className={styles.iconBtn}
+          aria-label="Notifications (3 unread)"
+          title="Economic Alert Notifications"
         >
-          <span className={styles.greenPulseDot} />
-          <div className={styles.pillTextCol}>
-            <span className={styles.pillTopLabel}>
-              {backendStatus?.isLive ? 'LIVE MODE' : 'DEMO MODE'}
-            </span>
-            <span className={styles.pillSubLabel}>
-              {backendStatus?.isLive ? 'FastAPI Connected' : 'Using Synthetic Data'}
-            </span>
-          </div>
-        </button>
-
-        {/* AI Explainer Mode Capsule */}
-        <button
-          type="button"
-          className={`${styles.pillCapsule} ${isAiOff ? styles.pillMuted : styles.pillActive}`}
-          onClick={onToggleAi}
-          role="switch"
-          aria-checked={!isAiOff}
-          title={
-            isAiOff
-              ? 'AI Explainer Slot is OFF. Pure deterministic calculation formulas only.'
-              : 'AI Explainer Slot is Enabled. Providing scenario narratives alongside deterministic numbers.'
-          }
-        >
-          <span className={styles.capsuleIcon} aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2a8 8 0 0 0-8 8c0 3 2 5.5 4 7v3h8v-3c2-1.5 4-4 4-7a8 8 0 0 0-8-8z" />
-              <path d="M10 22h4" />
-            </svg>
-          </span>
-          <div className={styles.pillTextCol}>
-            <span className={styles.pillTopLabel}>AI Explainer</span>
-            <span className={styles.pillSubLabel}>
-              {isAiOff ? 'Disabled' : 'Enabled'}
-            </span>
-          </div>
-        </button>
-
-        {/* Data Source Baseline Capsule */}
-        <div className={styles.pillCapsule} title="Anchored to MoSPI Household Consumption Expenditure Survey 2023-24">
-          <span className={styles.capsuleIcon} aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <ellipse cx="12" cy="5" rx="9" ry="3" />
-              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
-              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-            </svg>
-          </span>
-          <div className={styles.pillTextCol}>
-            <span className={styles.pillTopLabel}>Data Source</span>
-            <span className={styles.pillSubLabel}>MoSPI, HCES 2023-24</span>
-          </div>
-        </div>
-
-        {/* Hamburger Menu Icon */}
-        <button
-          type="button"
-          className={styles.menuButton}
-          aria-label="Navigation Menu"
-          title="Platform Controls & Benchmark Registry"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
           </svg>
+          <span className={styles.notifCountBadge}>3</span>
         </button>
+
+        {/* User Profile Avatar (Letter A in mint circle) */}
+        <div className={styles.userAvatar} title="User Profile (Arpit)">
+          <span>A</span>
+        </div>
       </div>
     </header>
   );

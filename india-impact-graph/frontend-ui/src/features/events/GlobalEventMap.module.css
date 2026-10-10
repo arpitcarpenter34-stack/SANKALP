@@ -1,0 +1,328 @@
+.mapCard {
+  background: #ffffff;
+  border: 1px solid #d8eadf;
+  border-radius: 14px;
+  padding: 18px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s ease;
+  min-height: 380px;
+}
+
+.mapCard:hover {
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.06);
+}
+
+.mapHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.mapTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.mapSubtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0;
+}
+
+.mapContainer {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 250px;
+  background: #f7fcf9;
+  border-radius: 10px;
+  border: 1px solid #e2f0e8;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mapSvg {
+  width: 100%;
+  height: 100%;
+  max-height: 270px;
+  display: block;
+  user-select: none;
+  cursor: grab;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.mapSvg:active {
+  cursor: grabbing;
+}
+
+.landmass {
+  fill: #cdecd8;
+  stroke: #b5e0c4;
+  stroke-width: 0.8;
+  transition: fill 0.2s ease;
+}
+
+.landmass:hover {
+  fill: #bfe5cc;
+}
+
+.graticule {
+  fill: none;
+  stroke: #e6f4ec;
+  stroke-width: 0.5;
+  stroke-dasharray: 2 4;
+}
+
+/* Marker Styling */
+.markerGroup {
+  cursor: pointer;
+  outline: none;
+}
+
+.markerPulse {
+  animation: markerPulseAnim 2s infinite ease-out;
+  transform-origin: center;
+}
+
+@keyframes markerPulseAnim {
+  0% {
+    r: 6;
+    opacity: 0.8;
+  }
+  70% {
+    r: 16;
+    opacity: 0;
+  }
+  100% {
+    r: 16;
+    opacity: 0;
+  }
+}
+
+.markerOuter {
+  transition: r 0.2s ease, stroke-width 0.2s ease;
+}
+
+.markerGroup:hover .markerOuter,
+.markerGroup:focus .markerOuter,
+.markerSelected .markerOuter {
+  stroke-width: 3.5;
+  r: 9;
+}
+
+.markerSelected .markerPin {
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6));
+}
+
+/* Map Controls Floating in Bottom-Right */
+.mapControls {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+
+.ctrlBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #d8eadf;
+  color: #172b3a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
+}
+
+.ctrlBtn:hover {
+  background: #e8f5ec;
+  color: #047857;
+  border-color: #10b981;
+}
+
+.ctrlBtn:active {
+  transform: scale(0.95);
+}
+
+/* Callout Popover Card */
+.calloutCard {
+  position: absolute;
+  background: #172b3a;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 11px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  pointer-events: auto;
+  z-index: 20;
+  min-width: 140px;
+  max-width: 190px;
+  transform: translate(-50%, -115%);
+  animation: calloutFadeIn 0.2s ease-out;
+}
+
+.calloutCard::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #172b3a transparent transparent transparent;
+}
+
+@keyframes calloutFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -105%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -115%);
+  }
+}
+
+.calloutLocation {
+  font-size: 11px;
+  font-weight: 700;
+  color: #cbd5e1;
+  margin-bottom: 2px;
+}
+
+.calloutTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.calloutMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.calloutSeverity {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.calloutSeverityHigh {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.calloutSeverityMedium {
+  background: rgba(249, 115, 22, 0.25);
+  color: #fdba74;
+  border: 1px solid rgba(249, 115, 22, 0.5);
+}
+
+.calloutSeverityLow {
+  background: rgba(234, 179, 8, 0.25);
+  color: #fef08a;
+  border: 1px solid rgba(234, 179, 8, 0.5);
+}
+
+.calloutSeverityMonitoring {
+  background: rgba(16, 185, 129, 0.25);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.calloutDate {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* Legend */
+.mapLegend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f2;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #475569;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dotHigh {
+  background: #ef4444;
+}
+
+.dotMedium {
+  background: #f97316;
+}
+
+.dotLow {
+  background: #eab308;
+}
+
+.dotMonitoring {
+  background: #10b981;
+}
+
+@media (max-width: 768px) {
+  .mapCard {
+    min-height: 320px;
+  }
+  .mapLegend {
+    gap: 10px;
+  }
+}
+
+.noMarkersOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 12px;
+  color: #64748b;
+  pointer-events: none;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}

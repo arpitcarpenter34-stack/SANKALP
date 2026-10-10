@@ -4,76 +4,65 @@
   flex-direction: column;
   background-color: var(--bg-canvas);
   color: var(--text-primary);
-  background-image: 
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(8, 124, 255, 0.08) 0%, transparent 80%),
-    radial-gradient(ellipse 40% 30% at 20% 40%, rgba(0, 217, 255, 0.04) 0%, transparent 60%);
-  background-attachment: fixed;
+  font-family: var(--font-sans);
 }
 
-/* Master 3-Column System Matching the Grok Reference */
-.mainGrid {
-  max-width: 1920px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 14px 18px;
-  display: grid;
-  grid-template-columns: minmax(290px, 1.15fr) minmax(580px, 2.3fr) minmax(320px, 1.25fr);
-  gap: 14px;
+.bodyWrapper {
+  display: flex;
   flex: 1;
-  align-items: start;
+  min-height: calc(100vh - 60px - 34px);
+  overflow: hidden;
 }
 
-.leftColumn {
+.mainContent {
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  background-color: var(--bg-canvas);
+}
+
+/* Legacy grid fallback if passed 3 columns */
+.legacyGrid {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 14px;
+}
+
+.legacyLeft,
+.legacyCenter,
+.legacyRight {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  animation: fadeIn 0.4s ease-out both;
 }
 
-.centerColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  animation: fadeIn 0.4s ease-out both;
-  animation-delay: 0.05s;
-}
-
-.rightColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  animation: fadeIn 0.4s ease-out both;
-  animation-delay: 0.1s;
-}
-
-/* Sleek Minimal Footer */
+/* Footer */
 .footer {
-  background: var(--bg-panel);
+  background-color: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
-  padding: 8px var(--space-xl);
-  margin-top: auto;
+  padding: 8px 20px;
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .footerContainer {
-  max-width: 1920px;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-muted);
+  max-width: 1920px;
+  margin: 0 auto;
 }
 
 .footerLeft {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 8px;
 }
 
 .footerBrand {
-  color: var(--text-secondary);
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .footerSep {
@@ -81,38 +70,34 @@
 }
 
 .footerRule {
+  color: var(--text-secondary);
+}
+
+.footerNote {
   color: var(--text-muted);
 }
 
 .footerVersion {
-  color: var(--accent-cyan);
-  padding: 2px 6px;
+  background-color: var(--bg-mint);
+  color: var(--accent-emerald);
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
-  background: rgba(0, 217, 255, 0.08);
-  border: 1px solid rgba(0, 217, 255, 0.2);
+  font-weight: 600;
+  font-size: 10px;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (max-width: 1024px) {
+  .footerNote {
+    display: none;
   }
 }
 
-@media (max-width: 1400px) {
-  .mainGrid {
-    grid-template-columns: 280px 1fr 310px;
-    padding: 10px;
-    gap: 10px;
+@media (max-width: 768px) {
+  .bodyWrapper {
+    flex-direction: column;
   }
-}
 
-@media (max-width: 1100px) {
-  .mainGrid {
-    grid-template-columns: 1fr;
+  .mainContent {
+    padding: 12px;
   }
 }

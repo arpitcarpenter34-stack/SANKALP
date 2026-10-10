@@ -1,0 +1,112 @@
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.calcBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.calcBtn:hover {
+  background-color: var(--bg-mint-subtle);
+  color: var(--accent-emerald);
+}
+
+.statsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.statBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+}
+
+.iconCircle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--bg-mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.statCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.valGroup {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.statVal {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.statValScenario {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-rose);
+}
+
+.unit {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.unitRed {
+  font-size: 11px;
+  color: var(--accent-rose);
+}
+
+.pctChange {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-rose);
+}

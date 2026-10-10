@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from '../components/layout/AppLayout';
+import { SummaryMetrics } from '../features/dashboard/SummaryMetrics';
+import { HouseholdImpactCard } from '../features/dashboard/HouseholdImpactCard';
+import { SipAffordabilityCard } from '../features/dashboard/SipAffordabilityCard';
+import { NewsSignalsCard } from '../features/dashboard/NewsSignalsCard';
+import { ExpenseForecastChart } from '../features/dashboard/ExpenseForecastChart';
+import { AiAssistantDrawer } from '../features/dashboard/AiAssistantDrawer';
 import { ScenarioWorkspace } from '../features/workspace/ScenarioWorkspace';
+import { GlobalEventsView } from '../features/events/GlobalEventsView';
+import { ImpactGraphView } from '../features/graph/ImpactGraphView';
 import { scenarioService } from '../services/api/scenarioService';
 import { apiClient } from '../services/api/apiClient';
 import { MOCK_SCENARIOS, getScenarioGraph, calculatePersonaImpact } from '../services/api/mockData';
@@ -34,10 +42,17 @@ export const App: React.FC<AppProps> = ({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
 
+  // Modals & Drawers state
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState<boolean>(false);
+  const [isPersonaModalOpen, setIsPersonaModalOpen] = useState<boolean>(false);
+  const [isScenarioWorkspaceOpen, setIsScenarioWorkspaceOpen] = useState<boolean>(false);
+  const [activeSidebarTab, setActiveSidebarTab] = useState<string>('impact-graph');
+  const [activeNavTab, setActiveNavTab] = useState<string>('dashboard');
+
   // Backend connection state
   const [backendStatus, setBackendStatus] = useState<BackendConnectionStatus>(apiClient.getStatus());
 
-  // Household Archetype Configuration
+  // Household Archetype Configuration (Anchored to MoSPI HCES 2023-24)
   const [personaConfig, setPersonaConfig] = useState<HouseholdPersonaConfig>({
     state: 'Madhya Pradesh',
     sector: 'Rural',
@@ -143,6 +158,19 @@ export const App: React.FC<AppProps> = ({
     }
   };
 
+  // AI Assistant domain filter handler
+  const handleDomainFilterFromAi = (domain: string) => {
+    if (domain === 'petrol') {
+      setSelectedPath('transport_cost');
+    } else if (domain === 'food') {
+      setSelectedPath('food_cost');
+    } else if (domain === 'semiconductors' || domain === 'currency') {
+      setSelectedPath('financial_market');
+    } else {
+      setSelectedPath('all');
+    }
+  };
+
   // Determine active receipt to display in Evidence Panel
   let activeEvidenceReceipt: SourceReceipt | null = null;
   let activeEvidenceTitle = 'Indian Energy Imports & Transport Share';
@@ -166,53 +194,153 @@ export const App: React.FC<AppProps> = ({
     }
   }
 
-  // Centerpiece Graph Panel for Center Column
-  const centerPanel = (
-    <>
-      {analysisState.status === 'error' && (
-        <div className={styles.slotErrorContainer} role="alert">
-          <span className={styles.slotErrorText}>
-            ⚠️ {analysisState.errorMessage}
-          </span>
-          <button
-            type="button"
-            className={styles.slotRetryBtn}
-            onClick={() => handleAnalyze(analysisState.selectedScenario.id)}
-          >
-            ↻ Retry Transmission Evaluation
-          </button>
+  return (
+    <AppLayout
+      isAiOff={isAiOff}
+      onToggleAi={handleToggleAi}
+      activeScenarioTitle={analysisState.selectedScenario.title}
+      backendStatus={backendStatus}
+      onToggleForceOffline={handleToggleForceOffline}
+      onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
+      activeSidebarTab={activeSidebarTab}
+      onSelectSidebarTab={setActiveSidebarTab}
+      activeNavTab={activeNavTab}
+      onSelectNavTab={setActiveNavTab}
+    >
+      {activeSidebarTab === 'global-events' ? (
+        <GlobalEventsView
+          onNavigateToGraph={(scenarioId) => {
+            setActiveSidebarTab('impact-graph');
+            if (scenarioId) {
+              handleAnalyze(scenarioId);
+            }
+          }}
+        />
+      ) : activeSidebarTab === 'impact-graph' ? (
+        <ImpactGraphView
+          onNavigateToScenario={() => {
+            setIsScenarioWorkspaceOpen(true);
+          }}
+        />
+      ) : (
+        <div className={styles.dashboardContainer}>
+          {/* 1. Quick Scenario Switcher Header Bar */}
+          <div className={styles.scenarioBar}>
+            <div className={styles.scenarioBarLeft}>
+              <span className={styles.scenarioIcon} aria-hidden="true">🌐</span>
+              <span className={styles.scenarioLabel}>Active Scenario:</span>
+              <select
+                className={styles.scenarioSelect}
+                value={analysisState.selectedScenario.id}
+                onChange={(e) => handleAnalyze(e.target.value)}
+                aria-label="Select Macroeconomic Event Scenario"
+              >
+                {scenarios.map((sc) => (
+                  <option key={sc.id} value={sc.id}>
+                    {sc.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.scenarioBarRight}>
+              <button
+                type="button"
+                className={styles.customNewsBtn}
+                onClick={() => setIsScenarioWorkspaceOpen(true)}
+                title="Open full scenario testbench & custom news input"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                <span>Scenario Testbench</span>
+              </button>
+
+              <button
+                type="button"
+                className={styles.resetBtn}
+                onClick={handleResetToIdle}
+                title="Reset dashboard to default scenario"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+
+          {/* 2. Top Summary Metric Cards */}
+          <SummaryMetrics
+            personaData={analysisState.personaData}
+            graphData={analysisState.graphData}
+            onEditForecast={() => setIsScenarioWorkspaceOpen(true)}
+          />
+
+          {/* 3. Center Dashboard Grid: Left Graph & Right Stack */}
+          <div className={styles.dashboardCenterGrid}>
+            {/* Left Column: Economic Impact Graph */}
+            <div className={styles.graphColumn}>
+              {analysisState.status === 'error' && (
+                <div className={styles.slotErrorContainer} role="alert">
+                  <span className={styles.slotErrorText}>
+                    ⚠️ {analysisState.errorMessage}
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.slotRetryBtn}
+                    onClick={() => handleAnalyze(analysisState.selectedScenario.id)}
+                  >
+                    ↻ Retry Transmission Evaluation
+                  </button>
+                </div>
+              )}
+
+              {CustomGraphCanvas && (
+                <CustomGraphCanvas
+                  data={analysisState.graphData || null}
+                  selectedPath={selectedPath}
+                  onSelectPath={setSelectedPath}
+                  selectedNodeId={selectedNodeId}
+                  onSelectNode={setSelectedNodeId}
+                  selectedEdgeId={selectedEdgeId}
+                  onSelectEdge={setSelectedEdgeId}
+                  isLoading={analysisState.status === 'loading'}
+                />
+              )}
+            </div>
+
+            {/* Right Column: Household Impact + SIP Affordability + News Signals */}
+            <div className={styles.cardsColumn}>
+              <HouseholdImpactCard
+                data={analysisState.personaData}
+                onEdit={() => setIsPersonaModalOpen(true)}
+                onViewDetails={() => setIsPersonaModalOpen(true)}
+              />
+
+              <SipAffordabilityCard
+                onOpenCalculator={() => setIsAiAssistantOpen(true)}
+              />
+
+              <NewsSignalsCard />
+            </div>
+          </div>
+
+          {/* 4. Bottom Row: 6-Month Expense Forecast Chart */}
+          <ExpenseForecastChart
+            scenarioTitle={analysisState.selectedScenario.title}
+          />
         </div>
       )}
 
-      {CustomGraphCanvas && (
-        <CustomGraphCanvas
-          data={analysisState.graphData || null}
-          selectedPath={selectedPath}
-          onSelectPath={setSelectedPath}
-          selectedNodeId={selectedNodeId}
-          onSelectNode={setSelectedNodeId}
-          selectedEdgeId={selectedEdgeId}
-          onSelectEdge={setSelectedEdgeId}
-          isLoading={analysisState.status === 'loading'}
-        />
-      )}
-    </>
-  );
+      {/* 5. Interactive AI Assistant Drawer */}
+      <AiAssistantDrawer
+        isOpen={isAiAssistantOpen}
+        onClose={() => setIsAiAssistantOpen(false)}
+        onApplyDomainFilter={handleDomainFilterFromAi}
+        activeScenarioTitle={analysisState.selectedScenario.title}
+      />
 
-  // Right Column: Household Persona & Evidence Slots
-  const rightPanel = (
-    <>
-      {CustomHouseholdImpact && (
-        <CustomHouseholdImpact
-          data={analysisState.personaData || null}
-          selectedPersona={personaConfig}
-          onPersonaChange={handlePersonaConfigChange}
-          isAiOff={isAiOff}
-          isLoading={analysisState.status === 'loading'}
-        />
-      )}
-
-      {CustomEvidencePanel && (
+      {/* 6. Contextual Evidence Receipt Drawer (when node or edge selected) */}
+      {CustomEvidencePanel && (selectedNodeId || selectedEdgeId) && (
         <CustomEvidencePanel
           receipt={activeEvidenceReceipt || null}
           contextTitle={activeEvidenceTitle}
@@ -223,26 +351,51 @@ export const App: React.FC<AppProps> = ({
           }}
         />
       )}
-    </>
-  );
 
-  return (
-    <AppLayout
-      isAiOff={isAiOff}
-      onToggleAi={handleToggleAi}
-      activeScenarioTitle={analysisState.selectedScenario.title}
-      backendStatus={backendStatus}
-      onToggleForceOffline={handleToggleForceOffline}
-      leftPanel={
-        <ScenarioWorkspace
-          scenarios={scenarios}
-          analysisState={analysisState}
-          onAnalyze={handleAnalyze}
-          onResetToIdle={handleResetToIdle}
-        />
-      }
-      centerPanel={centerPanel}
-      rightPanel={rightPanel}
-    />
+      {/* 7. Household Archetype Modal (when Edit clicked) */}
+      {isPersonaModalOpen && CustomHouseholdImpact && (
+        <div className={styles.modalBackdrop} onClick={() => setIsPersonaModalOpen(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className={styles.modalCloseBtn}
+              onClick={() => setIsPersonaModalOpen(false)}
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            <CustomHouseholdImpact
+              data={analysisState.personaData || null}
+              selectedPersona={personaConfig}
+              onPersonaChange={handlePersonaConfigChange}
+              isAiOff={isAiOff}
+              isLoading={analysisState.status === 'loading'}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 8. Full Scenario Workspace Modal (when Testbench clicked) */}
+      {isScenarioWorkspaceOpen && (
+        <div className={styles.modalBackdrop} onClick={() => setIsScenarioWorkspaceOpen(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className={styles.modalCloseBtn}
+              onClick={() => setIsScenarioWorkspaceOpen(false)}
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            <ScenarioWorkspace
+              scenarios={scenarios}
+              analysisState={analysisState}
+              onAnalyze={handleAnalyze}
+              onResetToIdle={handleResetToIdle}
+            />
+          </div>
+        </div>
+      )}
+    </AppLayout>
   );
 };
