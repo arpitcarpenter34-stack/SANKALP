@@ -78,5 +78,31 @@ class TestConsensusAPI(unittest.TestCase):
         self.assertEqual(data["status"], "DISAGREEMENT")
         self.assertEqual(data["source_count"], 2)
 
+    def test_evaluate_consensus_analyze_alias(self):
+        payload = {
+            "event_id": "test-event",
+            "claims": [
+                {
+                    "article_id": "1",
+                    "source_url": "url1",
+                    "publisher": "pub1",
+                    "publication_date": "2026-01-01",
+                    "extracted_event": self.base_event
+                },
+                {
+                    "article_id": "2",
+                    "source_url": "url2",
+                    "publisher": "pub2",
+                    "publication_date": "2026-01-01",
+                    "extracted_event": self.base_event
+                }
+            ]
+        }
+        response = self.client.post("/consensus/analyze", json=payload)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "AGREEMENT")
+
+
 if __name__ == '__main__':
     unittest.main()

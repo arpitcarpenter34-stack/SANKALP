@@ -15,6 +15,7 @@ class ConsensusRequest(BaseModel):
 
 @router.post("", response_model=ConsensusResult, include_in_schema=False)
 @router.post("/", response_model=ConsensusResult)
+@router.post("/analyze", response_model=ConsensusResult, summary="Analyze news consensus")
 def evaluate_consensus(request: ConsensusRequest):
     """
     Evaluates consensus among multiple reported claims for a specific financial event.

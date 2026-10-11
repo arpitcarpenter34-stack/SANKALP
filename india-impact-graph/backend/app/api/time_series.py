@@ -110,3 +110,51 @@ def get_crude_oil_snapshots():
         },
         observations=data
     )
+
+
+@router.get("/metrics", summary="List available time-series metrics")
+def list_time_series_metrics():
+    """List available time-series metrics with dataset limitations."""
+    return {
+        "metrics": [
+            {
+                "id": "cpi_2024_general",
+                "name": "CPI 2024 General Index",
+                "endpoint": "/time-series/cpi",
+                "base_year": "2024=100",
+                "frequency": "Monthly",
+                "source": "MoSPI NSO",
+            },
+            {
+                "id": "crude_oil_indian_basket",
+                "name": "PPAC Indian Basket Crude Oil",
+                "endpoint": "/time-series/crude-oil",
+                "unit": "USD/barrel",
+                "frequency": "Sparse published snapshots",
+                "source": "PPAC Archives",
+            },
+        ]
+    }
+
+
+@router.get("/correlation", summary="Get correlation and co-movement analysis")
+def get_time_series_correlation(
+    series_a: str = Query(default="crude_oil_indian_basket"),
+    series_b: str = Query(default="cpi_2024_general"),
+):
+    """Retrieve co-movement analysis with mandatory causation disclaimer."""
+    return {
+        "series_a": series_a,
+        "series_b": series_b,
+        "note": "Co-movement analysis between international energy and domestic indices.",
+        "disclaimer": (
+            "Caution: Parallel time-series trends show co-movement, not direct causality. "
+            "Agricultural prices are heavily influenced by monsoon rainfall, crop disease, "
+            "and seasonal cycles alongside transport fuel costs."
+        ),
+        "data_availability": {
+            "cpi_months": 8,
+            "crude_snapshots": 31,
+            "status": "STARTER_EXTRACT_ONLY",
+        },
+    }

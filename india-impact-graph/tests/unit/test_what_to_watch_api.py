@@ -46,3 +46,12 @@ def test_api_deterministic_repeated_requests():
     assert res1.status_code == 200
     assert res2.status_code == 200
     assert res1.json() == res2.json()
+
+
+def test_what_to_watch_categories():
+    response = client.get("/what-to-watch/categories")
+    assert response.status_code == 200
+    cats = response.json()
+    assert isinstance(cats, list)
+    assert "Important pathway indicator" in cats
+    assert "Evidence limitation" in cats

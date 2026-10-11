@@ -18,6 +18,7 @@ class WhatToWatchResponse(BaseModel):
 
 engine = WhatToWatchEngine()
 
+@router.post("", response_model=WhatToWatchResponse, include_in_schema=False)
 @router.post("/", response_model=WhatToWatchResponse)
 def generate_what_to_watch_notes(request: WhatToWatchRequest):
     try:
@@ -32,3 +33,15 @@ def generate_what_to_watch_notes(request: WhatToWatchRequest):
         return WhatToWatchResponse(notes=notes)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/categories", response_model=List[str], summary="List What-to-Watch rule categories")
+def list_watch_categories():
+    """Return available deterministic monitoring rule categories."""
+    return [
+        "Important pathway indicator",
+        "Evidence limitation",
+        "Missing data item",
+        "Time-series coverage limitation",
+        "Source lineage limitation",
+    ]
