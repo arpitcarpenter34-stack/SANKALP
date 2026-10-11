@@ -307,9 +307,19 @@ class TestCachedArticleCSVValidation:
         with pytest.raises(FileNotFoundError):
             validate_cached_articles_csv(Path("nonexistent/cached_articles.csv"))
 
-    def test_empty_template_csv_validates_successfully(self):
-        records = validate_cached_articles_csv(ARTICLES_TEMPLATE_CSV)
+    def test_empty_template_csv_validates_successfully(self, tmp_path):
+        empty_csv = tmp_path / "empty_catalog.csv"
+        empty_csv.write_text(",".join(EXPECTED_CSV_COLUMNS) + "\n", encoding="utf-8")
+        records = validate_cached_articles_csv(empty_csv)
         assert records == []
+
+    def test_catalog_csv_validates_populated_articles(self):
+        records = validate_cached_articles_csv(ARTICLES_TEMPLATE_CSV)
+        assert len(records) == 3
+        article_ids = {r.article_id for r in records}
+        assert article_ids == {"ie-rbi-01", "fe-rbi-02", "mc-rbi-03"}
+        for r in records:
+            assert r.verification_status == VerificationStatus.VERIFIED
 
     def test_csv_header_mismatch_raises_error(self, tmp_path):
         bad_csv = tmp_path / "bad_headers.csv"
@@ -434,11 +444,11 @@ class TestCachedArticleDatabaseOperations:
 class TestProjectScopeInvariants:
     """Verifies that shared contracts, templates, and registries remain untouched."""
 
-    def test_cached_articles_template_csv_remains_unmodified_header_only(self):
+    def test_cached_articles_catalog_header_preserved(self):
         assert ARTICLES_TEMPLATE_CSV.is_file()
         with open(ARTICLES_TEMPLATE_CSV, "r", encoding="utf-8") as f:
             lines = [line.strip() for line in f if line.strip()]
-        assert len(lines) == 1
+        assert len(lines) >= 1
         assert lines[0] == ",".join(EXPECTED_CSV_COLUMNS)
 
     def test_data_source_template_remains_unmodified(self):

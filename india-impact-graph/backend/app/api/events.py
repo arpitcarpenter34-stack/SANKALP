@@ -273,3 +273,42 @@ def get_event(
         )
 
     return model_to_schema(event_model)
+
+
+from pydantic import BaseModel
+from event_extraction.event_extractor import (
+    EventExtractionError,
+    FakeDeterministicProvider,
+    FinancialEventExtractor,
+)
+
+
+class EventExtractionRequest(BaseModel):
+    """Request payload for text-based financial event extraction."""
+
+    text: str
+
+
+@router.post(
+    "/extract",
+    response_model=FinancialEventExtraction,
+    status_code=status.HTTP_200_OK,
+    summary="Extract a financial event from text",
+)
+def extract_event(req: EventExtractionRequest) -> FinancialEventExtraction:
+    """Extract a financial event deterministically from text."""
+    provider = FakeDeterministicProvider()
+    extractor = FinancialEventExtractor(provider)
+    try:
+        raw_event = extractor.extract(req.text)
+        return FinancialEventExtraction(**raw_event)
+    except EventExtractionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )

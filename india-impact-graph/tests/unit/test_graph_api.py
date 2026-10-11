@@ -400,3 +400,116 @@ class TestGraphAPIEndpoints:
                 assert set(receipt.keys()).issubset(allowed_receipt_keys)
                 assert {"source_title", "verification_status"}.issubset(set(receipt.keys()))
                 assert receipt["verification_status"] in allowed_statuses
+
+
+class TestDynamicGraphAnalysisEndpoints:
+    """Tests for dynamic graph validation, path-finding, and evidence inspection APIs."""
+
+    @pytest.fixture
+    def valid_graph_payload(self):
+        return {
+            "nodes": [
+                {
+                    "id": "N1",
+                    "type": "commodity",
+                    "label": "Test Node 1",
+                    "receipt": {
+                        "source_title": "Source 1",
+                        "verification_status": "[VERIFIED]",
+                    },
+                },
+                {
+                    "id": "N2",
+                    "type": "commodity",
+                    "label": "Test Node 2",
+                    "receipt": {
+                        "source_title": "Source 2",
+                        "verification_status": "[INFERENCE]",
+                    },
+                },
+            ],
+            "edges": [
+                {
+                    "id": "E1",
+                    "from": "N1",
+                    "to": "N2",
+                    "relation_type": "increases_cost",
+                    "kind": "observed",
+                    "confidence": "high",
+                    "evidence_text": "Sample text",
+                    "receipt": {
+                        "source_title": "Source 1",
+                        "verification_status": "[VERIFIED]",
+                    },
+                }
+            ],
+        }
+
+    def test_build_graph_valid(self, client: TestClient, valid_graph_payload):
+        response = client.post("/api/graph/build", json=valid_graph_payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["nodes"]) == 2
+        assert len(data["edges"]) == 1
+
+    def test_build_graph_invalid_missing_node(self, client: TestClient, valid_graph_payload):
+        invalid_graph = {
+            "nodes": [],
+            "edges": valid_graph_payload["edges"],
+        }
+        response = client.post("/api/graph/build", json=invalid_graph)
+        assert response.status_code == 422
+
+    def test_find_paths(self, client: TestClient, valid_graph_payload):
+        req = {
+            "graph": valid_graph_payload,
+            "source_id": "N1",
+            "target_id": "N2",
+            "max_depth": 5,
+            "limit": 3,
+        }
+        response = client.post("/api/graph/paths", json=req)
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["length"] == 1
+
+    def test_get_node_evidence(self, client: TestClient, valid_graph_payload):
+        req = {
+            "graph": valid_graph_payload,
+            "node_id": "N1",
+        }
+        response = client.post("/api/graph/evidence/node", json=req)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "VALID_EVIDENCE"
+        assert data["target_id"] == "N1"
+
+    def test_get_edge_evidence(self, client: TestClient, valid_graph_payload):
+        req = {
+            "graph": valid_graph_payload,
+            "edge_id": "E1",
+        }
+        response = client.post("/api/graph/evidence/edge", json=req)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "VALID_EVIDENCE"
+
+    def test_get_path_evidence(self, client: TestClient, valid_graph_payload):
+        path_result = {
+            "nodes": ["N1", "N2"],
+            "edges": ["E1"],
+            "length": 1,
+            "min_confidence_score": 3,
+            "observed_ratio": 1.0,
+            "edge_metadata": [],
+        }
+        req = {
+            "graph": valid_graph_payload,
+            "path": path_result,
+        }
+        response = client.post("/api/graph/evidence/path", json=req)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "VALID_EVIDENCE"
+        assert len(data["receipts"]) >= 1

@@ -394,3 +394,24 @@ def test_cors_null_origin_rejected(client: TestClient):
     get_res = client.get("/api/events", headers={"Origin": "null"})
     assert get_res.status_code == 200
     assert "access-control-allow-origin" not in get_res.headers
+
+
+def test_extract_event_success(client: TestClient):
+    """Verify POST /api/events/extract deterministically extracts event from article text."""
+    payload = {"text": "SCENARIO: +12% crude oil shock in international markets"}
+    response = client.post("/api/events/extract", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["event_type"] == "commodity_price_shock"
+    assert data["event_id"] == "crude-oil-shock-12pct"
+    assert data["magnitude"]["value"] == 12.0
+    assert data["magnitude"]["direction"] == "increase"
+    assert len(data["entities"]) > 0
+
+
+def test_extract_event_empty_text_error(client: TestClient):
+    """Verify POST /api/events/extract rejects empty text with 422 unprocessable entity."""
+    payload = {"text": "   "}
+    response = client.post("/api/events/extract", json=payload)
+    assert response.status_code == 422
+    assert "detail" in response.json()
