@@ -3,7 +3,7 @@
 Reads configuration from environment variables and local .env files.
 """
 
-from typing import Any
+from typing import Any, Optional
 from pathlib import Path
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -41,6 +41,14 @@ class Settings(BaseSettings):
     CORS_ALLOWED_ORIGINS: list[str] = Field(
         default_factory=lambda: list(DEFAULT_ALLOWED_ORIGINS),
         description="Explicit allowlist of permitted CORS origins. Extensible via CORS_ALLOWED_ORIGINS environment variable.",
+    )
+    USE_LIVE_LLM: bool = Field(
+        default=False,
+        description="Whether to use live LLM for financial event extraction. Defaults to False for deterministic offline operation.",
+    )
+    LIVE_LLM_API_KEY: Optional[str] = Field(
+        default=None,
+        description="API key for live LLM extraction. Required when USE_LIVE_LLM is True.",
     )
 
     @field_validator("CORS_ALLOWED_ORIGINS", mode="before")

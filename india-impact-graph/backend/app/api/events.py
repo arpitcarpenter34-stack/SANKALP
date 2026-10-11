@@ -275,12 +275,33 @@ def get_event(
     return model_to_schema(event_model)
 
 
+import os
 from pydantic import BaseModel
 from event_extraction.event_extractor import (
     EventExtractionError,
+    EventExtractionProvider,
     FakeDeterministicProvider,
     FinancialEventExtractor,
+    LiveLLMProvider,
 )
+
+
+def get_extraction_provider() -> EventExtractionProvider:
+    """Select the configured EventExtractionProvider based on application settings.
+
+    Returns LiveLLMProvider if USE_LIVE_LLM is enabled; otherwise defaults to
+    FakeDeterministicProvider for deterministic, offline operation.
+    """
+    from app.config import settings
+
+    use_live_env = os.environ.get("USE_LIVE_LLM")
+    use_live = (use_live_env.lower() == "true") if use_live_env is not None else settings.USE_LIVE_LLM
+
+    if use_live:
+        api_key = os.environ.get("LIVE_LLM_API_KEY") or settings.LIVE_LLM_API_KEY
+        return LiveLLMProvider(api_key=api_key, use_live=True)
+
+    return FakeDeterministicProvider()
 
 
 class EventExtractionRequest(BaseModel):
@@ -295,9 +316,11 @@ class EventExtractionRequest(BaseModel):
     status_code=status.HTTP_200_OK,
     summary="Extract a financial event from text",
 )
-def extract_event(req: EventExtractionRequest) -> FinancialEventExtraction:
-    """Extract a financial event deterministically from text."""
-    provider = FakeDeterministicProvider()
+def extract_event(
+    req: EventExtractionRequest,
+    provider: EventExtractionProvider = Depends(get_extraction_provider),
+) -> FinancialEventExtraction:
+    """Extract a financial event from text using the configured provider."""
     extractor = FinancialEventExtractor(provider)
     try:
         raw_event = extractor.extract(req.text)

@@ -295,14 +295,18 @@ import urllib.error
 class LiveLLMProvider(EventExtractionProvider):
     """
     Genuine configurable LLM provider.
-    Reads LIVE_LLM_API_KEY and USE_LIVE_LLM from environment.
+    Reads LIVE_LLM_API_KEY and USE_LIVE_LLM from constructor or environment.
     """
+    def __init__(self, api_key: Optional[str] = None, use_live: Optional[bool] = None):
+        self.api_key = api_key
+        self.use_live = use_live
+
     def extract_event(self, text: str) -> Dict[str, Any]:
-        use_live = os.environ.get("USE_LIVE_LLM", "false").lower() == "true"
+        use_live = self.use_live if self.use_live is not None else (os.environ.get("USE_LIVE_LLM", "false").lower() == "true")
         if not use_live:
             raise ExtractionProviderError("Live provider is disabled via configuration. Set USE_LIVE_LLM=true.")
 
-        api_key = os.environ.get("LIVE_LLM_API_KEY")
+        api_key = self.api_key if self.api_key is not None else os.environ.get("LIVE_LLM_API_KEY")
         if not api_key:
             raise ExtractionProviderError("Configuration error: LIVE_LLM_API_KEY is missing.")
 
