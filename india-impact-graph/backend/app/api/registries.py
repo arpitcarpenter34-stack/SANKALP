@@ -15,7 +15,9 @@ from app.schemas.source import DataSourceResponse, SourceAccessCondition
 from app.schemas.pass_through import PassThroughRecordResponse
 from app.schemas.consumption import ConsumptionItemResponse
 from app.schemas.article import CachedArticleResponse
+from app.schemas.source_sync import DataSourceStatusListResponse
 from app.services.source import get_all_data_sources
+from app.services.live_refresh import get_data_sources_status
 from app.services.pass_through import get_all_pass_through_records
 from app.services.consumption import get_all_consumption_items, validate_consumption_csv
 from app.services.article import get_all_cached_articles, validate_cached_articles_csv
@@ -97,6 +99,21 @@ def list_data_sources(db: Session = Depends(get_db)):
             notes="General linking factors must not be applied to sub-indices.",
         ),
     ]
+
+
+@router.get(
+    "/data-sources/status",
+    response_model=DataSourceStatusListResponse,
+    summary="Get data source sync and freshness status",
+)
+@router.get(
+    "/sources/status",
+    response_model=DataSourceStatusListResponse,
+    summary="Get data source sync and freshness status (alias)",
+)
+def get_data_sources_sync_status(db: Session = Depends(get_db)):
+    """Retrieve detailed synchronization, freshness SLA, and error status for all tracked sources."""
+    return get_data_sources_status(db)
 
 
 # ---------------------------------------------------------------------------

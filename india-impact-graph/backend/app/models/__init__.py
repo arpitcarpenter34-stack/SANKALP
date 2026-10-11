@@ -9,6 +9,10 @@ from app.models.event import (
 )
 from app.models.pass_through import PassThroughRecordModel
 from app.models.source import DataSourceModel
+from app.models.source_sync import (
+    DataSourceRefreshRunModel,
+    DataSourceSyncStatusModel,
+)
 from app.models.time_series import (
     TimeSeriesDefinitionModel,
     TimeSeriesObservationModel,
@@ -18,6 +22,8 @@ __all__ = [
     "CachedArticleModel",
     "ConsumptionItemModel",
     "DataSourceModel",
+    "DataSourceRefreshRunModel",
+    "DataSourceSyncStatusModel",
     "EventEntityModel",
     "EventEvidenceSnippetModel",
     "FinancialEventModel",

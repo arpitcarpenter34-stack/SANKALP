@@ -50,6 +50,34 @@ class Settings(BaseSettings):
         default=None,
         description="API key for live LLM extraction. Required when USE_LIVE_LLM is True.",
     )
+    DATA_REFRESH_TIMEOUT_SECONDS: int = Field(
+        default=10,
+        description="HTTP request timeout in seconds for official data source refresh checks.",
+    )
+    DATA_REFRESH_MAX_RETRIES: int = Field(
+        default=2,
+        description="Maximum retry attempts on transient network errors.",
+    )
+    DATA_REFRESH_MAX_RESPONSE_BYTES: int = Field(
+        default=5_000_000,
+        description="Maximum permitted response payload size (5MB).",
+    )
+    MOSPI_CPI_URL: str = Field(
+        default="https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?product=CPI",
+        description="Official MoSPI CPI catalog and publication portal URL.",
+    )
+    PPAC_CRUDE_URL: str = Field(
+        default="https://ppac.gov.in/archives/impnews",
+        description="Official PPAC Important News archive URL for Indian Basket crude oil prices.",
+    )
+    CPI_FRESHNESS_DAYS: int = Field(
+        default=45,
+        description="Freshness SLA for monthly CPI series before flagged as stale.",
+    )
+    PPAC_FRESHNESS_DAYS: int = Field(
+        default=21,
+        description="Freshness threshold for sparse PPAC crude oil snapshots before flagged as stale.",
+    )
 
     @field_validator("CORS_ALLOWED_ORIGINS", mode="before")
     @classmethod

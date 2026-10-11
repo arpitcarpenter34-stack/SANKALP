@@ -69,6 +69,14 @@ from app.schemas.time_series import (
     TimeSeriesObservationResponse,
 )
 
+from app.schemas.source_sync import (
+    DataSourceStatusListResponse,
+    FreshnessPolicyInfo,
+    RefreshExecutionSummary,
+    SourceProvenanceInfo,
+    SourceSyncStatusResponse,
+)
+
 __all__ = [
     "CPIObservation",
     "CPISeriesResponse",
@@ -84,6 +92,7 @@ __all__ = [
     "DataSourceBase",
     "DataSourceCreate",
     "DataSourceResponse",
+    "DataSourceStatusListResponse",
     "Edge",
     "EdgeConfidence",
     "EdgeDirection",
@@ -98,6 +107,7 @@ __all__ = [
     "ExtractedEntity",
     "FinancialEventExtraction",
     "FinancialEventSummary",
+    "FreshnessPolicyInfo",
     "GraphEdge",
     "GraphNode",
     "ImpactKnowledgeGraph",
@@ -114,7 +124,10 @@ __all__ = [
     "PathResultSchema",
     "PropagationPath",
     "ReceiptDefinition",
+    "RefreshExecutionSummary",
     "SourceAccessCondition",
+    "SourceProvenanceInfo",
+    "SourceSyncStatusResponse",
     "TimeSeriesDefinitionBase",
     "TimeSeriesDefinitionCreate",
     "TimeSeriesDefinitionResponse",
