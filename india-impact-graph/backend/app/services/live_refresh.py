@@ -23,6 +23,7 @@ import urllib.error
 import urllib.request
 
 from sqlalchemy import desc, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -97,44 +98,68 @@ def safe_fetch_url(
     return False, None, sanitize_message(last_error or "Unknown fetch failure")
 
 
-def ensure_sync_status_records(db: Session) -> None:
-    """Ensure baseline sync status rows exist in data_source_sync_status for SRC-01 and SRC-02."""
-    configs = [
-        {
-            "source_id": "SRC-01",
-            "series_id": "crude_oil_indian_basket",
-            "refresh_policy": "sparse_snapshot",
-            "freshness_threshold_days": settings.PPAC_FRESHNESS_DAYS,
-        },
-        {
-            "source_id": "SRC-02",
-            "series_id": "cpi_2024_general",
-            "refresh_policy": "monthly",
-            "freshness_threshold_days": settings.CPI_FRESHNESS_DAYS,
-        },
-    ]
+def get_or_create_sync_status(
+    db: Session,
+    source_id: str,
+    series_id: str,
+    refresh_policy: str,
+    freshness_threshold_days: int,
+) -> DataSourceSyncStatusModel:
+    """Retrieve existing sync status row or initialize a new one without committing.
 
-    for cfg in configs:
-        row = db.get(DataSourceSyncStatusModel, cfg["source_id"])
-        if not row:
-            # Check latest period in time_series_observations
-            latest_obs = db.execute(
-                select(TimeSeriesObservationModel.reference_period)
-                .where(TimeSeriesObservationModel.series_id == cfg["series_id"])
-                .order_by(desc(TimeSeriesObservationModel.reference_period))
-            ).scalars().first()
+    Transaction ownership is retained by the caller. Uses a savepoint (begin_nested)
+    so concurrent inserts can be caught and recovered without aborting the outer transaction.
+    """
+    row = db.get(DataSourceSyncStatusModel, source_id)
+    if row is not None:
+        return row
 
-            row = DataSourceSyncStatusModel(
-                source_id=cfg["source_id"],
-                series_id=cfg["series_id"],
-                is_enabled=True,
-                last_observation_period=latest_obs,
-                refresh_policy=cfg["refresh_policy"],
-                freshness_threshold_days=cfg["freshness_threshold_days"],
-                status="idle",
-            )
+    latest_obs = db.execute(
+        select(TimeSeriesObservationModel.reference_period)
+        .where(TimeSeriesObservationModel.series_id == series_id)
+        .order_by(desc(TimeSeriesObservationModel.reference_period))
+    ).scalars().first()
+
+    row = DataSourceSyncStatusModel(
+        source_id=source_id,
+        series_id=series_id,
+        is_enabled=True,
+        last_observation_period=latest_obs,
+        refresh_policy=refresh_policy,
+        freshness_threshold_days=freshness_threshold_days,
+        status="idle",
+    )
+
+    try:
+        with db.begin_nested():
             db.add(row)
+            db.flush()
+    except IntegrityError:
+        # Concurrent insert occurred: savepoint rolled back, re-query existing row
+        existing = db.get(DataSourceSyncStatusModel, source_id)
+        if existing is not None:
+            return existing
+        raise
 
+    return row
+
+
+def ensure_sync_status_records(db: Session) -> None:
+    """Ensure baseline sync status rows exist in data_source_sync_status for SRC-01 and SRC-02 and commit them."""
+    get_or_create_sync_status(
+        db,
+        source_id="SRC-01",
+        series_id="crude_oil_indian_basket",
+        refresh_policy="sparse_snapshot",
+        freshness_threshold_days=settings.PPAC_FRESHNESS_DAYS,
+    )
+    get_or_create_sync_status(
+        db,
+        source_id="SRC-02",
+        series_id="cpi_2024_general",
+        refresh_policy="monthly",
+        freshness_threshold_days=settings.CPI_FRESHNESS_DAYS,
+    )
     db.commit()
 
 
@@ -200,8 +225,13 @@ def refresh_ppac_crude_source(
     Preserves sparse snapshot semantics without interpolating missing calendar days.
     """
     start_time = time.time()
-    ensure_sync_status_records(db)
-    sync_status = db.get(DataSourceSyncStatusModel, "SRC-01")
+    sync_status = get_or_create_sync_status(
+        db,
+        source_id="SRC-01",
+        series_id="crude_oil_indian_basket",
+        refresh_policy="sparse_snapshot",
+        freshness_threshold_days=settings.PPAC_FRESHNESS_DAYS,
+    )
 
     now = datetime.now(timezone.utc)
     run_type = "manual_import" if manual_file_path else "automated"
@@ -281,83 +311,87 @@ def refresh_ppac_crude_source(
     updated = 0
     latest_period = sync_status.last_observation_period
 
-    for item in new_observations:
-        obs_date = str(item.get("observation_date", "")).strip()
-        raw_price = str(item.get("price_usd_per_bbl", "")).strip()
-        if not obs_date or not raw_price:
-            continue
-
-        try:
-            price = float(raw_price)
-            if price <= 0:
+    try:
+        for item in new_observations:
+            obs_date = str(item.get("observation_date", "")).strip()
+            raw_price = str(item.get("price_usd_per_bbl", "")).strip()
+            if not obs_date or not raw_price:
                 continue
-        except ValueError:
-            continue
 
-        if obs_date in existing_periods:
-            # Check if this represents an official revision
-            existing_row = db.execute(
-                select(TimeSeriesObservationModel).where(
-                    TimeSeriesObservationModel.series_id == "crude_oil_indian_basket",
-                    TimeSeriesObservationModel.reference_period == obs_date,
+            try:
+                price = float(raw_price)
+                if price <= 0:
+                    continue
+            except ValueError:
+                continue
+
+            if obs_date in existing_periods:
+                # Check if this represents an official revision
+                existing_row = db.execute(
+                    select(TimeSeriesObservationModel).where(
+                        TimeSeriesObservationModel.series_id == "crude_oil_indian_basket",
+                        TimeSeriesObservationModel.reference_period == obs_date,
+                    )
+                ).scalars().first()
+                if existing_row and abs(existing_row.observation_value - price) > 0.001:
+                    existing_row.observation_value = price
+                    existing_row.notes = (
+                        f"{existing_row.notes or ''}; Revised to {price} on {now.strftime('%Y-%m-%d')}".strip("; ")
+                    )
+                    updated += 1
+            else:
+                obs = TimeSeriesObservationModel(
+                    series_id="crude_oil_indian_basket",
+                    reference_period=obs_date,
+                    observation_date=obs_date,
+                    geographic_scope="All-India",
+                    sector="Combined",
+                    observation_value=price,
+                    unit="USD/barrel",
+                    release_status=item.get("observation_kind", "As-on published snapshot"),
+                    source_title=item.get("source_title", "PPAC Archive - Important News"),
+                    source_url=item.get("source_url", settings.PPAC_CRUDE_URL),
+                    publication_date=item.get("published_date"),
+                    notes=item.get("notes", "Discovered in official PPAC refresh check"),
                 )
-            ).scalars().first()
-            if existing_row and abs(existing_row.observation_value - price) > 0.001:
-                existing_row.observation_value = price
-                existing_row.notes = (
-                    f"{existing_row.notes or ''}; Revised to {price} on {now.strftime('%Y-%m-%d')}".strip("; ")
-                )
-                updated += 1
+                db.add(obs)
+                existing_periods.add(obs_date)
+                inserted += 1
+                if not latest_period or obs_date > latest_period:
+                    latest_period = obs_date
+
+        # Determine status outcome
+        if inserted > 0 or updated > 0:
+            outcome_status = "success"
+            msg = f"Ingested {inserted} new snapshot(s), revised {updated}."
         else:
-            obs = TimeSeriesObservationModel(
-                series_id="crude_oil_indian_basket",
-                reference_period=obs_date,
-                observation_date=obs_date,
-                geographic_scope="All-India",
-                sector="Combined",
-                observation_value=price,
-                unit="USD/barrel",
-                release_status=item.get("observation_kind", "As-on published snapshot"),
-                source_title=item.get("source_title", "PPAC Archive - Important News"),
-                source_url=item.get("source_url", settings.PPAC_CRUDE_URL),
-                publication_date=item.get("published_date"),
-                notes=item.get("notes", "Discovered in official PPAC refresh check"),
-            )
-            db.add(obs)
-            existing_periods.add(obs_date)
-            inserted += 1
-            if not latest_period or obs_date > latest_period:
-                latest_period = obs_date
+            outcome_status = "no_change"
+            msg = "Official source checked successfully; no new published snapshots found."
 
-    # Determine status outcome
-    if inserted > 0 or updated > 0:
-        outcome_status = "success"
-        msg = f"Ingested {inserted} new snapshot(s), revised {updated}."
-    else:
-        outcome_status = "no_change"
-        msg = "Official source checked successfully; no new published snapshots found."
+        sync_status.last_check_time = now
+        sync_status.last_success_time = now
+        if inserted > 0 or updated > 0:
+            sync_status.last_observation_period = latest_period
+        sync_status.records_inserted_last_run = inserted
+        sync_status.records_updated_last_run = updated
+        sync_status.status = outcome_status
+        sync_status.error_summary = None
 
-    sync_status.last_check_time = now
-    sync_status.last_success_time = now
-    if inserted > 0 or updated > 0:
-        sync_status.last_observation_period = latest_period
-    sync_status.records_inserted_last_run = inserted
-    sync_status.records_updated_last_run = updated
-    sync_status.status = outcome_status
-    sync_status.error_summary = None
-
-    run_log = DataSourceRefreshRunModel(
-        source_id="SRC-01",
-        run_timestamp=now,
-        run_type=run_type,
-        status=outcome_status,
-        records_inserted=inserted,
-        records_updated=updated,
-        message=msg,
-        execution_duration_ms=duration_ms,
-    )
-    db.add(run_log)
-    db.commit()
+        run_log = DataSourceRefreshRunModel(
+            source_id="SRC-01",
+            run_timestamp=now,
+            run_type=run_type,
+            status=outcome_status,
+            records_inserted=inserted,
+            records_updated=updated,
+            message=msg,
+            execution_duration_ms=duration_ms,
+        )
+        db.add(run_log)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
 
     return RefreshExecutionSummary(
         source_id="SRC-01",
@@ -381,8 +415,13 @@ def refresh_mospi_cpi_source(
     Permits official revisions (e.g., updating provisional figures to final).
     """
     start_time = time.time()
-    ensure_sync_status_records(db)
-    sync_status = db.get(DataSourceSyncStatusModel, "SRC-02")
+    sync_status = get_or_create_sync_status(
+        db,
+        source_id="SRC-02",
+        series_id="cpi_2024_general",
+        refresh_policy="monthly",
+        freshness_threshold_days=settings.CPI_FRESHNESS_DAYS,
+    )
 
     now = datetime.now(timezone.utc)
     run_type = "manual_import" if manual_file_path else "automated"
@@ -460,84 +499,88 @@ def refresh_mospi_cpi_source(
     updated = 0
     latest_month = sync_status.last_observation_period
 
-    for item in new_observations:
-        ref_month = str(item.get("reference_month", "")).strip()
-        sector = str(item.get("sector", "")).strip()
-        raw_val = str(item.get("index_value", "")).strip()
-        if not ref_month or not sector or not raw_val:
-            continue
-
-        try:
-            val = float(raw_val)
-            if val <= 0:
+    try:
+        for item in new_observations:
+            ref_month = str(item.get("reference_month", "")).strip()
+            sector = str(item.get("sector", "")).strip()
+            raw_val = str(item.get("index_value", "")).strip()
+            if not ref_month or not sector or not raw_val:
                 continue
-        except ValueError:
-            continue
 
-        key = (ref_month, sector)
-        rel_status = str(item.get("release_status", "Final")).strip()
+            try:
+                val = float(raw_val)
+                if val <= 0:
+                    continue
+            except ValueError:
+                continue
 
-        if key in existing_keys:
-            existing_row = existing_keys[key]
-            # Official revision check: value change or provisional -> final promotion
-            if abs(existing_row.observation_value - val) > 0.001 or existing_row.release_status != rel_status:
-                existing_row.observation_value = val
-                existing_row.release_status = rel_status
-                if item.get("source_url"):
-                    existing_row.source_url = item["source_url"]
-                existing_row.notes = (
-                    f"{existing_row.notes or ''}; Official revision applied on {now.strftime('%Y-%m-%d')}".strip("; ")
+            key = (ref_month, sector)
+            rel_status = str(item.get("release_status", "Final")).strip()
+
+            if key in existing_keys:
+                existing_row = existing_keys[key]
+                # Official revision check: value change or provisional -> final promotion
+                if abs(existing_row.observation_value - val) > 0.001 or existing_row.release_status != rel_status:
+                    existing_row.observation_value = val
+                    existing_row.release_status = rel_status
+                    if item.get("source_url"):
+                        existing_row.source_url = item["source_url"]
+                    existing_row.notes = (
+                        f"{existing_row.notes or ''}; Official revision applied on {now.strftime('%Y-%m-%d')}".strip("; ")
+                    )
+                    updated += 1
+            else:
+                obs = TimeSeriesObservationModel(
+                    series_id="cpi_2024_general",
+                    reference_period=ref_month,
+                    observation_date=None,
+                    geographic_scope="All-India",
+                    sector=sector,
+                    observation_value=val,
+                    unit=item.get("unit", "Index points"),
+                    release_status=rel_status,
+                    source_title=item.get("source_title", "Press Release of CPI on Base 2024=100"),
+                    source_url=item.get("source_url", settings.MOSPI_CPI_URL),
+                    publication_date=item.get("source_release_date"),
+                    notes=item.get("notes", "Discovered in official MoSPI refresh check"),
                 )
-                updated += 1
+                db.add(obs)
+                existing_keys[key] = obs
+                inserted += 1
+                if not latest_month or ref_month > latest_month:
+                    latest_month = ref_month
+
+        if inserted > 0 or updated > 0:
+            outcome_status = "success"
+            msg = f"Ingested {inserted} new CPI observation(s), revised {updated}."
         else:
-            obs = TimeSeriesObservationModel(
-                series_id="cpi_2024_general",
-                reference_period=ref_month,
-                observation_date=None,
-                geographic_scope="All-India",
-                sector=sector,
-                observation_value=val,
-                unit=item.get("unit", "Index points"),
-                release_status=rel_status,
-                source_title=item.get("source_title", "Press Release of CPI on Base 2024=100"),
-                source_url=item.get("source_url", settings.MOSPI_CPI_URL),
-                publication_date=item.get("source_release_date"),
-                notes=item.get("notes", "Discovered in official MoSPI refresh check"),
-            )
-            db.add(obs)
-            existing_keys[key] = obs
-            inserted += 1
-            if not latest_month or ref_month > latest_month:
-                latest_month = ref_month
+            outcome_status = "no_change"
+            msg = "Official MoSPI catalog checked successfully; no new monthly releases found."
 
-    if inserted > 0 or updated > 0:
-        outcome_status = "success"
-        msg = f"Ingested {inserted} new CPI observation(s), revised {updated}."
-    else:
-        outcome_status = "no_change"
-        msg = "Official MoSPI catalog checked successfully; no new monthly releases found."
+        sync_status.last_check_time = now
+        sync_status.last_success_time = now
+        if inserted > 0 or updated > 0:
+            sync_status.last_observation_period = latest_month
+        sync_status.records_inserted_last_run = inserted
+        sync_status.records_updated_last_run = updated
+        sync_status.status = outcome_status
+        sync_status.error_summary = None
 
-    sync_status.last_check_time = now
-    sync_status.last_success_time = now
-    if inserted > 0 or updated > 0:
-        sync_status.last_observation_period = latest_month
-    sync_status.records_inserted_last_run = inserted
-    sync_status.records_updated_last_run = updated
-    sync_status.status = outcome_status
-    sync_status.error_summary = None
-
-    run_log = DataSourceRefreshRunModel(
-        source_id="SRC-02",
-        run_timestamp=now,
-        run_type=run_type,
-        status=outcome_status,
-        records_inserted=inserted,
-        records_updated=updated,
-        message=msg,
-        execution_duration_ms=duration_ms,
-    )
-    db.add(run_log)
-    db.commit()
+        run_log = DataSourceRefreshRunModel(
+            source_id="SRC-02",
+            run_timestamp=now,
+            run_type=run_type,
+            status=outcome_status,
+            records_inserted=inserted,
+            records_updated=updated,
+            message=msg,
+            execution_duration_ms=duration_ms,
+        )
+        db.add(run_log)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
 
     return RefreshExecutionSummary(
         source_id="SRC-02",
