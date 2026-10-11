@@ -1,5 +1,10 @@
 """Pydantic schemas package for India Impact Graph backend."""
 
+from app.schemas.article import (
+    CachedArticleBase,
+    CachedArticleCreate,
+    CachedArticleResponse,
+)
 from app.schemas.consumption import (
     ConsumptionItemBase,
     ConsumptionItemCategory,
@@ -42,6 +47,9 @@ from app.schemas.source import (
 )
 
 __all__ = [
+    "CachedArticleBase",
+    "CachedArticleCreate",
+    "CachedArticleResponse",
     "ConsumptionItemBase",
     "ConsumptionItemCategory",
     "ConsumptionItemCreate",
