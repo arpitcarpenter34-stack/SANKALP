@@ -1,0 +1,174 @@
+.projectedCard {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 180ms ease,
+              border-color 180ms ease;
+  will-change: transform;
+}
+
+.projectedCard:hover {
+  transform: translateY(-2px) scale(1.018);
+  box-shadow: 0 8px 18px -4px rgba(16, 24, 40, 0.08), 0 3px 6px -2px rgba(16, 24, 40, 0.04);
+  border-color: #10b981;
+  z-index: 2;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #5a7184;
+}
+
+.legendDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.chartContainer {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 145px;
+}
+
+.chartSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: #f1f5f9;
+  stroke-dasharray: 3 3;
+}
+
+.axisText {
+  font-size: 10px;
+  fill: #8298a9;
+  font-family: var(--font-sans, sans-serif);
+}
+
+.seriesLine {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.summaryCardsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.miniSummaryCard {
+  background: #f7fcf9;
+  border: 1px solid #d1e3d7;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 150ms ease;
+}
+
+.miniSummaryCard:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: #10b981;
+}
+
+.miniIconCircle {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconCurrent {
+  background: #e8f5ec;
+  color: #047857;
+}
+
+.iconPessimistic {
+  background: #ffe4e6;
+  color: #e11d48;
+}
+
+.iconOptimistic {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.miniCardText {
+  display: flex;
+  flex-direction: column;
+}
+
+.miniCardValue {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #172b3a;
+  font-family: var(--font-sans, inherit);
+}
+
+.miniCardLabel {
+  font-size: 0.65rem;
+  color: #8298a9;
+  font-weight: 500;
+}
+
+.disclaimerNote {
+  margin: 10px 0 0 0;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: #8298a9;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 6px 8px;
+  border-left: 2px solid #10b981;
+}
+
+@media (max-width: 600px) {
+  .summaryCardsRow {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,259 @@
+.workflowCard {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+.header {
+  margin-bottom: 18px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.stagesStrip {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.stageItem {
+  flex: 1;
+  min-width: 175px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transform: translateZ(0);
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease, background 200ms ease;
+  will-change: transform;
+}
+
+.stageItem:hover {
+  transform: scale(1.018);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+  background: #ffffff;
+  z-index: 2;
+}
+
+.stageItem:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+}
+
+.stageSelected {
+  background: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25), 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stageTopRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.stepBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.stageTitle {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.iconCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.iconCircle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.stageShortDesc {
+  margin: 0;
+  font-size: 0.71875rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.activePillIndicator {
+  position: absolute;
+  bottom: -1px;
+  left: 25%;
+  right: 25%;
+  height: 3px;
+  background: #059669;
+  border-radius: 3px 3px 0 0;
+}
+
+.arrowSeparator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.arrowSeparator svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Detail Drawer */
+.stageDetailDrawer {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 18px;
+  animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.drawerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawerStepNumber {
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.drawerTitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.jumpToFeatureBtn {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.jumpToFeatureBtn:hover {
+  background: #047857;
+}
+
+.drawerFullDesc {
+  margin: 0 0 12px 0;
+  font-size: 0.8125rem;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.drawerMetaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.metaBox {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+}
+
+.metaLabel {
+  display: block;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 2px;
+}
+
+.metaVal {
+  color: #059669;
+  line-height: 1.35;
+}
+
+.metaValWarning {
+  color: #b45309;
+  line-height: 1.35;
+}
+
+@media (max-width: 1024px) {
+  .stagesStrip {
+    flex-wrap: nowrap;
+  }
+  .drawerMetaGrid {
+    grid-template-columns: 1fr;
+  }
+}

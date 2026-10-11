@@ -1,0 +1,129 @@
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 12px;
+  padding: 14px 20px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.headerIconBadge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mainTitle {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #172b3a;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #5a7184;
+}
+
+.controlsArea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.selectorWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.controlLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #8298a9;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.customSelectGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f7fcf9;
+  border: 1px solid #d1e3d7;
+  border-radius: 8px;
+  padding: 6px 10px;
+  transition: all 180ms ease;
+}
+
+.customSelectGroup:hover {
+  border-color: #10b981;
+  background: #ffffff;
+}
+
+.selectIcon {
+  color: #047857;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.styledSelect {
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #172b3a;
+  outline: none;
+  cursor: pointer;
+  padding-right: 4px;
+}
+
+@media (max-width: 992px) {
+  .headerContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 16px;
+  }
+
+  .controlsArea {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .controlsArea {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .styledSelect {
+    width: 100%;
+  }
+}

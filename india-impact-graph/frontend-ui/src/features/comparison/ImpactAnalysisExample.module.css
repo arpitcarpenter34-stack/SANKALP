@@ -1,0 +1,358 @@
+.exampleCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 12px);
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.selectorWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selectLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.eventSelect {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.eventSelect:focus {
+  border-color: #059669;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.platformCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transform: translateZ(0);
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  will-change: transform;
+}
+
+.platformCard:hover {
+  transform: scale(1.018);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+  z-index: 2;
+}
+
+.platformCard:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+}
+
+.cardSelected {
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25);
+}
+
+.bharatCard {
+  background: linear-gradient(155deg, #ffffff 0%, #f0fdf4 100%);
+  border-color: #a7f3d0;
+}
+
+.bharatCard:hover {
+  border-color: #059669;
+  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.15);
+}
+
+.cardHeader {
+  margin-bottom: 10px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.71875rem;
+  font-weight: 700;
+}
+
+.newsBadge {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.financeBadge {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.researchBadge {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.bharatBadge {
+  background: #d1fae5;
+  color: #047857;
+}
+
+/* News Visual */
+.newsVisual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 54px;
+  background: #f8fafc;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  color: #94a3b8;
+}
+
+.newsIconGraphic svg {
+  width: 28px;
+  height: 28px;
+}
+
+.newsHeadline {
+  margin: 0 0 4px 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.newsSubtext {
+  margin: 0 0 8px 0;
+  font-size: 0.71875rem;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+/* Finance Widget */
+.financeWidget {
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+}
+
+.tickerHeader {
+  display: flex;
+  gap: 4px;
+  font-size: 0.6875rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 2px 0 4px 0;
+}
+
+.priceValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.priceChange {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+.sparklineContainer {
+  height: 24px;
+}
+
+.sparkline {
+  width: 100%;
+  height: 100%;
+}
+
+/* Research Widget */
+.researchWidget {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.reportIcon {
+  color: #0284c7;
+  flex-shrink: 0;
+}
+
+.reportIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.reportTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.25;
+}
+
+.researchSummary {
+  margin: 0 0 8px 0;
+  font-size: 0.71875rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* Bullet list common */
+.bulletList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bulletList li {
+  font-size: 0.71875rem;
+  color: #475569;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+/* Bharat Highlights */
+.bharatHighlights {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.statChip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.71875rem;
+}
+
+.statLabel {
+  color: #065f46;
+  font-weight: 600;
+}
+
+.statVal {
+  color: #047857;
+  font-weight: 700;
+}
+
+.statValNegative {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.bharatList {
+  margin: 0 0 10px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bharatItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.71875rem;
+  color: #064e3b;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.greenCheck {
+  color: #059669;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.linksRow {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.quickLinkBtn {
+  flex: 1;
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.quickLinkBtn:hover {
+  background: #047857;
+}
+
+@media (max-width: 1000px) {
+  .cardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+}

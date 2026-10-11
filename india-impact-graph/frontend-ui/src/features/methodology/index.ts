@@ -1,0 +1,13 @@
+export { MethodologyView } from './MethodologyView';
+export { MethodologyHeader } from './MethodologyHeader';
+export { OurApproachWorkflow } from './OurApproachWorkflow';
+export { DataSourcesRegistry } from './DataSourcesRegistry';
+export { ModelsTechniquesCard } from './ModelsTechniquesCard';
+export { ImpactFlowVisualizer } from './ImpactFlowVisualizer';
+export { MethodologyInAction } from './MethodologyInAction';
+export { ModelAccuracyValidation } from './ModelAccuracyValidation';
+export { ImpactCalculationFormulas } from './ImpactCalculationFormulas';
+export { MethodologyLimitations } from './MethodologyLimitations';
+export { generateMethodologyReportText, downloadMethodologyReport } from './reportGenerator';
+export * from './types';
+export * from './methodologyData';

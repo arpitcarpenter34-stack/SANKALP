@@ -1,0 +1,266 @@
+.tableCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 12px);
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+.tableHeaderSection {
+  margin-bottom: 14px;
+}
+
+.tableTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tableSubtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.featureColHeader {
+  padding: 12px 14px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #475569;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  width: 38%;
+}
+
+.platformColHeader {
+  padding: 12px 10px;
+  text-align: center;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  user-select: none;
+}
+
+.platformColHeader:hover {
+  background: #f1f5f9;
+}
+
+.selectedColumn {
+  background: #ecfdf5 !important;
+  border-bottom-color: #059669 !important;
+}
+
+.bharatColHeader {
+  background: #f0fdf4;
+}
+
+.headerBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.headerPlatformName {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e293b;
+  vertical-align: middle;
+}
+
+.row {
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.row:hover {
+  background: #f8fafc;
+}
+
+.row:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: -2px;
+}
+
+.expandedRow {
+  background: #f8fafc;
+  border-bottom: none;
+}
+
+.featureCell {
+  padding: 12px 14px;
+}
+
+.featureInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.featureIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+.featureIcon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.featureTitleText {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.featureHint {
+  display: block;
+  font-size: 0.6875rem;
+  color: #94a3b8;
+}
+
+.statusCell {
+  padding: 12px 10px;
+  text-align: center;
+}
+
+.selectedColumnCell {
+  background: #f0fdf4;
+}
+
+.bharatColumnCell {
+  background: #f7fee7;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
+
+.statusBadge svg {
+  width: 20px;
+  height: 20px;
+}
+
+.supported {
+  color: #059669;
+}
+
+.partiallySupported {
+  color: #d97706;
+}
+
+.notSupported {
+  color: #dc2626;
+}
+
+.unknown {
+  color: #94a3b8;
+}
+
+.detailRow {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.detailCell {
+  padding: 0 14px 14px 14px;
+}
+
+.detailCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.78125rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.detailHeader {
+  color: #1e293b;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.platformDetailBox {
+  font-size: 0.75rem;
+}
+
+.platformDetailName {
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 2px;
+}
+
+.platformDetailNote {
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.evidenceFooter {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.71875rem;
+  color: #64748b;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .detailGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}

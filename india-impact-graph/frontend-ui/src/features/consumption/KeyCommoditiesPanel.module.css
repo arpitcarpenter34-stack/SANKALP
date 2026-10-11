@@ -1,0 +1,160 @@
+.panelCard {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 180ms ease,
+              border-color 180ms ease;
+  will-change: transform;
+}
+
+.panelCard:hover {
+  transform: translateY(-2px) scale(1.018);
+  box-shadow: 0 8px 18px -4px rgba(16, 24, 40, 0.08), 0 3px 6px -2px rgba(16, 24, 40, 0.04);
+  border-color: #10b981;
+  z-index: 2;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0;
+}
+
+.tabsGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.tabBtn {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #5a7184;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.tabActive {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.25);
+}
+
+.commoditiesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  flex: 1;
+}
+
+.itemCard {
+  background: #f7fcf9;
+  border: 1px solid #d1e3d7;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+
+.itemCard:hover {
+  transform: translateY(-2px);
+  border-color: #10b981;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(16, 24, 40, 0.06);
+}
+
+.itemTopRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.itemIconBadge {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: #e8f5ec;
+  color: #047857;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.itemName {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #172b3a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quantitySub {
+  font-size: 0.68rem;
+  color: #8298a9;
+  margin-bottom: 6px;
+}
+
+.itemBottomRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.costGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.itemCost {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #172b3a;
+  font-family: var(--font-sans, inherit);
+}
+
+.itemChange {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #e11d48;
+}
+
+.sparklineSvg {
+  width: 48px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .commoditiesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

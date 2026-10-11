@@ -1,0 +1,121 @@
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.kpiCard {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 12px;
+  padding: 16px 14px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 180ms ease,
+              border-color 180ms ease;
+  will-change: transform;
+  cursor: default;
+}
+
+/* Individual card hover zoom - only the hovered card enlarges */
+.kpiCard:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 18px -4px rgba(16, 24, 40, 0.08), 0 3px 6px -2px rgba(16, 24, 40, 0.04);
+  border-color: #10b981;
+  z-index: 2;
+}
+
+.cardTopRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.iconCircle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #e8f5ec;
+  color: #047857;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 180ms ease;
+}
+
+.kpiCard:hover .iconCircle {
+  transform: scale(1.05);
+}
+
+.cardTitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #5a7184;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.cardValueRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.mainValue {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #172b3a;
+  letter-spacing: -0.02em;
+  font-family: var(--font-sans, inherit);
+}
+
+.changePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  background: #ffe4e6;
+  color: #e11d48;
+}
+
+.changePill.positive {
+  background: #e8f5ec;
+  color: #047857;
+}
+
+.cardFooter {
+  font-size: 0.72rem;
+  color: #8298a9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1200px) {
+  .kpiGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .kpiGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+}

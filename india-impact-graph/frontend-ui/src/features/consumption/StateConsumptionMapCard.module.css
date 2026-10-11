@@ -1,0 +1,164 @@
+.mapCard {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 180ms ease,
+              border-color 180ms ease;
+  will-change: transform;
+}
+
+.mapCard:hover {
+  transform: translateY(-2px) scale(1.018);
+  box-shadow: 0 8px 18px -4px rgba(16, 24, 40, 0.08), 0 3px 6px -2px rgba(16, 24, 40, 0.04);
+  border-color: #10b981;
+  z-index: 2;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0;
+}
+
+.categorySelect {
+  border: 1px solid #d1e3d7;
+  border-radius: 6px;
+  background: #f7fcf9;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #172b3a;
+  outline: none;
+  cursor: pointer;
+}
+
+.bodyRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.mapColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.mapSvgWrapper {
+  width: 140px;
+  height: 155px;
+  position: relative;
+}
+
+.mapSvg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.15));
+}
+
+.statePath {
+  cursor: pointer;
+  transition: fill 150ms ease, transform 150ms ease;
+}
+
+.statePath:hover {
+  fill: #047857 !important;
+}
+
+.gradientLegend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #8298a9;
+}
+
+.gradientBar {
+  width: 80px;
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #dcfce7 0%, #10b981 50%, #047857 100%);
+}
+
+.rankingColumn {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+}
+
+.rankingHeader {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #5a7184;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.rankingList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rankingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.rankingRow:hover {
+  background-color: #f0f9f3;
+}
+
+.rankingLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rankBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #047857;
+  width: 12px;
+}
+
+.stateLabel {
+  font-weight: 600;
+  color: #172b3a;
+}
+
+.stateAmount {
+  font-weight: 700;
+  color: #172b3a;
+  font-family: var(--font-sans, inherit);
+}
+
+@media (max-width: 600px) {
+  .bodyRow {
+    flex-direction: column;
+  }
+}

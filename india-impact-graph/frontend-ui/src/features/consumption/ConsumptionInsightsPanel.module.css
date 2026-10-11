@@ -1,0 +1,116 @@
+.insightsCard {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 180ms ease,
+              border-color 180ms ease;
+  will-change: transform;
+}
+
+.insightsCard:hover {
+  transform: translateY(-2px) scale(1.018);
+  box-shadow: 0 8px 18px -4px rgba(16, 24, 40, 0.08), 0 3px 6px -2px rgba(16, 24, 40, 0.04);
+  border-color: #10b981;
+  z-index: 2;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0;
+}
+
+.aiBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #047857;
+  background: #e8f5ec;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+}
+
+.insightRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 9px;
+  background: #f7fcf9;
+  border: 1px solid #e2ece5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.insightRow:hover {
+  background: #ffffff;
+  border-color: #10b981;
+  transform: translateX(2px);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.05);
+}
+
+.iconCircle {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.iconFuel {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.iconLeaf {
+  background: #dcfce7;
+  color: #10b981;
+}
+
+.iconBolt {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.iconCart {
+  background: #ffe4e6;
+  color: #e11d48;
+}
+
+.iconShield {
+  background: #ede9fe;
+  color: #8b5cf6;
+}
+
+.insightText {
+  font-size: 0.74rem;
+  color: #172b3a;
+  line-height: 1.35;
+  flex: 1;
+}

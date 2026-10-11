@@ -13,6 +13,9 @@ import { SectorsView } from '../features/sectors/SectorsView';
 import { HouseholdView } from '../features/household/HouseholdView';
 import { SipForecastsView } from '../features/forecasts/SipForecastsView';
 import { NewsInsightsView } from '../features/news/NewsInsightsView';
+import { ConsumptionView } from '../features/consumption';
+import { ComparisonView } from '../features/comparison';
+import { MethodologyView } from '../features/methodology';
 import { HouseholdAssumptions } from '../features/household/types';
 import { PROFILE_PRESETS } from '../features/household/householdData';
 import { scenarioService } from '../services/api/scenarioService';
@@ -271,7 +274,7 @@ export const App: React.FC<AppProps> = ({
             setActiveSidebarTab('sip-forecasts');
           }}
           onNavigateToConsumption={() => {
-            setActiveSidebarTab('overview');
+            setActiveSidebarTab('consumption');
           }}
           selectedEventId={analysisState.selectedScenario.id}
         />
@@ -305,6 +308,64 @@ export const App: React.FC<AppProps> = ({
             }
           }}
           onNavigateToGraph={() => setActiveSidebarTab('impact-graph')}
+        />
+      ) : activeSidebarTab === 'consumption' ? (
+        <ConsumptionView
+          initialAssumptions={{
+            monthlyIncome: householdAssumptions.monthlyIncome,
+            familySize: householdAssumptions.familySize,
+            location: householdAssumptions.location,
+            lifestyle:
+              householdAssumptions.consumptionPattern === 'frugal'
+                ? 'frugal'
+                : householdAssumptions.consumptionPattern === 'discretionary'
+                ? 'discretionary'
+                : 'moderate',
+          }}
+          onNavigateToHousehold={() => setActiveSidebarTab('household-impact')}
+          onNavigateToSectors={(sectorId) => {
+            if (sectorId) setSelectedSectorDomain(sectorId);
+            setActiveSidebarTab('sectors');
+          }}
+          onNavigateToGraph={() => setActiveSidebarTab('impact-graph')}
+          onNavigateToGlobalEvents={(eventId) => {
+            setActiveSidebarTab('global-events');
+            if (eventId) {
+              handleAnalyze(eventId);
+            }
+          }}
+          onNavigateToSipForecasts={() => setActiveSidebarTab('sip-forecasts')}
+        />
+      ) : activeSidebarTab === 'comparison' ? (
+        <ComparisonView
+          onNavigateToGlobalEvents={(eventId) => {
+            setActiveSidebarTab('global-events');
+            if (eventId) {
+              handleAnalyze(eventId);
+            }
+          }}
+          onNavigateToGraph={() => setActiveSidebarTab('impact-graph')}
+          onNavigateToSectors={(sectorId) => {
+            if (sectorId) setSelectedSectorDomain(sectorId);
+            setActiveSidebarTab('sectors');
+          }}
+          onNavigateToHousehold={() => setActiveSidebarTab('household-impact')}
+          onNavigateToSipForecasts={() => setActiveSidebarTab('sip-forecasts')}
+          onNavigateToConsumption={() => setActiveSidebarTab('consumption')}
+          onNavigateToMethodology={() => setActiveSidebarTab('methodology')}
+        />
+      ) : activeSidebarTab === 'methodology' ? (
+        <MethodologyView
+          onNavigateSection={(sectionId) => {
+            if (sectionId === 'global-events') setActiveSidebarTab('global-events');
+            else if (sectionId === 'impact-graph') setActiveSidebarTab('impact-graph');
+            else if (sectionId === 'sectors') setActiveSidebarTab('sectors');
+            else if (sectionId === 'household-impact') setActiveSidebarTab('household-impact');
+            else if (sectionId === 'sip-forecasts') setActiveSidebarTab('sip-forecasts');
+            else if (sectionId === 'consumption') setActiveSidebarTab('consumption');
+            else if (sectionId === 'comparison') setActiveSidebarTab('comparison');
+            else setActiveSidebarTab(sectionId);
+          }}
         />
       ) : (
         <div className={styles.dashboardContainer}>

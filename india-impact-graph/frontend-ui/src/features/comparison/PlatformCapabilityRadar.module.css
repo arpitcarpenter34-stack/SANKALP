@@ -1,0 +1,189 @@
+.radarCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 12px);
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cardSubtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.legendBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.legendChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.legendChip:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.chipSelected {
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.3);
+  border-color: #059669;
+}
+
+.chipDisabled {
+  opacity: 0.45;
+  text-decoration: line-through;
+  background: #f1f5f9;
+}
+
+.legendColorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  white-space: nowrap;
+}
+
+.hiddenNotice {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.chartContainer {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  aspect-ratio: 440 / 400;
+}
+
+.svgChart {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gridPolygon {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 1;
+}
+
+.spokeLine {
+  stroke: #cbd5e1;
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.levelValueText {
+  font-size: 9px;
+  fill: #94a3b8;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.axisLabel {
+  font-size: 9.5px;
+  fill: #334155;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.seriesPolygon {
+  cursor: pointer;
+  transition: stroke-width 0.2s ease, fill 0.2s ease;
+}
+
+.seriesDot {
+  cursor: pointer;
+  transition: r 0.2s ease;
+}
+
+.seriesDot:hover {
+  r: 6;
+}
+
+.seriesFocused .seriesPolygon {
+  stroke-width: 3;
+}
+
+.tooltipBox {
+  position: absolute;
+  transform: translate(-50%, -120%);
+  background: #0f172a;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  z-index: 10;
+  max-width: 240px;
+}
+
+.tooltipPlatform {
+  font-weight: 700;
+  color: #34d399;
+  font-size: 0.71875rem;
+  margin-bottom: 2px;
+}
+
+.tooltipDim {
+  color: #f8fafc;
+}
+
+.tooltipCriteria {
+  margin-top: 4px;
+  font-size: 0.6875rem;
+  color: #94a3b8;
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.chartFooter {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.scoringFootnote {
+  margin: 0;
+  font-size: 0.6875rem;
+  color: #94a3b8;
+  line-height: 1.35;
+  text-align: center;
+}

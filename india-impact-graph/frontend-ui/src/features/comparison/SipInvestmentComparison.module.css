@@ -1,0 +1,254 @@
+.containerCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 12px);
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.controller {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.controllerLabel {
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.controllerLabel strong {
+  color: #059669;
+}
+
+.rangeSlider {
+  width: 100px;
+  accent-color: #059669;
+  cursor: pointer;
+}
+
+.contentLayout {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.lineChartBox {
+  display: flex;
+  flex-direction: column;
+}
+
+.legendRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.legendChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+}
+
+.legendChip:hover {
+  background: #f1f5f9;
+}
+
+.chipSelected {
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+}
+
+.colorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.svgWrapper {
+  width: 100%;
+  aspect-ratio: 480 / 200;
+}
+
+.svgLineChart {
+  width: 100%;
+  height: 100%;
+}
+
+.gridLine {
+  stroke: #f1f5f9;
+  stroke-width: 1;
+}
+
+.yTickText {
+  font-size: 9px;
+  fill: #94a3b8;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.xTickText {
+  font-size: 9.5px;
+  fill: #64748b;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.trajectoryPath {
+  transition: stroke-width 0.2s ease;
+}
+
+/* Right Summary Card */
+.barSummaryCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.barSummaryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.barSummaryTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.advantageBadge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #047857;
+  background: #d1fae5;
+  padding: 2px 6px;
+  border-radius: 9999px;
+}
+
+.horizontalBarsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.horizontalBarRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.barRowSelected .barTrackHoriz {
+  box-shadow: 0 0 0 2px #059669;
+}
+
+.barLabel {
+  font-size: 0.71875rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.barTrackHoriz {
+  width: 100%;
+  height: 22px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+
+.barFillHoriz {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  transition: width 350ms ease;
+}
+
+.barCapValue {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.exploreSipBtn {
+  margin-top: auto;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #059669;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.exploreSipBtn:hover {
+  background: #059669;
+  color: #ffffff;
+  border-color: #059669;
+}
+
+.disclaimer {
+  margin-top: auto;
+  font-size: 0.6875rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+  .contentLayout {
+    grid-template-columns: 1fr;
+  }
+}

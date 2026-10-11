@@ -1,0 +1,239 @@
+.container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.selectorWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selectInput {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.selectInput:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.flowRow {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.flowCard {
+  flex: 1;
+  min-width: 170px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.flowCard:hover {
+  transform: scale(1.018);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  border-color: #059669;
+  z-index: 2;
+}
+
+.flowCardSelected {
+  border-color: #059669;
+  background: #f0fdf4;
+  box-shadow: 0 0 0 2px #059669;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cardIcon {
+  font-size: 1.2rem;
+}
+
+.shockPill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.cardTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.headlineText {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+  line-height: 1.35;
+}
+
+.bulletList {
+  margin: 0;
+  padding-left: 14px;
+  font-size: 0.74rem;
+  color: #475569;
+  line-height: 1.45;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bulletList li {
+  margin: 0;
+}
+
+.connectorArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #059669;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 0 2px;
+}
+
+.drawer {
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  animation: fadeIn 200ms ease;
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.drawerTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0;
+}
+
+.drawerActionBtn {
+  padding: 5px 12px;
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.drawerActionBtn:hover {
+  background: #047857;
+}
+
+.drawerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  font-size: 0.8rem;
+  color: #1e293b;
+}
+
+.drawerItem strong {
+  color: #065f46;
+  display: block;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .flowRow {
+    flex-wrap: wrap;
+  }
+  .connectorArrow {
+    display: none;
+  }
+  .flowCard {
+    min-width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 640px) {
+  .flowCard {
+    min-width: 100%;
+  }
+}

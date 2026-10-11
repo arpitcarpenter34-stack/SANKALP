@@ -1,0 +1,142 @@
+.container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  margin-bottom: 24px;
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconBadge {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #fffbeb;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.card:hover {
+  transform: scale(1.018);
+  box-shadow: 0 6px 16px rgba(180, 83, 9, 0.06);
+  border-color: #f59e0b;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.featureTag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.sectionBlock {
+  margin-bottom: 10px;
+}
+
+.sectionLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.sectionText {
+  font-size: 0.8rem;
+  color: #334155;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.unavailableText {
+  color: #b91c1c;
+}
+
+.workaroundBox {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: auto;
+}
+
+.workaroundLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #047857;
+  margin-bottom: 2px;
+}
+
+.workaroundText {
+  font-size: 0.78rem;
+  color: #065f46;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.futureBox {
+  margin-top: 8px;
+  font-size: 0.74rem;
+  color: #475569;
+}

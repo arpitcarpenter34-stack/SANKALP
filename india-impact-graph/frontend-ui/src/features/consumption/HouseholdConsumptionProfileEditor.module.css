@@ -1,0 +1,212 @@
+.editorCard {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 180ms ease,
+              border-color 180ms ease;
+  will-change: transform;
+}
+
+.editorCard:hover {
+  transform: translateY(-2px) scale(1.018);
+  box-shadow: 0 8px 18px -4px rgba(16, 24, 40, 0.08), 0 3px 6px -2px rgba(16, 24, 40, 0.04);
+  border-color: #10b981;
+  z-index: 2;
+}
+
+.cardHeader {
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0;
+}
+
+.cardSubtitle {
+  font-size: 0.72rem;
+  color: #5a7184;
+  margin: 2px 0 0 0;
+}
+
+.presetTabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.presetBtn {
+  border: 1px solid #d1e3d7;
+  background: #f7fcf9;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #5a7184;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.presetBtn:hover {
+  border-color: #10b981;
+  color: #172b3a;
+}
+
+.presetActive {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.25);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #5a7184;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.infoIcon {
+  font-size: 0.7rem;
+  color: #8298a9;
+  cursor: help;
+}
+
+.incomeInputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.numberInput {
+  background: #f7fcf9;
+  border: 1px solid #d1e3d7;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #172b3a;
+  outline: none;
+  font-family: var(--font-sans, inherit);
+}
+
+.numberInput:focus {
+  border-color: #10b981;
+  background: #ffffff;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sliderTrack {
+  flex: 1;
+  accent-color: #10b981;
+  cursor: pointer;
+}
+
+.sliderMinMax {
+  font-size: 0.65rem;
+  color: #8298a9;
+  font-weight: 600;
+}
+
+.selectWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f7fcf9;
+  border: 1px solid #d1e3d7;
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+.selectWithIcon:focus-within {
+  border-color: #10b981;
+  background: #ffffff;
+}
+
+.selectIcon {
+  color: #047857;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.styledSelect {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #172b3a;
+  outline: none;
+  cursor: pointer;
+}
+
+.updateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 180ms ease;
+  box-shadow: 0 2px 4px rgba(4, 120, 87, 0.2);
+}
+
+.updateButton:hover {
+  background: #065f46;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(4, 120, 87, 0.3);
+}
+
+.updateButton:active {
+  transform: translateY(0);
+}
+
+.btnSpinIcon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}

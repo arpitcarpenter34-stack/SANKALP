@@ -1,0 +1,171 @@
+.container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.infoIcon {
+  font-size: 0.95rem;
+  color: #64748b;
+  cursor: help;
+}
+
+.metricsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metricCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.metricCard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 14px rgba(5, 150, 105, 0.08);
+  border-color: #059669;
+}
+
+.metricCardSelected {
+  border-color: #059669;
+  background: #ecfdf5;
+  box-shadow: 0 0 0 2px #059669;
+}
+
+.metricValue {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #047857;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.metricLabel {
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.3;
+}
+
+.metricTag {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.checkItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #334155;
+  line-height: 1.35;
+}
+
+.checkIcon {
+  color: #059669;
+  font-weight: bold;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-top: -1px;
+}
+
+.drawer {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  animation: fadeIn 200ms ease;
+}
+
+.drawerTitle {
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 6px 0;
+}
+
+.drawerMeta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.74rem;
+}
+
+.drawerMeta div strong {
+  display: block;
+  color: #047857;
+}
+
+.drawerLimitations {
+  font-size: 0.72rem;
+  color: #92400e;
+  background: #fffbeb;
+  border-radius: 6px;
+  padding: 6px 8px;
+  border: 1px solid #fef3c7;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .metricsRow {
+    grid-template-columns: 1fr;
+  }
+}

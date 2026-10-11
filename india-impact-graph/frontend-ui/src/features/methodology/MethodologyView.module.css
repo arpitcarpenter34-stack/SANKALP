@@ -1,0 +1,66 @@
+.viewContainer {
+  padding: 24px 32px 48px;
+  max-width: 1600px;
+  margin: 0 auto;
+  min-height: calc(100vh - 70px);
+  background: #f8fafc;
+  animation: fadeIn 240ms ease;
+}
+
+.sectionGap {
+  margin-bottom: 24px;
+}
+
+.threeColumnRow {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 0.85fr;
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+.twoColumnRow {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1300px) {
+  .threeColumnRow {
+    grid-template-columns: 1fr 1fr;
+  }
+  .threeColumnRow > div:last-child {
+    grid-column: span 2;
+  }
+  .twoColumnRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .viewContainer {
+    padding: 16px;
+  }
+  .threeColumnRow {
+    grid-template-columns: 1fr;
+  }
+  .threeColumnRow > div:last-child {
+    grid-column: span 1;
+  }
+  .twoColumnRow {
+    grid-template-columns: 1fr;
+  }
+}
