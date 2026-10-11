@@ -113,20 +113,47 @@ def load_personas() -> List[PersonaResponse]:
 # Endpoints
 # ---------------------------------------------------------------------------
 
+UNSUPPORTED_SPEC_PERSONA_IDS = {
+    "mp_rural_low",
+    "mp_rural_middle",
+    "mp_rural_high",
+    "mp_urban_low",
+    "mp_urban_middle",
+    "mp_urban_high",
+}
+
+
 @router.get("/personas", response_model=List[PersonaResponse], summary="List demographic household personas")
 def list_personas(
-    state: Optional[str] = Query(default=None, description="Filter by state (e.g. Madhya Pradesh)"),
+    state: Optional[str] = Query(default=None, description="Filter by state (e.g. Madhya Pradesh, All-India)"),
     sector: Optional[str] = Query(default=None, description="Filter by sector (Rural/Urban)"),
-    expenditure_class: Optional[str] = Query(default=None, description="Filter by expenditure class"),
+    expenditure_class: Optional[str] = Query(default=None, description="Filter by expenditure class (e.g. All, 0-5%)"),
 ) -> List[PersonaResponse]:
-    """Retrieve verified MoSPI HCES 2023-24 demographic personas."""
+    """Retrieve verified MoSPI HCES 2023-24 demographic personas.
+
+    Supported personas in the curated dataset include:
+    - State/UT-wide averages with expenditure_class='All' (e.g. 'madhya_pradesh_rural_all', 'madhya_pradesh_urban_all')
+    - All-India fractile classes with expenditure_class in ['0-5%', '5-10%', ..., '95-100%'] (e.g. 'all_india_rural_0-5')
+
+    Note: State-specific fractile personas (such as 'mp_rural_low') are not present in the
+    MoSPI HCES 2023-24 Factsheet Statement 7 extract and will not be returned.
+    """
     personas = load_personas()
     if state:
-        personas = [p for p in personas if p.state.lower() == state.lower()]
+        clean_state = state.strip().lower().replace("-", " ")
+        personas = [
+            p for p in personas
+            if p.state.lower().replace("-", " ") == clean_state or p.state.lower() == state.strip().lower()
+        ]
     if sector:
-        personas = [p for p in personas if p.sector.lower() == sector.lower()]
+        personas = [p for p in personas if p.sector.lower() == sector.strip().lower()]
     if expenditure_class:
-        personas = [p for p in personas if p.expenditure_class.lower() == expenditure_class.lower()]
+        clean_exp = expenditure_class.strip().lower()
+        personas = [
+            p for p in personas
+            if p.expenditure_class.lower() == clean_exp
+            or p.expenditure_class.lower().rstrip("%") == clean_exp.rstrip("%")
+        ]
     return personas
 
 
@@ -142,9 +169,22 @@ def calculate_household_impact(payload: CalculateImpactRequest) -> CalculateImpa
     personas = load_personas()
     matched_persona = next((p for p in personas if p.persona_id == payload.persona_id), None)
     if not matched_persona:
+        if payload.persona_id in UNSUPPORTED_SPEC_PERSONA_IDS:
+            detail = (
+                f"Persona with ID '{payload.persona_id}' is not supported. "
+                "State-level fractile personas are not present in the MoSPI HCES 2023-24 Factsheet Statement 7 extract. "
+                "Supported personas include state averages (e.g. 'madhya_pradesh_rural_all', 'madhya_pradesh_urban_all') "
+                "and All-India fractiles (e.g. 'all_india_rural_0-5')."
+            )
+        else:
+            detail = (
+                f"Persona with ID '{payload.persona_id}' not found. "
+                "Supported personas include state averages (e.g. 'madhya_pradesh_rural_all') "
+                "and All-India fractiles (e.g. 'all_india_rural_0-5')."
+            )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Persona with ID '{payload.persona_id}' not found",
+            detail=detail,
         )
 
     calc = HouseholdImpactCalculator()
