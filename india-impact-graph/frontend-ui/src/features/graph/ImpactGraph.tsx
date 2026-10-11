@@ -4,6 +4,7 @@ import type {
   KnowledgeGraphData,
 } from '../../types/contracts';
 import { computeDeterministicLayout } from './graph-layout';
+import { computeConnectedChain, computeCausalPaths } from './graph-traversal';
 import styles from './graph.module.css';
 
 const STAGE_COLUMNS = [
@@ -38,11 +39,32 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
   const [activeDomain, setActiveDomain] = useState<string>('all');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
-  // Play Impact Chain playback state
-  const [isPlayingChain, setIsPlayingChain] = useState<boolean>(false);
-  const [playbackStep, setPlaybackStep] = useState<number>(2); // Default step 3 of 7 (0-indexed 2)
-  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
-  const timerRef = useRef<number | null>(null);
+  // Automatic continuous animation state
+  const [animStep, setAnimStep] = useState<number>(0);
+  const [animPathIndex, setAnimPathIndex] = useState<number>(0);
+  const animTimerRef = useRef<number | null>(null);
+
+  // Detect reduced-motion preference to avoid unwanted movement
+  const prefersReducedMotion = useMemo(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
+
+  // Compute deterministic layout
+  const { nodes: rawNodes, edges: rawEdges } = useMemo(() => {
+    return computeDeterministicLayout(data, { width: 1040, height: 420, paddingX: 110, paddingY: 80 });
+  }, [data]);
+
+  // Derive valid causal transmission paths from root nodes to terminal impact nodes
+  const causalPaths = useMemo(() => {
+    return computeCausalPaths(rawNodes, rawEdges, selectedPath);
+  }, [rawNodes, rawEdges, selectedPath]);
+
+  // Current active animation path
+  const currentAnimPath = useMemo(() => {
+    if (!causalPaths || causalPaths.length === 0) return null;
+    return causalPaths[animPathIndex % causalPaths.length] || causalPaths[0];
+  }, [causalPaths, animPathIndex]);
 
   // Handle Escape key to clear selections or exit fullscreen
   const handleGlobalKeyDown = useCallback(
@@ -53,7 +75,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         } else {
           if (selectedNodeId && onSelectNode) onSelectNode(null);
           if (selectedEdgeId && onSelectEdge) onSelectEdge(null);
-          setIsPlayingChain(false);
+          setAnimStep(0);
         }
       }
     },
@@ -65,137 +87,200 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [handleGlobalKeyDown]);
 
-  // Compute deterministic layout
-  const { nodes: rawNodes, edges: rawEdges } = useMemo(() => {
-    return computeDeterministicLayout(data, { width: 1040, height: 420, paddingX: 110, paddingY: 80 });
-  }, [data]);
-
-  // Derive topological causal path for playback (ordered from left to right by x position)
-  const causalChainNodeIds = useMemo(() => {
-    if (!rawNodes || rawNodes.length === 0) return [];
-    const sorted = [...rawNodes].sort((a, b) => a.x - b.x || a.y - b.y);
-    return sorted.map((n) => n.id);
-  }, [rawNodes]);
-
-  const totalSteps = Math.max(causalChainNodeIds.length, 7);
-
-  // Playback timer effect
+  // Automatic & continuous impact-chain animation loop
   useEffect(() => {
-    if (isPlayingChain) {
-      const intervalMs = Math.round(1600 / playbackSpeed);
-      timerRef.current = window.setInterval(() => {
-        setPlaybackStep((prev) => {
-          const next = prev + 1;
-          if (next >= causalChainNodeIds.length) {
-            setIsPlayingChain(false);
-            return prev;
-          }
-          const targetNodeId = causalChainNodeIds[next];
-          if (targetNodeId && onSelectNode) {
-            onSelectNode(targetNodeId);
-          }
-          return next;
-        });
-      }, intervalMs);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+    // While a node or edge is manually selected, or if user prefers reduced motion, pause/suppress the loop
+    if (selectedNodeId || selectedEdgeId || prefersReducedMotion) {
+      if (animTimerRef.current) {
+        clearInterval(animTimerRef.current);
+        animTimerRef.current = null;
       }
+      return;
     }
+
+    if (!currentAnimPath || currentAnimPath.nodeIds.length === 0) {
+      return;
+    }
+
+    // Step sequence: each node in path + 1 final hold tick before looping
+    const totalStepsForPath = currentAnimPath.nodeIds.length + 1;
+
+    animTimerRef.current = window.setInterval(() => {
+      setAnimStep((prev) => {
+        const next = prev + 1;
+        if (next >= totalStepsForPath) {
+          // Advance to next valid causal transmission path and smoothly restart at step 0
+          setAnimPathIndex((prevIdx) => (prevIdx + 1) % Math.max(1, causalPaths.length));
+          return 0;
+        }
+        return next;
+      });
+    }, 1400);
 
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+      if (animTimerRef.current) {
+        clearInterval(animTimerRef.current);
+        animTimerRef.current = null;
       }
     };
-  }, [isPlayingChain, playbackSpeed, causalChainNodeIds, onSelectNode]);
+  }, [selectedNodeId, selectedEdgeId, prefersReducedMotion, currentAnimPath, causalPaths.length]);
 
-  // Play impact chain controls
-  const handleTogglePlay = () => {
-    if (isPlayingChain) {
-      setIsPlayingChain(false);
-    } else {
-      if (playbackStep >= causalChainNodeIds.length - 1) {
-        setPlaybackStep(0);
-        if (causalChainNodeIds[0] && onSelectNode) {
-          onSelectNode(causalChainNodeIds[0]);
-        }
-      }
-      setIsPlayingChain(true);
-    }
-  };
+  // Calculate complete multi-hop connected chain when a node is manually selected
+  const manualChain = useMemo(() => {
+    if (!selectedNodeId) return null;
+    return computeConnectedChain(selectedNodeId, rawEdges);
+  }, [selectedNodeId, rawEdges]);
 
-  const handlePause = () => {
-    setIsPlayingChain(false);
-  };
-
-  const handleRestart = () => {
-    setPlaybackStep(0);
-    if (causalChainNodeIds[0] && onSelectNode) {
-      onSelectNode(causalChainNodeIds[0]);
-    }
-    setIsPlayingChain(true);
-  };
-
-  // Handle domain filter selection
-  const handleDomainSelect = (domainId: string) => {
-    setActiveDomain(domainId);
-    if (domainId === 'all') {
-      if (onSelectPath) onSelectPath('all');
-    } else if (domainId === 'petrol' || domainId === 'lpg') {
-      if (onSelectPath) onSelectPath('transport_cost');
-    } else if (domainId === 'food') {
-      if (onSelectPath) onSelectPath('food_cost');
-    } else if (domainId === 'currency' || domainId === 'semiconductors') {
-      if (onSelectPath) onSelectPath('financial_market');
-    }
-  };
-
-  // Compute augmented nodes & edges
+  // Compute augmented nodes & edges with coordinated manual & auto-animation highlighting
   const { nodes, edges, activeIncompleteWarning } = useMemo(() => {
+    const isManualSelectionActive = Boolean(selectedNodeId);
+    const isEdgeSelectionActive = Boolean(selectedEdgeId);
     const isPathFilterActive = selectedPath !== 'all';
 
-    const pathEdges = new Set<string>();
-    const pathNodes = new Set<string>();
+    // 1. MANUAL NODE SELECTION MODE
+    if (isManualSelectionActive && manualChain) {
+      const augmentedEdges = rawEdges.map((e) => {
+        const isSelected = selectedEdgeId === e.id;
+        const isHighlighted = manualChain.connectedEdgeIds.has(e.id);
+        const isDimmed = !isHighlighted && !isSelected;
 
-    if (isPathFilterActive) {
-      for (const e of rawEdges) {
-        if (e.pathCategory === selectedPath) {
-          pathEdges.add(e.id);
-          pathNodes.add(e.from);
-          pathNodes.add(e.to);
-        }
-      }
+        // Bezier curve connecting card edges
+        const cardHalfW = 75;
+        const srcX = e.sourceX + cardHalfW;
+        const srcY = e.sourceY;
+        const tgtX = e.targetX - cardHalfW;
+        const tgtY = e.targetY;
+        const dx = Math.max(25, (tgtX - srcX) * 0.45);
+        const curvedPathD = `M ${srcX} ${srcY} C ${srcX + dx} ${srcY}, ${tgtX - dx} ${tgtY}, ${tgtX} ${tgtY}`;
+
+        return {
+          ...e,
+          pathD: curvedPathD,
+          isSelected,
+          isHighlighted,
+          isDimmed,
+          isTraversing: false,
+        };
+      });
+
+      const augmentedNodes = rawNodes.map((n) => {
+        const isSelected = n.id === selectedNodeId;
+        const isHighlighted = manualChain.connectedNodeIds.has(n.id);
+        const isDimmed = !isHighlighted;
+
+        return {
+          ...n,
+          isSelected,
+          isHighlighted,
+          isDimmed,
+        };
+      });
+
+      return {
+        nodes: augmentedNodes,
+        edges: augmentedEdges,
+        activeIncompleteWarning: null,
+      };
     }
 
-    // Active playback node
-    const activePlaybackNodeId = causalChainNodeIds[playbackStep] || selectedNodeId;
+    // 2. MANUAL EDGE SELECTION MODE
+    if (isEdgeSelectionActive) {
+      const selectedEdge = rawEdges.find((e) => e.id === selectedEdgeId);
+      const edgeEndpoints = new Set<string>();
+      if (selectedEdge) {
+        edgeEndpoints.add(selectedEdge.from);
+        edgeEndpoints.add(selectedEdge.to);
+      }
+
+      const augmentedEdges = rawEdges.map((e) => {
+        const isSelected = e.id === selectedEdgeId;
+        const cardHalfW = 75;
+        const srcX = e.sourceX + cardHalfW;
+        const srcY = e.sourceY;
+        const tgtX = e.targetX - cardHalfW;
+        const tgtY = e.targetY;
+        const dx = Math.max(25, (tgtX - srcX) * 0.45);
+        const curvedPathD = `M ${srcX} ${srcY} C ${srcX + dx} ${srcY}, ${tgtX - dx} ${tgtY}, ${tgtX} ${tgtY}`;
+
+        return {
+          ...e,
+          pathD: curvedPathD,
+          isSelected,
+          isHighlighted: isSelected,
+          isDimmed: !isSelected,
+          isTraversing: false,
+        };
+      });
+
+      const augmentedNodes = rawNodes.map((n) => {
+        const isHighlighted = edgeEndpoints.has(n.id);
+        return {
+          ...n,
+          isSelected: false,
+          isHighlighted,
+          isDimmed: !isHighlighted,
+        };
+      });
+
+      return {
+        nodes: augmentedNodes,
+        edges: augmentedEdges,
+        activeIncompleteWarning: null,
+      };
+    }
+
+    // 3. AUTOMATIC CONTINUOUS ANIMATION MODE (or static readable state for reduced motion)
+    if (prefersReducedMotion || !currentAnimPath || currentAnimPath.nodeIds.length === 0) {
+      // In reduced motion mode, maintain a readable baseline without continuous pulse
+      const augmentedEdges = rawEdges.map((e) => {
+        const cardHalfW = 75;
+        const srcX = e.sourceX + cardHalfW;
+        const srcY = e.sourceY;
+        const tgtX = e.targetX - cardHalfW;
+        const tgtY = e.targetY;
+        const dx = Math.max(25, (tgtX - srcX) * 0.45);
+        const curvedPathD = `M ${srcX} ${srcY} C ${srcX + dx} ${srcY}, ${tgtX - dx} ${tgtY}, ${tgtX} ${tgtY}`;
+
+        return {
+          ...e,
+          pathD: curvedPathD,
+          isSelected: false,
+          isHighlighted: false,
+          isDimmed: false,
+          isTraversing: false,
+        };
+      });
+
+      const augmentedNodes = rawNodes.map((n) => ({
+        ...n,
+        isSelected: false,
+        isHighlighted: false,
+        isDimmed: false,
+      }));
+
+      return {
+        nodes: augmentedNodes,
+        edges: augmentedEdges,
+        activeIncompleteWarning: null,
+      };
+    }
+
+    // Determine current moving traversal step along connected edges
+    const clampedStep = Math.min(animStep, currentAnimPath.nodeIds.length - 1);
+    const activeNodeId = currentAnimPath.nodeIds[clampedStep];
+    const activeTraversingEdgeId = clampedStep > 0 ? currentAnimPath.edgeIds[clampedStep - 1] : null;
+
+    // Set of nodes & edges traversed so far in the current chain
+    const traversedNodeIds = new Set(currentAnimPath.nodeIds.slice(0, clampedStep + 1));
+    const traversedEdgeIds = new Set(
+      clampedStep > 0 ? currentAnimPath.edgeIds.slice(0, clampedStep) : []
+    );
 
     const augmentedEdges = rawEdges.map((e) => {
-      const isSelected = selectedEdgeId === e.id;
-      let isHighlighted = false;
-      let isDimmed = false;
+      const isTraversing = e.id === activeTraversingEdgeId;
+      const isHighlighted = traversedEdgeIds.has(e.id);
+      const isDimmed = !isTraversing && !isHighlighted;
 
-      if (isPathFilterActive) {
-        if (pathEdges.has(e.id)) {
-          isHighlighted = true;
-        } else {
-          isDimmed = true;
-        }
-      }
-
-      if (activePlaybackNodeId) {
-        if (e.from === activePlaybackNodeId || e.to === activePlaybackNodeId) {
-          isHighlighted = true;
-          isDimmed = false;
-        } else if (!isPathFilterActive) {
-          isDimmed = true;
-        }
-      }
-
-      // Bezier curve connecting card edges
       const cardHalfW = 75;
       const srcX = e.sourceX + cardHalfW;
       const srcY = e.sourceY;
@@ -207,34 +292,17 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
       return {
         ...e,
         pathD: curvedPathD,
-        isSelected,
+        isSelected: false,
         isHighlighted,
         isDimmed,
+        isTraversing,
       };
     });
 
     const augmentedNodes = rawNodes.map((n) => {
-      const isSelected = (activePlaybackNodeId === n.id) || (selectedNodeId === n.id);
-      let isHighlighted = false;
-      let isDimmed = false;
-
-      if (isPathFilterActive) {
-        if (pathNodes.has(n.id)) {
-          isHighlighted = true;
-        } else {
-          isDimmed = true;
-        }
-      }
-
-      if (selectedEdgeId) {
-        const edge = rawEdges.find((e) => e.id === selectedEdgeId);
-        if (edge && (edge.from === n.id || edge.to === n.id)) {
-          isHighlighted = true;
-          isDimmed = false;
-        } else if (!isPathFilterActive) {
-          isDimmed = true;
-        }
-      }
+      const isSelected = n.id === activeNodeId;
+      const isHighlighted = traversedNodeIds.has(n.id);
+      const isDimmed = !isSelected && !isHighlighted;
 
       return {
         ...n,
@@ -260,22 +328,88 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
       edges: augmentedEdges,
       activeIncompleteWarning: warning,
     };
-  }, [rawNodes, rawEdges, selectedPath, selectedNodeId, selectedEdgeId, data, causalChainNodeIds, playbackStep]);
+  }, [
+    rawNodes,
+    rawEdges,
+    selectedNodeId,
+    selectedEdgeId,
+    selectedPath,
+    manualChain,
+    currentAnimPath,
+    animStep,
+    prefersReducedMotion,
+    data,
+  ]);
 
+  // Node click handler: Toggles selection and coordinates with auto-animation
+  const handleNodeClick = (nodeId: string) => {
+    if (selectedNodeId === nodeId) {
+      // Clicking the currently selected node again clears selection and resumes automatic animation
+      if (onSelectNode) onSelectNode(null);
+      if (onSelectEdge) onSelectEdge(null);
+      setAnimStep(0);
+    } else {
+      // Selecting a node pauses auto-animation and highlights its full connected impact chain
+      if (onSelectNode) onSelectNode(nodeId);
+      if (onSelectEdge) onSelectEdge(null);
+    }
+  };
+
+  // Edge click handler
+  const handleEdgeClick = (edgeId: string) => {
+    if (selectedEdgeId === edgeId) {
+      if (onSelectEdge) onSelectEdge(null);
+      setAnimStep(0);
+    } else {
+      if (onSelectEdge) onSelectEdge(edgeId);
+      if (onSelectNode) onSelectNode(null);
+    }
+  };
+
+  // Background click handler to clear selection
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      if (selectedNodeId && onSelectNode) onSelectNode(null);
+      if (selectedEdgeId && onSelectEdge) onSelectEdge(null);
+      setAnimStep(0);
+    }
+  };
+
+  // Reset view to default state
   const handleResetView = () => {
     if (onSelectPath) onSelectPath('all');
     if (onSelectNode) onSelectNode(null);
     if (onSelectEdge) onSelectEdge(null);
     setActiveDomain('all');
     setZoomLevel(1);
-    setIsPlayingChain(false);
-    setPlaybackStep(2);
+    setAnimStep(0);
+    setAnimPathIndex(0);
   };
 
-  // Node details helper for aesthetic cards matching screenshot
+  // Handle domain filter selection
+  const handleDomainSelect = (domainId: string) => {
+    setActiveDomain(domainId);
+    // Clear manual node selection so animation runs for newly selected domain
+    if (selectedNodeId && onSelectNode) onSelectNode(null);
+    if (selectedEdgeId && onSelectEdge) onSelectEdge(null);
+    setAnimStep(0);
+    setAnimPathIndex(0);
+
+    if (domainId === 'all') {
+      if (onSelectPath) onSelectPath('all');
+    } else if (domainId === 'petrol' || domainId === 'lpg') {
+      if (onSelectPath) onSelectPath('transport_cost');
+    } else if (domainId === 'food') {
+      if (onSelectPath) onSelectPath('food_cost');
+    } else if (domainId === 'currency' || domainId === 'semiconductors') {
+      if (onSelectPath) onSelectPath('financial_market');
+    }
+  };
+
+  // Node details helper for aesthetic cards matching reference fintech design
   const getNodeDetails = (nodeId: string, nodeLabel: string) => {
     const id = nodeId.toLowerCase();
-    if (id.includes('taiwan') || id.includes('chip') && id.includes('disrupt')) {
+    if (id.includes('taiwan') || (id.includes('chip') && id.includes('disrupt'))) {
       return {
         title: 'Taiwan Chip Disruption',
         delta: '+25% Chip supply',
@@ -399,12 +533,12 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
 
   return (
     <div className={`${styles.centerContainer} ${isFullscreen ? styles.fullscreenContainer : ''}`}>
-      {/* 1. Header with Title & Play Impact Chain & View/Zoom Controls */}
+      {/* 1. Header with Title & View/Zoom Controls (Playback control bar removed) */}
       <div className={styles.graphCardHeader}>
         <div className={styles.headerLeft}>
           <div className={styles.titleWithIcon}>
             <div className={styles.titleIconBadge}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#047857" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#047857" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <circle cx="6" cy="6" r="3" />
                 <circle cx="18" cy="18" r="3" />
                 <circle cx="6" cy="18" r="3" />
@@ -418,84 +552,9 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
           </div>
         </div>
 
-        {/* Center: Play Impact Chain Controller */}
-        <div className={styles.playbackControlsGroup}>
-          <button
-            type="button"
-            className={`${styles.playChainBtn} ${isPlayingChain ? styles.playChainBtnActive : ''}`}
-            onClick={handleTogglePlay}
-            title={isPlayingChain ? 'Pause Impact Chain Playback' : 'Play Scenario Causal Path'}
-          >
-            {isPlayingChain ? (
-              <>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                  <rect x="6" y="4" width="4" height="16" />
-                  <rect x="14" y="4" width="4" height="16" />
-                </svg>
-                <span>Pause</span>
-              </>
-            ) : (
-              <>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-                <span>Play Impact Chain</span>
-              </>
-            )}
-          </button>
-
-          <button
-            type="button"
-            className={styles.playbackIconBtn}
-            onClick={handlePause}
-            title="Pause animation"
-            aria-label="Pause animation"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-              <rect x="6" y="4" width="4" height="16" />
-              <rect x="14" y="4" width="4" height="16" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            className={styles.playbackIconBtn}
-            onClick={handleRestart}
-            title="Restart from Step 1"
-            aria-label="Restart from Step 1"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <path d="M1 4v6h6M23 20v-6h-6" />
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
-            </svg>
-          </button>
-
-          <select
-            className={styles.speedSelect}
-            value={playbackSpeed}
-            onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-            aria-label="Playback speed"
-          >
-            <option value={1}>1x</option>
-            <option value={1.5}>1.5x</option>
-            <option value={2}>2x</option>
-          </select>
-
-          {/* Step indicator */}
-          <div className={styles.stepIndicator}>
-            <span className={styles.stepLabel}>Step {playbackStep + 1} of {totalSteps}</span>
-            <div className={styles.stepProgressBar}>
-              <div
-                className={styles.stepProgressFill}
-                style={{ width: `${((playbackStep + 1) / totalSteps) * 100}%` }}
-              />
-            </div>
-          </div>
-        </div>
-
         {/* Right: View & Zoom Controls */}
         <div className={styles.headerRight}>
-          <div className={styles.viewSwitcher}>
+          <div className={styles.viewSwitcher} role="group" aria-label="Graph View Selector">
             <span className={styles.viewLabel}>View:</span>
             <button
               type="button"
@@ -521,7 +580,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
               title="Zoom Out"
               aria-label="Zoom Out"
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 <line x1="8" y1="11" x2="14" y2="11" />
@@ -534,7 +593,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
               title="Zoom In"
               aria-label="Zoom In"
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 <line x1="11" y1="8" x2="11" y2="14" />
@@ -547,7 +606,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
               onClick={handleResetView}
               title="Fit View"
             >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
               </svg>
               <span>Fit View</span>
@@ -559,7 +618,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
               aria-label="Toggle Fullscreen"
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
               </svg>
             </button>
@@ -620,7 +679,19 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
               <path d="M 0 1 L 10 5 L 0 9 z" fill="#047857" />
             </marker>
 
-            {/* Subtle Drop Shadows */}
+            <marker
+              id="arrow-highlighted"
+              viewBox="0 0 10 10"
+              refX="10"
+              refY="5"
+              markerWidth="6.5"
+              markerHeight="6.5"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1.5 L 9.5 5 L 0 8.5 z" fill="#10B981" />
+            </marker>
+
+            {/* Drop Shadows & Glow Filters */}
             <filter id="card-shadow" x="-15%" y="-15%" width="130%" height="130%">
               <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#047857" floodOpacity="0.08" />
             </filter>
@@ -628,14 +699,20 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
               <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#EF4444" floodOpacity="0.35" />
             </filter>
             <filter id="card-glow-green" x="-25%" y="-25%" width="150%" height="150%">
-              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#10B981" floodOpacity="0.4" />
+              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#10B981" floodOpacity="0.45" />
             </filter>
           </defs>
 
-          {/* Ambient Map & Grid Canvas Tint */}
-          <rect width="1040" height="420" fill="#F4FAF6" />
+          {/* Ambient Map & Grid Canvas Background */}
+          <rect
+            width="1040"
+            height="420"
+            fill="#F4FAF6"
+            className={styles.canvasBackground}
+            onClick={handleBackgroundClick}
+          />
 
-          {/* Subdued World/India Map Background Outline Graphic */}
+          {/* Subdued Background Concentric Guide Outlines */}
           <g opacity="0.12" fill="#047857">
             <circle cx="520" cy="210" r="180" fill="none" stroke="#047857" strokeWidth="1" strokeDasharray="3 3" />
             <circle cx="520" cy="210" r="280" fill="none" stroke="#047857" strokeWidth="0.8" strokeDasharray="4 4" />
@@ -678,24 +755,49 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
               const isSelected = edge.isSelected;
               const isHighlighted = edge.isHighlighted;
               const isDimmed = edge.isDimmed;
+              const isTraversing = edge.isTraversing;
               const isObserved = edge.kind === 'observed';
 
-              const edgeColor = isSelected ? '#047857' : isHighlighted ? '#10B981' : isObserved ? '#047857' : '#0284C7';
-              const markerEnd = isSelected
-                ? 'url(#arrow-selected)'
-                : isObserved
-                ? 'url(#arrow-observed)'
-                : 'url(#arrow-inferred)';
+              const edgeColor =
+                isSelected || isTraversing
+                  ? '#047857'
+                  : isHighlighted
+                  ? '#10B981'
+                  : isObserved
+                  ? '#047857'
+                  : '#0284C7';
+
+              const markerEnd =
+                isSelected || isTraversing
+                  ? 'url(#arrow-selected)'
+                  : isHighlighted
+                  ? 'url(#arrow-highlighted)'
+                  : isObserved
+                  ? 'url(#arrow-observed)'
+                  : 'url(#arrow-inferred)';
 
               return (
                 <g
                   key={edge.id}
-                  className={`${styles.edgeGroup} ${isDimmed ? styles.edgeDimmed : ''}`}
-                  onClick={() => onSelectEdge && onSelectEdge(edge.id)}
+                  className={`${styles.edgeGroup} ${isDimmed ? styles.edgeDimmed : ''} ${
+                    isHighlighted ? styles.edgeHighlighted : ''
+                  }`}
+                  onClick={() => handleEdgeClick(edge.id)}
                 >
+                  {/* Invisible wide hit area for easy clicking */}
                   <path d={edge.pathD} className={styles.edgeHitArea} />
 
-                  {(isSelected || isHighlighted) && (
+                  {/* Active Traversal Edge Glow Backdrop */}
+                  {isTraversing && (
+                    <path
+                      d={edge.pathD}
+                      fill="none"
+                      className={styles.activeTraversalGlow}
+                    />
+                  )}
+
+                  {/* Highlight Glow Backdrop */}
+                  {(isSelected || isHighlighted) && !isTraversing && (
                     <path
                       d={edge.pathD}
                       fill="none"
@@ -706,13 +808,15 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
                     />
                   )}
 
+                  {/* Main Visible Edge Path */}
                   <path
                     d={edge.pathD}
                     fill="none"
                     stroke={edgeColor}
-                    strokeWidth={isSelected ? 2.8 : isHighlighted ? 2.4 : 1.8}
-                    strokeDasharray={isObserved ? undefined : '5 4'}
+                    strokeWidth={isSelected || isTraversing ? 3 : isHighlighted ? 2.5 : 1.8}
+                    strokeDasharray={isTraversing ? '8 5' : isObserved ? undefined : '5 4'}
                     markerEnd={markerEnd}
+                    className={isTraversing ? styles.activeTraversalEdge : ''}
                   />
                 </g>
               );
@@ -736,11 +840,21 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
               return (
                 <g
                   key={node.id}
-                  className={`${styles.nodeGroup} ${isDimmed ? styles.nodeDimmed : ''} ${isSelected ? styles.nodeSelected : ''}`}
+                  className={`${styles.nodeGroup} ${isDimmed ? styles.nodeDimmed : ''} ${
+                    isSelected ? styles.nodeSelected : ''
+                  } ${isHighlighted ? styles.nodeHighlighted : ''}`}
                   transform={`translate(${cardX}, ${cardY})`}
-                  onClick={() => onSelectNode && onSelectNode(node.id)}
+                  onClick={() => handleNodeClick(node.id)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${details.title}, ${details.delta}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleNodeClick(node.id);
+                    }
+                  }}
                 >
-                  {/* Outer subtle glow when selected or shock */}
+                  {/* Shock event outer red glow if applicable */}
                   {details.glow && (
                     <rect
                       x="-3"
@@ -756,6 +870,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
                     />
                   )}
 
+                  {/* Selected / actively traversing emerald glow */}
                   {isSelected && !details.glow && (
                     <rect
                       x="-3"
@@ -765,25 +880,25 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
                       rx="12"
                       fill="none"
                       stroke="#10B981"
-                      strokeWidth="1.5"
+                      strokeWidth="1.8"
                       opacity="0.6"
                       filter="url(#card-glow-green)"
                     />
                   )}
 
-                  {/* Card Background */}
+                  {/* Card Background Container */}
                   <rect
                     width={cardW}
                     height={cardH}
                     rx="10"
                     fill="#FFFFFF"
                     stroke={isSelected ? '#047857' : isHighlighted ? '#10B981' : '#D8EADF'}
-                    strokeWidth={isSelected ? 2.4 : isHighlighted ? 1.8 : 1}
+                    strokeWidth={isSelected ? 2.5 : isHighlighted ? 2 : 1}
                     filter="url(#card-shadow)"
                     className={styles.nodeCardRect}
                   />
 
-                  {/* Left Icon Container */}
+                  {/* Left Icon Badge */}
                   <rect
                     x="8"
                     y="8"
@@ -799,23 +914,24 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
                     y="29"
                     fontSize="15"
                     textAnchor="middle"
+                    aria-hidden="true"
                   >
                     {details.icon}
                   </text>
 
-                  {/* Node Label Text */}
+                  {/* Node Title Label Text */}
                   <text
                     x="48"
                     y="23"
-                    fill="#172B3A"
+                    fill="#10233F"
                     fontSize="11"
                     fontWeight="700"
                     fontFamily="var(--font-sans)"
                   >
-                    {details.title.length > 16 ? `${details.title.slice(0, 15)}…` : details.title}
+                    {details.title.length > 20 ? `${details.title.slice(0, 19)}…` : details.title}
                   </text>
 
-                  {/* Node Delta / Metric Subtitle */}
+                  {/* Metric / Subtitle Delta Badge */}
                   <text
                     x="48"
                     y="37"
@@ -841,10 +957,8 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
             <span className={styles.legendText}>Observed relationship</span>
           </div>
 
-          <div className={styles.legendItem}>
-            <span className={styles.inferredArrow}>- - →</span>
-            <span className={styles.legendText}>Inferred relationship</span>
-          </div>
+          <div className={styles.inferredArrow}>- - →</div>
+          <span className={styles.legendText}>Inferred relationship</span>
 
           <div className={styles.legendItem}>
             <span className={styles.potentialArrow}>····→</span>
@@ -861,7 +975,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
       {/* 4. Domain Filter Pills Bar */}
       <div className={styles.domainBar}>
         <span className={styles.domainLabel}>Explore domains:</span>
-        <div className={styles.domainPills}>
+        <div className={styles.domainPills} role="tablist" aria-label="Explore Domains">
           {DOMAIN_FILTERS.map((df) => {
             const isActive = activeDomain === df.id;
             return (

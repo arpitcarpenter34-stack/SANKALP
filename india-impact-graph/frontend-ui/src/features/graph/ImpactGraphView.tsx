@@ -7,6 +7,7 @@ import {
   DomainGraphDataset,
   DomainNode,
 } from './domainGraphData';
+import { computeConnectedChain } from './graph-traversal';
 import styles from './ImpactGraphView.module.css';
 
 interface ImpactGraphViewProps {
@@ -150,34 +151,24 @@ export const ImpactGraphView: React.FC<ImpactGraphViewProps> = ({
     return currentDataset.nodes.find((n) => n.id === selectedNodeId);
   }, [currentDataset, selectedNodeId]);
 
-  // Connected nodes & edges calculation
+  // Connected nodes & edges calculation (complete multi-hop impact chain traversal)
   const { connectedNodeIds, connectedEdgeIds } = useMemo(() => {
-    const nodeIds = new Set<string>();
-    const edgeIds = new Set<string>();
-
     if (selectedNodeId) {
-      nodeIds.add(selectedNodeId);
-      currentDataset.edges.forEach((edge) => {
-        if (edge.from === selectedNodeId) {
-          nodeIds.add(edge.to);
-          edgeIds.add(edge.id);
-        } else if (edge.to === selectedNodeId) {
-          nodeIds.add(edge.from);
-          edgeIds.add(edge.id);
-        }
-      });
+      const chain = computeConnectedChain(selectedNodeId, currentDataset.edges);
+      return { connectedNodeIds: chain.connectedNodeIds, connectedEdgeIds: chain.connectedEdgeIds };
     }
 
     if (selectedEdgeId) {
-      edgeIds.add(selectedEdgeId);
       const edge = currentDataset.edges.find((e) => e.id === selectedEdgeId);
+      const edgeNodeIds = new Set<string>();
       if (edge) {
-        nodeIds.add(edge.from);
-        nodeIds.add(edge.to);
+        edgeNodeIds.add(edge.from);
+        edgeNodeIds.add(edge.to);
       }
+      return { connectedNodeIds: edgeNodeIds, connectedEdgeIds: new Set([selectedEdgeId]) };
     }
 
-    return { connectedNodeIds: nodeIds, connectedEdgeIds: edgeIds };
+    return { connectedNodeIds: new Set<string>(), connectedEdgeIds: new Set<string>() };
   }, [selectedNodeId, selectedEdgeId, currentDataset]);
 
   // Filtered nodes based on layer visibility and search
@@ -892,9 +883,13 @@ export const ImpactGraphView: React.FC<ImpactGraphViewProps> = ({
                         transition: 'opacity 0.2s ease, transform 0.2s ease',
                       }}
                       onClick={() => {
-                        setSelectedNodeId(node.id);
-                        setSelectedEdgeId(null);
-                        setIsDetailsOpen(true);
+                        if (selectedNodeId === node.id) {
+                          setSelectedNodeId(null);
+                        } else {
+                          setSelectedNodeId(node.id);
+                          setSelectedEdgeId(null);
+                          setIsDetailsOpen(true);
+                        }
                       }}
                       onDoubleClick={() => focusNode(node.id)}
                     >
