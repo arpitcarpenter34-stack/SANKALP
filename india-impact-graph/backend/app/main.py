@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.api.events import router as events_router
 from app.api.graph import router as graph_router
+from app.api.scenarios import router as scenarios_router
 from app.api import api_router
 
 from app.config import settings
@@ -31,6 +32,7 @@ app.add_middleware(
 
 app.include_router(events_router)
 app.include_router(graph_router)
+app.include_router(scenarios_router)
 app.include_router(api_router)
 
 
