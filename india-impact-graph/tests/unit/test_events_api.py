@@ -415,3 +415,45 @@ def test_extract_event_empty_text_error(client: TestClient):
     response = client.post("/api/events/extract", json=payload)
     assert response.status_code == 422
     assert "detail" in response.json()
+
+
+def test_extract_event_free_text_acceptance_headline(client: TestClient):
+    """Verify POST /api/events/extract extracts headline 'Crude oil surges by 15% amid geopolitical tensions'."""
+    payload = {"text": "Crude oil surges by 15% amid geopolitical tensions"}
+    response = client.post("/api/events/extract", json=payload)
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["event_id"] == "crude-oil-increase-15pct"
+    assert data["event_type"] == "commodity_price_shock"
+    assert data["is_scenario"] is False
+    assert data["headline"] == "Crude oil surges by 15% amid geopolitical tensions"
+    assert data["magnitude"] == {
+        "direction": "increase",
+        "value": 15.0,
+        "unit": "%",
+    }
+    assert len(data["entities"]) == 1
+    assert data["entities"][0]["entity_id"] == "crude_oil"
+    assert data["entities"][0]["name"] == "Crude Oil"
+    assert data["entities"][0]["entity_type"] == "commodity"
+    assert data["entities"][0]["mention_text"] == "Crude oil"
+    assert len(data["evidence_snippets"]) == 1
+    assert data["evidence_snippets"][0]["quote"] == "Crude oil surges by 15% amid geopolitical tensions"
+    assert data["evidence_snippets"][0]["source_title"] == "Input Text"
+
+
+def test_extract_event_free_text_ambiguous_direction(client: TestClient):
+    """Verify POST /api/events/extract returns HTTP 422 for ambiguous conflicting directions."""
+    payload = {"text": "Crude oil surges then cuts by 5%"}
+    response = client.post("/api/events/extract", json=payload)
+    assert response.status_code == 422
+    assert "ambiguous direction" in response.json()["detail"].lower()
+
+
+def test_extract_event_free_text_unsupported_text(client: TestClient):
+    """Verify POST /api/events/extract returns HTTP 422 for unsupported non-financial text."""
+    payload = {"text": "Film wins prestigious international cinema award"}
+    response = client.post("/api/events/extract", json=payload)
+    assert response.status_code == 422
+    assert "unsupported text" in response.json()["detail"].lower()
