@@ -35,6 +35,8 @@ from app.models.time_series import (
 from app.services.live_refresh import (
     calculate_freshness,
     get_data_sources_status,
+    parse_mospi_cpi_content,
+    parse_ppac_archive_html,
     refresh_mospi_cpi_source,
     refresh_ppac_crude_source,
     safe_fetch_url,
@@ -484,3 +486,153 @@ class TestTransactionSafetyAndSyncStatus:
         status_after = db_session.get(DataSourceSyncStatusModel, "SRC-01")
         assert status_after.status == status_before
         assert status_after.last_observation_period == period_before
+
+
+class TestOfficialPublicationParsers:
+    """Validate HTML and JSON parser extraction against official publication formats."""
+
+    def test_ppac_archive_html_parsing_valid_headlines(self):
+        html_fixture = """
+        <html>
+        <body>
+        <div class="news-list">
+            <li><a href="/1">Indian Basket of Crude oil was US$ 71.50 per bbl on 01.03.2026</a></li>
+            <li><a href="/2">Indian Basket crude price was $72.40/bbl as on 02-03-2026</a></li>
+            <li><a href="/3">Indian Basket was 68.52 USD/bbl on 2026-02-06</a></li>
+            <li><a href="/4">Unrelated news item: Safety protocols reviewed</a></li>
+        </div>
+        </body>
+        </html>
+        """
+        parsed = parse_ppac_archive_html(html_fixture)
+        assert len(parsed) == 3
+        assert parsed[0]["observation_date"] == "2026-03-01"
+        assert parsed[0]["price_usd_per_bbl"] == 71.50
+        assert parsed[1]["observation_date"] == "2026-03-02"
+        assert parsed[1]["price_usd_per_bbl"] == 72.40
+        assert parsed[2]["observation_date"] == "2026-02-06"
+        assert parsed[2]["price_usd_per_bbl"] == 68.52
+
+    def test_ppac_archive_html_parsing_empty_and_unsupported(self):
+        assert parse_ppac_archive_html("") == []
+        assert parse_ppac_archive_html("<html><body><p>No crude headlines here</p></body></html>") == []
+
+    def test_mospi_cpi_json_parsing_valid_releases(self):
+        json_fixture = """
+        {
+            "product": "CPI",
+            "base": "2024=100",
+            "releases": [
+                {
+                    "reference_month": "2026-09",
+                    "sector": "Rural",
+                    "index_value": 109.80,
+                    "status": "Provisional"
+                },
+                {
+                    "reference_month": "2026-09",
+                    "sector": "Urban",
+                    "index_value": 108.90,
+                    "status": "Provisional"
+                },
+                {
+                    "reference_month": "2026-09",
+                    "sector": "Combined",
+                    "index_value": 109.40,
+                    "status": "Provisional",
+                    "source_release_date": "2026-10-12"
+                }
+            ]
+        }
+        """
+        parsed = parse_mospi_cpi_content(json_fixture)
+        assert len(parsed) == 3
+        assert parsed[0]["sector"] == "Rural"
+        assert parsed[0]["index_value"] == 109.80
+        assert parsed[0]["release_status"] == "Provisional"
+        assert parsed[2]["sector"] == "Combined"
+        assert parsed[2]["index_value"] == 109.40
+
+    def test_mospi_cpi_html_table_parsing_valid(self):
+        html_fixture = """
+        <div class="cpi-table">
+          <table>
+            <thead><tr><th>Month</th><th>Sector</th><th>Index Value</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>2026-09</td><td>Rural</td><td>109.80</td><td>Provisional</td></tr>
+              <tr><td>2026-09</td><td>Urban</td><td>108.90</td><td>Provisional</td></tr>
+              <tr><td>2026-09</td><td>Combined</td><td>109.40</td><td>Provisional</td></tr>
+            </tbody>
+          </table>
+        </div>
+        """
+        parsed = parse_mospi_cpi_content(html_fixture)
+        assert len(parsed) == 3
+        assert parsed[0]["reference_month"] == "2026-09"
+        assert parsed[0]["sector"] == "Rural"
+        assert parsed[0]["index_value"] == 109.80
+
+    def test_mospi_cpi_parsing_empty_and_unsupported(self):
+        assert parse_mospi_cpi_content("") == []
+        assert parse_mospi_cpi_content("<html><body><h1>Maintenance</h1></body></html>") == []
+
+    @patch("app.services.live_refresh.safe_fetch_url")
+    def test_ppac_automated_network_live_parse(self, mock_fetch, db_session):
+        html_fixture = """
+        <html><body>
+        <a href="#">Indian Basket of Crude oil was US$ 73.10 per bbl on 01.05.2026</a>
+        </body></html>
+        """
+        mock_fetch.return_value = (True, html_fixture, None)
+        res = refresh_ppac_crude_source(db_session)
+        assert res.status == "success"
+        assert res.records_inserted == 1
+
+        obs = db_session.query(TimeSeriesObservationModel).filter_by(
+            series_id="crude_oil_indian_basket", reference_period="2026-05-01"
+        ).first()
+        assert obs is not None
+        assert obs.observation_value == 73.10
+
+    @patch("app.services.live_refresh.safe_fetch_url")
+    def test_ppac_automated_network_no_new_data(self, mock_fetch, db_session):
+        html_fixture = "<html><body><p>No new crude headlines available</p></body></html>"
+        mock_fetch.return_value = (True, html_fixture, None)
+        res = refresh_ppac_crude_source(db_session)
+        assert res.status == "no_change"
+        assert res.records_inserted == 0
+
+    @patch("app.services.live_refresh.safe_fetch_url")
+    def test_mospi_automated_network_live_parse(self, mock_fetch, db_session):
+        json_fixture = """
+        {
+            "product": "CPI",
+            "releases": [
+                {
+                    "reference_month": "2026-10",
+                    "sector": "Combined",
+                    "index_value": 110.25,
+                    "status": "Provisional"
+                }
+            ]
+        }
+        """
+        mock_fetch.return_value = (True, json_fixture, None)
+        res = refresh_mospi_cpi_source(db_session)
+        assert res.status == "success"
+        assert res.records_inserted == 1
+
+        obs = db_session.query(TimeSeriesObservationModel).filter_by(
+            series_id="cpi_2024_general", reference_period="2026-10", sector="Combined"
+        ).first()
+        assert obs is not None
+        assert obs.observation_value == 110.25
+        assert obs.release_status == "Provisional"
+
+    @patch("app.services.live_refresh.safe_fetch_url")
+    def test_mospi_automated_network_no_new_data(self, mock_fetch, db_session):
+        html_fixture = "<html><body><p>Portal Catalog</p></body></html>"
+        mock_fetch.return_value = (True, html_fixture, None)
+        res = refresh_mospi_cpi_source(db_session)
+        assert res.status == "no_change"
+        assert res.records_inserted == 0

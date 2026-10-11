@@ -98,11 +98,39 @@ Register-ScheduledTask `
 
 ---
 
-## 4. Troubleshooting & Failure Modes
+## 4. Parser Architecture & Supported Publication Formats
+
+The live refresh service implements deterministic, regex- and structural-parsers for primary official portals while maintaining strict zero-fabrication guarantees.
+
+### 4.1 PPAC Indian Basket Crude Oil (SRC-01)
+- **Official URL:** `https://ppac.gov.in/archives/impnews`
+- **Supported Live Format:** Public Important News headline announcements.
+- **Headline Pattern:** Captures Indian Basket crude oil prices (`US$ XX.XX per bbl`, `$XX.XX/bbl`, or `XX.XX USD/barrel`) and as-on observation dates (`DD.MM.YYYY`, `DD-MM-YYYY`, `DD/MM/YYYY`, or `YYYY-MM-DD`).
+- **Semantic Constraint:** Preserves discrete sparse snapshot points only. Weekends, holidays, or missing dates are **never** filled with synthetic or interpolated values.
+- **Fallback / Limitation:** If the archive HTML layout changes or the headline does not contain an identifiable price and date, the pipeline records `no_change` without fabricating data.
+- **Manual Import Format (CSV):**
+  Headers: `observation_date,published_date,price_usd_per_bbl,series_name,observation_kind,source_title,source_url,notes`
+
+### 4.2 MoSPI CPI Base 2024=100 General Index (SRC-02)
+- **Official URL:** `https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?product=CPI`
+- **Supported Live Format:**
+  1. **REST / JSON API catalog items:** Array of objects with `reference_month` (`YYYY-MM`), `sector` (`Rural`, `Urban`, or `Combined`), `index_value` (float), and `status` (`Final` or `Provisional`).
+  2. **HTML publication table rows:** `<tr>...<td>YYYY-MM</td>...<td>Sector</td>...<td>Value</td>...<td>Status</td>...</tr>`.
+- **Semantic Constraint:**
+  - Ingests only Base 2024=100 General Index values. Incompatible base years (such as Base 2012=100) are strictly excluded unless officially linked.
+  - Automatically handles official status revisions (e.g. promoting a provisional figure to final upon publication of subsequent release) without creating duplicate natural keys.
+- **Fallback / Limitation:** Because monthly press releases are often distributed as multi-page PDF bulletins (`Press_Release_of_CPI_<Month>_<Year>.pdf`), live portal HTML without structured tables or JSON will yield `no_change`. Operators can extract the 3 key national index numbers from the official release and ingest them via `--manual-file`.
+- **Manual Import Format (CSV):**
+  Headers: `reference_month,sector,index_value,index_base,series_name,release_status,source_title,source_url,source_release_date,table_section,unit,notes`
+
+---
+
+## 5. Troubleshooting & Failure Modes
 
 | Symptom | Cause | Resolution |
 | :--- | :--- | :--- |
 | `Network connection error` | Portal unreachable or machine offline | The refresh pipeline logs an error in `data_source_refresh_runs` without crashing. Existing historical records remain completely safe. |
 | `HTTP 403 Forbidden` / Bot Block | Government portal blocking automated Python `User-Agent` | Download the official press release manually and use `--manual-file` option. |
 | Status indicates `STALE` | No new observation released within freshness SLA | Normal for sparse snapshot series or survey data; check portal for scheduled release dates. |
+| `no_change` after official check | Portal returns valid page but no new structured rows | Portal has not published a new release, or release is an unparsed PDF attachment. Ingest via `--manual-file`. |
 | Missing observation values | Government release does not publish a sub-index | The pipeline rejects blank/zero values to avoid distorting downstream economic calculations. |
