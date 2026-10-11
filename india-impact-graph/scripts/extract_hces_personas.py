@@ -226,8 +226,8 @@ def validate_row_and_extract(
         mpce = float(raw_mpce)
     except ValueError as exc:
         raise HCESValidationError(f"Row {row_idx}: Invalid numeric MPCE '{raw_mpce}'") from exc
-    if mpce < 0 or math.isnan(mpce) or math.isinf(mpce):
-        raise HCESValidationError(f"Row {row_idx}: MPCE cannot be negative, got {mpce}")
+    if mpce <= 0 or math.isnan(mpce) or math.isinf(mpce):
+        raise HCESValidationError(f"Row {row_idx}: MPCE must be strictly positive, got {mpce}")
 
     hh_id = None
     if mapping.composite_household_id_cols:
@@ -260,7 +260,22 @@ def validate_row_and_extract(
                 raise HCESValidationError(
                     f"Row {row_idx}: Item expenditure for '{item_key}' cannot be negative, got {exp_val}"
                 )
+            # Economic invariant: item per-capita expenditure cannot exceed total household MPCE
+            pc_item_exp = exp_val / hh_size
+            if pc_item_exp > mpce:
+                raise HCESValidationError(
+                    f"Row {row_idx}: Per-capita expenditure for '{item_key}' ({pc_item_exp:.2f} INR) "
+                    f"cannot exceed total household MPCE ({mpce:.2f} INR)"
+                )
             item_expenditures[item_key] = exp_val
+
+    # Economic invariant: sum of item per-capita expenditures cannot exceed total household MPCE
+    total_items_pc_exp = sum(item_expenditures.values()) / hh_size
+    if total_items_pc_exp > mpce:
+        raise HCESValidationError(
+            f"Row {row_idx}: Sum of item per-capita expenditures ({total_items_pc_exp:.2f} INR) "
+            f"cannot exceed total household MPCE ({mpce:.2f} INR)"
+        )
 
     return {
         "hh_id": hh_id,
@@ -410,7 +425,18 @@ def aggregate_class_metrics(
         if has_item_data and weighted_mpce > 0:
             avg_pc_item_exp = total_item_pc_exp / sum_person_weight
             share = avg_pc_item_exp / weighted_mpce
+            if share > 1.0:
+                raise HCESValidationError(
+                    f"Class '{class_name}' calculated spending share for '{item_key}' ({share:.6f}) exceeds 1.0"
+                )
             item_shares[item_key] = round(share, 6)
+
+    # Invariant: total sum of calculated item shares cannot exceed 1.0 (100% of household expenditure)
+    total_shares = sum(item_shares.values())
+    if total_shares > 1.0:
+        raise HCESValidationError(
+            f"Class '{class_name}' total calculated item spending shares ({total_shares:.6f}) exceeds 1.0"
+        )
 
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
     notes = (

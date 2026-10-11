@@ -348,16 +348,51 @@ class TestHCESPersonaExtraction:
             extractor.process_records(records)
 
     def test_invalid_and_negative_mpce_raises_validation_error(self):
-        """Negative or non-numeric MPCE must trigger validation failure."""
+        """Negative, zero, or non-numeric MPCE must trigger validation failure."""
         records = generate_synthetic_hces_records()
         records[0]["mpce"] = "-150.00"
 
         extractor = HCESPersonaExtractor()
-        with pytest.raises(HCESValidationError, match="MPCE cannot be negative"):
+        with pytest.raises(HCESValidationError, match="MPCE must be strictly positive"):
+            extractor.process_records(records)
+
+        records[0]["mpce"] = "0.0"
+        with pytest.raises(HCESValidationError, match="MPCE must be strictly positive"):
             extractor.process_records(records)
 
         records[0]["mpce"] = "invalid_string"
         with pytest.raises(HCESValidationError, match="Invalid numeric MPCE"):
+            extractor.process_records(records)
+
+    def test_item_expenditure_exceeding_mpce_raises_validation_error(self):
+        """Item expenditure per capita cannot exceed total household MPCE."""
+        records = generate_synthetic_hces_records()
+        # Household has mpce=1400.0, hh_size=4.0 -> total expenditure=5600.0
+        # Set petrol expenditure to 6000.0 -> pc_exp = 1500.0 > 1400.0
+        records[0]["exp_petrol"] = "6000.00"
+
+        mapping = HCESMappingConfig(
+            item_expenditure_cols={"petrol": "exp_petrol"},
+            item_recall_bases={"petrol": "monthly_inr"},
+        )
+        extractor = HCESPersonaExtractor(mapping=mapping)
+        with pytest.raises(HCESValidationError, match="cannot exceed total household MPCE"):
+            extractor.process_records(records)
+
+    def test_sum_of_item_expenditures_exceeding_mpce_raises_validation_error(self):
+        """Sum of all item expenditures per capita cannot exceed household MPCE."""
+        records = generate_synthetic_hces_records()
+        # Household has mpce=1400.0, hh_size=4.0
+        # Set petrol=3000 (750 pc), lpg=3000 (750 pc) -> sum pc = 1500.0 > 1400.0
+        records[0]["exp_petrol"] = "3000.00"
+        records[0]["exp_lpg"] = "3000.00"
+
+        mapping = HCESMappingConfig(
+            item_expenditure_cols={"petrol": "exp_petrol", "lpg": "exp_lpg"},
+            item_recall_bases={"petrol": "monthly_inr", "lpg": "monthly_inr"},
+        )
+        extractor = HCESPersonaExtractor(mapping=mapping)
+        with pytest.raises(HCESValidationError, match="Sum of item per-capita expenditures.*cannot exceed"):
             extractor.process_records(records)
 
     def test_invalid_weight_and_household_size_raises_validation_error(self):
