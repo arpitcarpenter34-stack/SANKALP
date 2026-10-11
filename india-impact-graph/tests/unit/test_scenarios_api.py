@@ -246,3 +246,14 @@ def test_contract_validator_criteria():
 
     # Title check: Must NOT be 'Backend Mock Scenario'
     assert d["scenario"]["title"] != "Backend Mock Scenario"
+
+
+def test_analyze_trailing_slash_support():
+    """Verify endpoint handles trailing slash path POST /api/scenarios/analyze/."""
+    payload = {
+        "scenarioId": "crude-oil-12pct",
+        "isAiOff": True,
+    }
+    response = client.post("/api/scenarios/analyze/", json=payload)
+    assert response.status_code == 200
+    assert response.json()["scenario"]["id"] == "crude-oil-12pct"

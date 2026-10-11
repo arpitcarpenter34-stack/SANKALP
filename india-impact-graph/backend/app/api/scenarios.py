@@ -726,3 +726,17 @@ def analyze_scenario(
         "isLiveBackend": True,
         "dataSourceLabel": "LIVE FASTAPI BACKEND // REAL-TIME EXTRACTION",
     }
+
+
+@router.post(
+    "/analyze/",
+    summary="Composite scenario transmission analysis (trailing slash)",
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+def analyze_scenario_trailing_slash(
+    request: AnalysisRequest,
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    """Handle trailing slash path for POST /api/scenarios/analyze/."""
+    return analyze_scenario(request=request, db=db)
