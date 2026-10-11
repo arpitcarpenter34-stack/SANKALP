@@ -6,10 +6,12 @@ from app.models.event import (
     EventEvidenceSnippetModel,
     FinancialEventModel,
 )
+from app.models.pass_through import PassThroughRecordModel
 
 __all__ = [
     "ConsumptionItemModel",
     "EventEntityModel",
     "EventEvidenceSnippetModel",
     "FinancialEventModel",
+    "PassThroughRecordModel",
 ]

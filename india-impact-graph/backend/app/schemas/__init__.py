@@ -29,6 +29,11 @@ from app.schemas.graph import (
     ReceiptDefinition,
     VerificationStatus,
 )
+from app.schemas.pass_through import (
+    PassThroughRecordBase,
+    PassThroughRecordCreate,
+    PassThroughRecordResponse,
+)
 
 __all__ = [
     "ConsumptionItemBase",
@@ -51,6 +56,9 @@ __all__ = [
     "ImpactKnowledgeGraph",
     "MagnitudeDirection",
     "NodeType",
+    "PassThroughRecordBase",
+    "PassThroughRecordCreate",
+    "PassThroughRecordResponse",
     "PropagationPath",
     "ReceiptDefinition",
     "VerificationStatus",
