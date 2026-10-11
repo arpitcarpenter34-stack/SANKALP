@@ -26,8 +26,7 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 # Use DATABASE_URL from pydantic settings dynamically
-if not config.get_main_option("sqlalchemy.url"):
-    config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 
 def run_migrations_offline() -> None:
@@ -35,7 +34,7 @@ def run_migrations_offline() -> None:
 
     This configures the context with just a URL and not an Engine.
     """
-    url = config.get_main_option("sqlalchemy.url") or settings.DATABASE_URL
+    url = settings.DATABASE_URL
     context.configure(
         url=url,
         target_metadata=target_metadata,

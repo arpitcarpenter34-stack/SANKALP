@@ -100,6 +100,18 @@ class Settings(BaseSettings):
         description="Freshness threshold for sparse PPAC crude oil snapshots before flagged as stale.",
     )
 
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def normalize_database_url(cls, v: Any) -> str:
+        """Ensure PostgreSQL connection strings use the psycopg 3 driver prefix."""
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith("postgres://"):
+                return "postgresql+psycopg://" + v[len("postgres://"):]
+            if v.startswith("postgresql://") and not v.startswith("postgresql+"):
+                return "postgresql+psycopg://" + v[len("postgresql://"):]
+        return v
+
     @field_validator("CORS_ALLOWED_ORIGINS", "CLERK_AUTHORIZED_PARTIES", mode="before")
     @classmethod
     def parse_cors_origins(cls, v: Any) -> list[str]:

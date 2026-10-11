@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: bharatimpact-api
+    runtime: python
+    rootDir: india-impact-graph/backend
+    buildCommand: pip install -r requirements.txt && alembic upgrade head
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bharatimpact-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: USE_LIVE_LLM
+        value: "false"
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+
+databases:
+  - name: bharatimpact-db
+    databaseName: india_impact_graph
+    user: bharatimpact_user
+    plan: free
