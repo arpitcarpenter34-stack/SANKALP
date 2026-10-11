@@ -34,6 +34,12 @@ from app.schemas.pass_through import (
     PassThroughRecordCreate,
     PassThroughRecordResponse,
 )
+from app.schemas.source import (
+    DataSourceBase,
+    DataSourceCreate,
+    DataSourceResponse,
+    SourceAccessCondition,
+)
 
 __all__ = [
     "ConsumptionItemBase",
@@ -41,6 +47,9 @@ __all__ = [
     "ConsumptionItemCreate",
     "ConsumptionItemResponse",
     "DataAvailabilityStatus",
+    "DataSourceBase",
+    "DataSourceCreate",
+    "DataSourceResponse",
     "EdgeConfidence",
     "EdgeDirection",
     "EdgeKind",
@@ -61,5 +70,6 @@ __all__ = [
     "PassThroughRecordResponse",
     "PropagationPath",
     "ReceiptDefinition",
+    "SourceAccessCondition",
     "VerificationStatus",
 ]
