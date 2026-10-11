@@ -7,10 +7,11 @@ to the developer's normal PostgreSQL database.
 import csv
 from pathlib import Path
 import sys
+from unittest.mock import MagicMock
 import pytest
 from pydantic import ValidationError
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 # Ensure backend package directory is discoverable
@@ -317,6 +318,24 @@ class TestPassThroughDatabaseOperations:
         item_records = get_pass_through_for_item("vegetables", db_session)
         assert len(item_records) == 1
         assert item_records[0].upstream_commodity == "diesel"
+
+    def test_loader_rollback_on_failure(self, tmp_path):
+        """Database transaction must rollback cleanly if commit fails."""
+        csv_file = tmp_path / "test_rollback.csv"
+        csv_file.write_text(
+            "upstream_commodity,downstream_item,pass_through_factor_low,pass_through_factor_high,unit,time_lag_months,historical_basis_source,verification_status,caveats\n"
+            "crude_oil,petrol,0.30,0.45,elasticity_coefficient,1,PPAC Study,[VERIFIED],Tax buffer\n",
+            encoding="utf-8",
+        )
+
+        mock_db = MagicMock(spec=Session)
+        mock_db.execute.return_value.all.return_value = []
+        mock_db.commit.side_effect = RuntimeError("Simulated DB failure")
+
+        with pytest.raises(RuntimeError, match="Simulated DB failure"):
+            load_pass_through_records_from_csv(csv_file, mock_db)
+
+        mock_db.rollback.assert_called_once()
 
 
 # ==============================================================================

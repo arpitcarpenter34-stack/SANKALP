@@ -7,10 +7,11 @@ to the developer's normal PostgreSQL database.
 import csv
 from pathlib import Path
 import sys
+from unittest.mock import MagicMock
 import pytest
 from pydantic import ValidationError
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 # Ensure backend package directory is discoverable
@@ -322,6 +323,24 @@ class TestDataSourceDatabaseOperations:
 
         # Non-existent query
         assert get_data_source_by_id("SRC-99", db_session) is None
+
+    def test_loader_rollback_on_failure(self, tmp_path):
+        """Database transaction must rollback cleanly if commit fails."""
+        csv_file = tmp_path / "test_rollback.csv"
+        csv_file.write_text(
+            "source_id,source_title,publisher,series_or_table_id,base_year,frequency,geographic_coverage,source_url,verification_status,access_condition,notes\n"
+            "SRC-01,CPI Item Weights,MoSPI,Table A,2024 Base,Monthly,All-India,https://mospi.gov.in,[VERIFY],official_portal,Notes\n",
+            encoding="utf-8",
+        )
+
+        mock_db = MagicMock(spec=Session)
+        mock_db.execute.return_value.scalars.return_value.all.return_value = []
+        mock_db.commit.side_effect = RuntimeError("Simulated DB failure")
+
+        with pytest.raises(RuntimeError, match="Simulated DB failure"):
+            load_data_sources_from_csv(csv_file, mock_db)
+
+        mock_db.rollback.assert_called_once()
 
 
 # ==============================================================================
