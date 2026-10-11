@@ -81,7 +81,7 @@ export interface SettingsViewProps {
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
-  onNavigateSection: _onNavigateSection,
+  onNavigateSection,
   currentUser,
   isUserLoaded,
   onUpdateUser,
@@ -288,6 +288,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <DashboardPreferencesCard
             preferences={settings.preferences}
             onChangePreferences={handleChangePreferences}
+            onNavigateSection={onNavigateSection}
           />
         </div>
 

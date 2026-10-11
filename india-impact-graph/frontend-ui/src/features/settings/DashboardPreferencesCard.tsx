@@ -12,6 +12,7 @@ import styles from './DashboardPreferencesCard.module.css';
 interface DashboardPreferencesCardProps {
   preferences: DashboardPreferences;
   onChangePreferences: (prefs: DashboardPreferences) => void;
+  onNavigateSection?: (sectionId: string) => void;
 }
 
 const VIEW_TILES: { id: DefaultViewType; label: string; icon: string }[] = [
@@ -24,9 +25,11 @@ const VIEW_TILES: { id: DefaultViewType; label: string; icon: string }[] = [
 export const DashboardPreferencesCard: React.FC<DashboardPreferencesCardProps> = ({
   preferences,
   onChangePreferences,
+  onNavigateSection,
 }) => {
   const handleViewChange = (viewId: DefaultViewType) => {
     onChangePreferences({ ...preferences, defaultView: viewId });
+    onNavigateSection?.(viewId);
   };
 
   return (

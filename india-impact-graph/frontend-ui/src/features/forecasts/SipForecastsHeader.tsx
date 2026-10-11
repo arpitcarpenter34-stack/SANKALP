@@ -5,12 +5,16 @@ export interface SipForecastsHeaderProps {
   scenarioTitle?: string;
   impactLevel?: 'High Impact' | 'Moderate Impact' | 'Low Impact';
   onChangeScenario?: () => void;
+  onNavigateToHousehold?: () => void;
+  onNavigateToGraph?: () => void;
 }
 
 export const SipForecastsHeader: React.FC<SipForecastsHeaderProps> = ({
   scenarioTitle = 'Global chip supply tensions',
   impactLevel = 'High Impact',
   onChangeScenario,
+  onNavigateToHousehold,
+  onNavigateToGraph,
 }) => {
   return (
     <header className={styles.headerContainer}>
@@ -62,6 +66,28 @@ export const SipForecastsHeader: React.FC<SipForecastsHeaderProps> = ({
               <path d="M16 16h5v5" />
             </svg>
             Change Scenario
+          </button>
+        )}
+
+        {onNavigateToHousehold && (
+          <button
+            type="button"
+            className={styles.navBtn}
+            onClick={onNavigateToHousehold}
+            title="Inspect Household Impact Dashboard"
+          >
+            Household Impact →
+          </button>
+        )}
+
+        {onNavigateToGraph && (
+          <button
+            type="button"
+            className={styles.navBtn}
+            onClick={onNavigateToGraph}
+            title="Trace causal shock pathway on Impact Graph"
+          >
+            Impact Graph →
           </button>
         )}
       </div>

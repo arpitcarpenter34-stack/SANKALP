@@ -8,6 +8,8 @@ export interface HouseholdHeaderProps {
   selectedLocation: string;
   onProfileChange: (profile: HouseholdProfileType) => void;
   onLocationChange: (loc: string) => void;
+  onNavigateToConsumption?: () => void;
+  onNavigateToGraph?: () => void;
 }
 
 export const HouseholdHeader: React.FC<HouseholdHeaderProps> = ({
@@ -15,6 +17,8 @@ export const HouseholdHeader: React.FC<HouseholdHeaderProps> = ({
   selectedLocation,
   onProfileChange,
   onLocationChange,
+  onNavigateToConsumption,
+  onNavigateToGraph,
 }) => {
   return (
     <div className={styles.headerContainer}>
@@ -88,6 +92,26 @@ export const HouseholdHeader: React.FC<HouseholdHeaderProps> = ({
             </select>
           </div>
         </div>
+        {onNavigateToConsumption && (
+          <button
+            type="button"
+            className={styles.jumpBtn}
+            onClick={onNavigateToConsumption}
+            title="Inspect detailed consumption basket itemization"
+          >
+            Consumption Basket →
+          </button>
+        )}
+        {onNavigateToGraph && (
+          <button
+            type="button"
+            className={styles.jumpBtn}
+            onClick={onNavigateToGraph}
+            title="Trace causal shock pathway on Impact Graph"
+          >
+            Impact Graph →
+          </button>
+        )}
       </div>
     </div>
   );

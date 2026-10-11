@@ -32,11 +32,11 @@ export interface ConsumptionViewProps {
 
 export const ConsumptionView: React.FC<ConsumptionViewProps> = ({
   initialAssumptions,
-  onNavigateToHousehold: _onNavigateToHousehold,
+  onNavigateToHousehold,
   onNavigateToSectors,
-  onNavigateToGraph: _onNavigateToGraph,
+  onNavigateToGraph,
   onNavigateToGlobalEvents,
-  onNavigateToSipForecasts: _onNavigateToSipForecasts,
+  onNavigateToSipForecasts,
 }) => {
   const [timePeriod, setTimePeriod] = useState<ConsumptionTimePeriod>('6m');
   const [location, setLocation] = useState<string>(
@@ -98,6 +98,9 @@ export const ConsumptionView: React.FC<ConsumptionViewProps> = ({
         onLocationChange={handleLocationChange}
         profileType={assumptions.profileType}
         onProfileTypeChange={handleProfileTypeChange}
+        onNavigateToHousehold={onNavigateToHousehold}
+        onNavigateToGraph={onNavigateToGraph}
+        onNavigateToSipForecasts={onNavigateToSipForecasts}
       />
 
       {/* 2. Top-Level KPI Cards (5 Cards) */}

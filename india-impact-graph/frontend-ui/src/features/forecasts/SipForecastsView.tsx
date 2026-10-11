@@ -54,7 +54,7 @@ export const SipForecastsView: React.FC<SipForecastsViewProps> = ({
   onOpenAiAssistant,
   onNavigateToHousehold,
   onNavigateToSectors,
-  onNavigateToGraph: _onNavigateToGraph,
+  onNavigateToGraph,
   householdIncome = 60000,
   householdExpenses = 40100,
   initialMonthlySip = 5000,
@@ -181,6 +181,8 @@ export const SipForecastsView: React.FC<SipForecastsViewProps> = ({
         scenarioTitle={selectedScenarioTitle}
         impactLevel="High Impact"
         onChangeScenario={onChangeScenario}
+        onNavigateToHousehold={onNavigateToHousehold}
+        onNavigateToGraph={onNavigateToGraph}
       />
 
       {/* 2. Top Financial KPI Cards (5 Cards) - Synchronized with Selected Scenario */}

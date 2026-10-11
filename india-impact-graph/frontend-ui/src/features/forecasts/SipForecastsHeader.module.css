@@ -141,6 +141,28 @@
   transform: translateY(0);
 }
 
+.navBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--bg-mint, #ecfdf5);
+  color: var(--accent-emerald, #047857);
+  border: 1px solid var(--border-medium, #d1e3d7);
+  border-radius: var(--radius-md, 8px);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+  white-space: nowrap;
+}
+
+.navBtn:hover {
+  background: #ffffff;
+  border-color: var(--accent-emerald, #047857);
+  transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
   .headerContainer {
     flex-direction: column;

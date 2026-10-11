@@ -10,6 +10,9 @@ export interface ConsumptionHeaderProps {
   onLocationChange: (location: string) => void;
   profileType: ConsumptionProfileType;
   onProfileTypeChange: (profile: ConsumptionProfileType) => void;
+  onNavigateToHousehold?: () => void;
+  onNavigateToGraph?: () => void;
+  onNavigateToSipForecasts?: () => void;
 }
 
 export const ConsumptionHeader: React.FC<ConsumptionHeaderProps> = ({
@@ -19,6 +22,9 @@ export const ConsumptionHeader: React.FC<ConsumptionHeaderProps> = ({
   onLocationChange,
   profileType,
   onProfileTypeChange,
+  onNavigateToHousehold,
+  onNavigateToGraph,
+  onNavigateToSipForecasts,
 }) => {
   return (
     <header className={styles.headerContainer} aria-label="Consumption Dashboard Header">
@@ -109,6 +115,37 @@ export const ConsumptionHeader: React.FC<ConsumptionHeaderProps> = ({
             </select>
           </div>
         </div>
+
+        {onNavigateToHousehold && (
+          <button
+            type="button"
+            className={styles.jumpBtn}
+            onClick={onNavigateToHousehold}
+            title="Inspect Household Impact Dashboard"
+          >
+            Household Impact →
+          </button>
+        )}
+        {onNavigateToGraph && (
+          <button
+            type="button"
+            className={styles.jumpBtn}
+            onClick={onNavigateToGraph}
+            title="Trace causal shock pathway on Impact Graph"
+          >
+            Impact Graph →
+          </button>
+        )}
+        {onNavigateToSipForecasts && (
+          <button
+            type="button"
+            className={styles.jumpBtn}
+            onClick={onNavigateToSipForecasts}
+            title="Simulate SIP & wealth projections"
+          >
+            SIP Forecasts →
+          </button>
+        )}
       </div>
     </header>
   );

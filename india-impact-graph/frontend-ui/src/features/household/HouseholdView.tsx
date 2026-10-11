@@ -30,9 +30,9 @@ interface HouseholdViewProps {
 
 export const HouseholdView: React.FC<HouseholdViewProps> = ({
   onNavigateToSectors,
-  onNavigateToGraph: _onNavigateToGraph,
+  onNavigateToGraph,
   onNavigateToSipForecasts,
-  onNavigateToConsumption: _onNavigateToConsumption,
+  onNavigateToConsumption,
   selectedEventId,
   assumptions: externalAssumptions,
   onAssumptionsChange,
@@ -106,6 +106,8 @@ export const HouseholdView: React.FC<HouseholdViewProps> = ({
         selectedLocation={assumptions.location}
         onProfileChange={handleProfileChange}
         onLocationChange={handleLocationChange}
+        onNavigateToConsumption={onNavigateToConsumption}
+        onNavigateToGraph={onNavigateToGraph}
       />
 
       {/* 2. Top-Level Financial KPI Cards */}
