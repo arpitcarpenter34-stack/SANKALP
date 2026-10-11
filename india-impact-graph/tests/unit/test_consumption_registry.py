@@ -19,12 +19,15 @@ backend_dir = Path(__file__).resolve().parent.parent.parent / "backend"
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
+from pydantic import ValidationError
 from app.database import Base, get_db
 from app.main import app
 from app.models.consumption import ConsumptionItemModel
 from app.models.event import FinancialEventModel
 from app.schemas.consumption import (
+    ConsumptionItemBase,
     ConsumptionItemCategory,
+    ConsumptionItemCreate,
     DataAvailabilityStatus,
     VerificationStatus,
 )
@@ -36,8 +39,11 @@ from app.services.consumption import (
     validate_consumption_csv,
 )
 
-# Project curated CSV path
+# Project curated CSV and template paths
 CURATED_CSV_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "curated" / "consumption_items.csv"
+PASS_THROUGH_TEMPLATE_CSV = Path(__file__).resolve().parent.parent.parent / "data" / "templates" / "pass-through-register.csv"
+SOURCE_TEMPLATE_CSV = Path(__file__).resolve().parent.parent.parent / "data" / "templates" / "data-source-register.csv"
+PERSONA_TEMPLATE_CSV = Path(__file__).resolve().parent.parent.parent / "data" / "templates" / "household-persona-template.csv"
 
 # In-memory SQLite engine configured for concurrent session isolation
 test_engine = create_engine(
@@ -84,6 +90,143 @@ def client():
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+
+
+class TestConsumptionSchemaValidation:
+    """Test suite for Pydantic schema validation and economic constraint invariants."""
+
+    def test_valid_consumption_item_creation(self):
+        """Valid inputs must construct cleanly and normalize strings."""
+        item = ConsumptionItemCreate(
+            item_id="petrol_fuel",
+            name="Petrol Fuel",
+            category=ConsumptionItemCategory.TRANSPORT_FUEL,
+            canonical_unit="INR/Litre",
+            is_calculable=False,
+            is_capital_asset=False,
+            verification_status=VerificationStatus.VERIFY,
+            data_availability=DataAvailabilityStatus.PENDING_VERIFICATION,
+            source_title="PPAC",
+        )
+        assert item.item_id == "petrol_fuel"
+        assert item.name == "Petrol Fuel"
+
+    def test_rejects_malformed_item_ids(self):
+        """Item IDs must strictly conform to snake_case pattern."""
+        bad_ids = [
+            "Petrol",
+            "petrol-fuel",
+            "petrol fuel",
+            "123petrol",
+            "petrol@fuel",
+            "",
+            "   ",
+        ]
+        for bad_id in bad_ids:
+            with pytest.raises(ValidationError):
+                ConsumptionItemCreate(
+                    item_id=bad_id,
+                    name="Petrol",
+                    category=ConsumptionItemCategory.TRANSPORT_FUEL,
+                    canonical_unit="INR/Litre",
+                    verification_status=VerificationStatus.VERIFY,
+                    data_availability=DataAvailabilityStatus.PENDING_VERIFICATION,
+                )
+
+    def test_rejects_empty_name_and_unit(self):
+        """Name and canonical unit cannot be empty or whitespace."""
+        with pytest.raises(ValidationError):
+            ConsumptionItemCreate(
+                item_id="petrol",
+                name="   ",
+                category=ConsumptionItemCategory.TRANSPORT_FUEL,
+                canonical_unit="INR/Litre",
+                verification_status=VerificationStatus.VERIFY,
+                data_availability=DataAvailabilityStatus.PENDING_VERIFICATION,
+            )
+
+        with pytest.raises(ValidationError):
+            ConsumptionItemCreate(
+                item_id="petrol",
+                name="Petrol",
+                category=ConsumptionItemCategory.TRANSPORT_FUEL,
+                canonical_unit="",
+                verification_status=VerificationStatus.VERIFY,
+                data_availability=DataAvailabilityStatus.PENDING_VERIFICATION,
+            )
+
+    def test_enforces_capital_asset_exclusivity(self):
+        """Capital asset cannot be marked calculable or have contradictory category/availability."""
+        # Contradiction: capital asset marked calculable
+        with pytest.raises(ValidationError, match="capital assets are stores of value excluded from MPCE"):
+            ConsumptionItemCreate(
+                item_id="gold",
+                name="Gold",
+                category=ConsumptionItemCategory.CAPITAL_ASSET,
+                canonical_unit="INR/10 grams",
+                is_calculable=True,
+                is_capital_asset=True,
+                verification_status=VerificationStatus.VERIFIED,
+                data_availability=DataAvailabilityStatus.EXCLUDED_CAPITAL_ASSET,
+                source_title="IBJA",
+            )
+
+        # Contradiction: is_capital_asset=True but category is not capital_asset
+        with pytest.raises(ValidationError, match="Expected category 'capital_asset'"):
+            ConsumptionItemCreate(
+                item_id="gold",
+                name="Gold",
+                category=ConsumptionItemCategory.UTILITY,
+                canonical_unit="INR/10 grams",
+                is_calculable=False,
+                is_capital_asset=True,
+                verification_status=VerificationStatus.VERIFY,
+                data_availability=DataAvailabilityStatus.EXCLUDED_CAPITAL_ASSET,
+            )
+
+    def test_rejects_calculable_when_unverified_or_missing_source(self):
+        """Calculable items must be verified, have empirical source citation, and available data."""
+        # Not verified
+        with pytest.raises(ValidationError, match=r"Must be '\[VERIFIED\]'"):
+            ConsumptionItemCreate(
+                item_id="petrol",
+                name="Petrol",
+                category=ConsumptionItemCategory.TRANSPORT_FUEL,
+                canonical_unit="INR/Litre",
+                is_calculable=True,
+                is_capital_asset=False,
+                verification_status=VerificationStatus.VERIFY,
+                data_availability=DataAvailabilityStatus.PENDING_VERIFICATION,
+                source_title="PPAC",
+            )
+
+        # Missing source title
+        with pytest.raises(ValidationError, match="has no source_title citation"):
+            ConsumptionItemCreate(
+                item_id="petrol",
+                name="Petrol",
+                category=ConsumptionItemCategory.TRANSPORT_FUEL,
+                canonical_unit="INR/Litre",
+                is_calculable=True,
+                is_capital_asset=False,
+                verification_status=VerificationStatus.VERIFIED,
+                data_availability=DataAvailabilityStatus.PENDING_VERIFICATION,
+                source_title=None,
+            )
+
+        # Data not available cannot be calculable
+        with pytest.raises(ValidationError, match="cannot be calculable"):
+            ConsumptionItemCreate(
+                item_id="petrol",
+                name="Petrol",
+                category=ConsumptionItemCategory.TRANSPORT_FUEL,
+                canonical_unit="INR/Litre",
+                is_calculable=True,
+                is_capital_asset=False,
+                verification_status=VerificationStatus.VERIFIED,
+                data_availability=DataAvailabilityStatus.DATA_NOT_AVAILABLE,
+                source_title="PPAC",
+            )
 
 
 class TestCuratedCSVValidation:
@@ -185,6 +328,28 @@ class TestCSVValidationErrors:
         with pytest.raises(ValueError, match="validation error"):
             validate_consumption_csv(invalid_csv)
 
+    def test_rejects_malformed_item_id_in_csv(self, tmp_path: Path):
+        """CSV with non-snake_case item_id must be rejected."""
+        bad_csv = tmp_path / "bad_id.csv"
+        with open(bad_csv, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(EXPECTED_CSV_COLUMNS)
+            writer.writerow(["Petrol Fuel", "Petrol", "transport_fuel", "INR/Litre", "False", "False", "[VERIFY]", "pending_verification", "", "", "", ""])
+
+        with pytest.raises(ValueError, match="validation error"):
+            validate_consumption_csv(bad_csv)
+
+    def test_rejects_empty_item_id_in_csv(self, tmp_path: Path):
+        """CSV with empty item_id must raise ValueError with line number."""
+        bad_csv = tmp_path / "empty_id.csv"
+        with open(bad_csv, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(EXPECTED_CSV_COLUMNS)
+            writer.writerow(["", "Petrol", "transport_fuel", "INR/Litre", "False", "False", "[VERIFY]", "pending_verification", "", "", "", ""])
+
+        with pytest.raises(ValueError, match="Line 2: item_id cannot be empty"):
+            validate_consumption_csv(bad_csv)
+
 
 class TestConsumptionDataLoaderAndDB:
     """Test suite for database loading, idempotency, and querying."""
@@ -259,3 +424,25 @@ class TestConsumptionDataLoaderAndDB:
         assert graph_resp.status_code == 200
         assert "nodes" in graph_resp.json()
         assert "edges" in graph_resp.json()
+
+
+class TestProjectScopeInvariants:
+    """Verifies that shared contracts, templates, and registries remain untouched."""
+
+    def test_template_csvs_remain_unmodified_header_only(self):
+        """All shared template files must remain clean single-line header files."""
+        for path in (PASS_THROUGH_TEMPLATE_CSV, SOURCE_TEMPLATE_CSV, PERSONA_TEMPLATE_CSV):
+            assert path.is_file(), f"Template file missing: {path}"
+            with open(path, "r", encoding="utf-8") as f:
+                lines = [line.strip() for line in f if line.strip()]
+            assert len(lines) == 1, f"Template {path.name} was unexpectedly populated"
+
+    def test_consumption_items_registry_remains_not_calculable(self):
+        """Integrity invariant: No consumption item is promoted to calculable without empirical proof."""
+        assert CURATED_CSV_PATH.is_file()
+        with open(CURATED_CSV_PATH, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                assert row["is_calculable"].strip().lower() == "false", (
+                    f"Item '{row['item_id']}' in curated registry has is_calculable=True!"
+                )

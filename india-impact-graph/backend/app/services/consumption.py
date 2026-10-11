@@ -73,7 +73,7 @@ def validate_consumption_csv(csv_path: Union[str, Path]) -> list[ConsumptionItem
             )
 
         for line_num, row in enumerate(reader, start=2):
-            raw_id = (row.get("item_id") or "").strip()
+            raw_id = (row.get("item_id") or "").strip().lower()
             if not raw_id:
                 raise ValueError(f"Line {line_num}: item_id cannot be empty")
 
