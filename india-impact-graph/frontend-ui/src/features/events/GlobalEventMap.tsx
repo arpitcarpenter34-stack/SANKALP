@@ -184,24 +184,30 @@ export const GlobalEventMap: React.FC<GlobalEventMapProps> = ({
         worldCopyJump: true,
       });
 
+      const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY;
+      const isCartoConfigured = Boolean(cartoApiKey);
+
+      const tileUrl = isCartoConfigured
+        ? `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=${cartoApiKey}`
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+      const attributionText = isCartoConfigured
+        ? '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>'
+        : '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors';
+
       L.control
         .attribution({
           position: 'bottomleft',
           prefix: false,
         })
-        .addAttribution(
-          '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>'
-        )
+        .addAttribution(attributionText)
         .addTo(map);
 
-      const tileLayer = L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-        {
-          subdomains: 'abcd',
-          maxZoom: 19,
-          minZoom: 1.5,
-        }
-      );
+      const tileLayer = L.tileLayer(tileUrl, {
+        subdomains: isCartoConfigured ? 'abcd' : 'abc',
+        maxZoom: 19,
+        minZoom: 1.5,
+      });
 
       tileLayer.on('tileerror', () => setIsTileOffline(true));
       tileLayer.on('tileload', () => setIsTileOffline(false));

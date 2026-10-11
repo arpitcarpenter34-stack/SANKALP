@@ -61,9 +61,9 @@
   z-index: 1;
 }
 
-/* Subtle Mint Filter on CARTO Positron Tiles to harmonize with BharatImpact brand */
+/* Subtle Mint Filter on basemap tiles to harmonize with BharatImpact brand */
 .leafletHost :global(.leaflet-tile-pane) {
-  filter: saturate(0.9) brightness(1.02);
+  filter: saturate(0.75) contrast(0.96) brightness(1.02);
 }
 
 /* Leaflet Attribution Bar */
