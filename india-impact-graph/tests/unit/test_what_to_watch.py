@@ -127,3 +127,37 @@ def test_deterministic_ordering():
     assert notes[0].note_id == "missing-verification-node-node_a"
     assert notes[1].note_id == "missing-verification-node-node_b"
 
+def test_null_and_malformed_edge_cases():
+    engine = WhatToWatchEngine()
+    # Null receipt on node and edge, None metadata values, None paths, non-dict elements
+    nodes = [
+        {"id": "node1", "label": None, "receipt": None},
+        "invalid_node_string",
+        {"id": "node2", "label": "Node 2", "receipt": {"verification_status": None}}
+    ]
+    edges = [
+        {"id": "edge1", "from": "node1", "to": "node2", "kind": None, "receipt": None},
+        None,
+        {"id": "edge2", "from": "node2", "to": "node1", "kind": "inferred", "receipt": "not_a_dict"}
+    ]
+    ts_meta = {
+        "cpi": {"frequency": None, "notes": None},
+        "invalid_ts": None,
+        "oil": {"frequency": "sparse snapshots", "notes": None}
+    }
+    consensus = {"source_lineage_status": None}
+
+    notes = engine.generate_notes(
+        event_id="test-event",
+        nodes=nodes,
+        edges=edges,
+        paths=None,
+        time_series_metadata=ts_meta,
+        consensus_result=consensus
+    )
+    # edge2 is inferred -> 1 note; oil has sparse frequency -> 1 note
+    assert len(notes) == 2
+    categories = [n.rule_category for n in notes]
+    assert "Evidence limitation" in categories
+    assert "Time-series coverage" in categories
+

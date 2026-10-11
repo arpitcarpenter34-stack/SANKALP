@@ -120,4 +120,36 @@ print(f"Publisher count: {consensus_res.get('publisher_count')}")
 print(f"Root source count: {consensus_res.get('root_source_count')}")
 print(f"Lineage: {consensus_res.get('source_lineage_status')}")
 
+print("\n6. Checking What-to-Watch Notes Engine")
+what_to_watch_req = {
+    "event_id": "crude-oil-shock-12pct",
+    "nodes": build_req["nodes"],
+    "edges": build_req["edges"],
+    "paths": [["crude_oil", "diesel", "transport_cost"]],
+    "time_series_metadata": {
+        "cpi": cpi_res.get("metadata", {}) if cpi_res else {},
+        "crude-oil": oil_res.get("metadata", {}) if oil_res else {}
+    },
+    "consensus_result": consensus_res
+}
+watch_res = post("/what-to-watch/", what_to_watch_req)
+if watch_res:
+    notes = watch_res.get("notes", [])
+    print(f"What-to-Watch API returned {len(notes)} notes successfully.")
+else:
+    print("What-to-Watch global route /what-to-watch/: HTTP 404 (Pending Engineer A registration in backend/app/api/__init__.py)")
+    from what_to_watch.engine import WhatToWatchEngine
+    standalone_engine = WhatToWatchEngine()
+    notes = standalone_engine.generate_notes(
+        event_id=what_to_watch_req["event_id"],
+        nodes=what_to_watch_req["nodes"],
+        edges=what_to_watch_req["edges"],
+        paths=what_to_watch_req["paths"],
+        time_series_metadata=what_to_watch_req["time_series_metadata"],
+        consensus_result=what_to_watch_req["consensus_result"]
+    )
+    print(f"Standalone engine generated {len(notes)} notes:")
+    for note in notes:
+        print(f"  - [{note.rule_category}] {note.indicator_to_monitor}: {note.reason}")
+
 print("\n--- DEMO COMPLETE ---")

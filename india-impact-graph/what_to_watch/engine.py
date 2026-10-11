@@ -31,12 +31,17 @@ class WhatToWatchEngine:
         notes = []
         
         path_nodes = set()
-        for p in paths:
-            for n_id in p:
-                path_nodes.add(n_id)
+        for p in (paths or []):
+            if p:
+                for n_id in p:
+                    if n_id:
+                        path_nodes.add(n_id)
                 
-        for node in nodes:
+        for node in (nodes or []):
+            if not isinstance(node, dict):
+                continue
             node_id = node.get("id", "unknown")
+            label = node.get("label") or node_id
             
             # 1. Important pathway indicator
             if node_id in path_nodes:
@@ -45,33 +50,35 @@ class WhatToWatchEngine:
                     event_id=event_id,
                     related_item_id=node_id,
                     item_type="node",
-                    indicator_to_monitor=node.get("label", node_id),
+                    indicator_to_monitor=label,
                     reason="This indicator appears on a ranked impact pathway.",
                     rule_category="Important pathway indicator",
-                    evidence_receipt=node.get("receipt")
+                    evidence_receipt=node.get("receipt") if isinstance(node.get("receipt"), dict) else None
                 ))
             
             # 5. Missing data (Node level)
-            receipt = node.get("receipt", {})
-            status = receipt.get("verification_status")
+            receipt = node.get("receipt")
+            status = receipt.get("verification_status") if isinstance(receipt, dict) else None
             if status in ["[UNVERIFIED]", "[VERIFY]"]:
                 notes.append(WatchNote(
                     note_id=f"missing-verification-node-{node_id}",
                     event_id=event_id,
                     related_item_id=node_id,
                     item_type="node",
-                    indicator_to_monitor=node.get("label", node_id),
+                    indicator_to_monitor=label,
                     reason="Required indicator data lacks verification.",
                     rule_category="Missing data",
                     missing_data_explanation="Data acquisition is required before further reliable calculation."
                 ))
             
         # 2. Evidence limitation & Missing data (Edges)
-        for edge in edges:
+        for edge in (edges or []):
+            if not isinstance(edge, dict):
+                continue
             edge_id = edge.get("id", "unknown")
             kind = edge.get("kind")
-            receipt = edge.get("receipt", {})
-            status = receipt.get("verification_status")
+            receipt = edge.get("receipt")
+            status = receipt.get("verification_status") if isinstance(receipt, dict) else None
             
             if kind == "inferred":
                 notes.append(WatchNote(
@@ -82,7 +89,7 @@ class WhatToWatchEngine:
                     indicator_to_monitor=f"Relationship from {edge.get('from')} to {edge.get('to')}",
                     reason="This relationship is structurally inferred and requires validation.",
                     rule_category="Evidence limitation",
-                    evidence_receipt=receipt,
+                    evidence_receipt=receipt if isinstance(receipt, dict) else None,
                     observed_inferred_status=kind
                 ))
             
@@ -95,14 +102,16 @@ class WhatToWatchEngine:
                     indicator_to_monitor=f"Relationship from {edge.get('from')} to {edge.get('to')}",
                     reason="This relationship lacks sufficient corroborating evidence.",
                     rule_category="Evidence limitation",
-                    evidence_receipt=receipt,
+                    evidence_receipt=receipt if isinstance(receipt, dict) else None,
                     observed_inferred_status=kind
                 ))
                 
         # 3. Time-series coverage
-        for ts_id, meta in time_series_metadata.items():
-            freq = meta.get("frequency", "").lower()
-            notes_str = meta.get("notes", "").lower()
+        for ts_id, meta in (time_series_metadata or {}).items():
+            if not isinstance(meta, dict):
+                continue
+            freq = (meta.get("frequency") or "").lower()
+            notes_str = (meta.get("notes") or "").lower()
             if "sparse" in freq or "starter extract" in notes_str or "not a complete" in freq or "not the full" in notes_str:
                 notes.append(WatchNote(
                     note_id=f"ts-coverage-{ts_id}",
@@ -116,7 +125,7 @@ class WhatToWatchEngine:
                 ))
                 
         # 4. Source-lineage limitation
-        if consensus_result:
+        if consensus_result and isinstance(consensus_result, dict):
             lineage = consensus_result.get("source_lineage_status")
             if lineage == "MULTI_PUBLISHER_SINGLE_ROOT":
                 notes.append(WatchNote(

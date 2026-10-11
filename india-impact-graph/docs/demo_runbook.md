@@ -76,6 +76,19 @@ Evaluates multiple cached news sources to determine alignment.
 - Expected Lineage Status: `MULTI_PUBLISHER_SINGLE_ROOT`.
 - Expected Consensus Status: `AGREEMENT`.
 
+### F. What-to-Watch Notes Engine (`POST /what-to-watch/`)
+Deterministic, rule-based monitoring engine identifying critical indicators, evidence gaps, and data limitations without market predictions or financial advice.
+**Rules & Categories:**
+1. **Important pathway indicator:** Identifies indicators that appear on active ranked impact pathways.
+2. **Evidence limitation:** Highlights structurally inferred relationships (`inferred` edge kind) and unverified edge receipts.
+3. **Time-series coverage:** Transparently alerts users when baseline historical series are sparse or starter extracts.
+4. **Source-lineage limitation:** Alerts when multiple publishers echo a single root announcement (`MULTI_PUBLISHER_SINGLE_ROOT`), distinguishing publisher count from independent confirmation.
+5. **Missing data:** Identifies indicators or relationships requiring data acquisition (`[UNVERIFIED]` or `[VERIFY]` status).
+
+**Integration Status & Ownership Boundary:**
+- The engine logic (`what_to_watch.engine`), standalone API router (`what_to_watch.api`), and comprehensive unit/API/pipeline tests are 100% complete and passing.
+- Global FastAPI router registration in `backend/app/api/__init__.py` is owned by Engineer A and is currently pending merge. In the global app, `POST /what-to-watch/` returns HTTP 404 until Engineer A mounts `what_to_watch_router` into `api_router`.
+
 ## 4. AI-Off Proof
 
 The backend logic operates completely offline regarding mathematics and paths. The AI is utilized exclusively as a "Reader/Explainer" for unstructured text extraction. Graph paths and household budget impacts are calculated using classical algorithms and official tabular data.

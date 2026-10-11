@@ -5,6 +5,7 @@ from graph.graph_builder import ImpactGraphBuilder, Node, Edge, Receipt
 from graph.path_finder import ImpactPathFinder
 from evidence_service.evidence_service import EvidenceService
 from calculator.core_calculator import HouseholdImpactCalculator, PassThroughData, Receipt as CalcReceipt
+from what_to_watch.engine import WhatToWatchEngine
 
 class TestEndToEndPipeline(unittest.TestCase):
     def test_crude_oil_scenario_end_to_end(self):
@@ -141,6 +142,31 @@ class TestEndToEndPipeline(unittest.TestCase):
         self.assertEqual(calc_result_valid.low_impact, Decimal("120.00"))
         self.assertEqual(calc_result_valid.high_impact, Decimal("192.00"))
         self.assertEqual(calc_result_valid.calculation_basis, "INR/household/month")
+
+        # 6. What-to-Watch Notes Engine
+        what_engine = WhatToWatchEngine()
+        ts_meta = {
+            "cpi": {"frequency": "monthly", "notes": "Starter extract only"},
+            "crude-oil": {"frequency": "Sparse public archive snapshots", "notes": "Do not interpolate"}
+        }
+        consensus_data = {
+            "event_id": event["event_id"],
+            "source_lineage_status": "MULTI_PUBLISHER_SINGLE_ROOT"
+        }
+        notes = what_engine.generate_notes(
+            event_id=event["event_id"],
+            nodes=graph_dict["nodes"],
+            edges=graph_dict["edges"],
+            paths=[p.nodes for p in paths],
+            time_series_metadata=ts_meta,
+            consensus_result=consensus_data
+        )
+        self.assertGreater(len(notes), 0)
+        categories = {n.rule_category for n in notes}
+        self.assertIn("Important pathway indicator", categories)
+        self.assertIn("Evidence limitation", categories)
+        self.assertIn("Time-series coverage", categories)
+        self.assertIn("Source-lineage limitation", categories)
 
 if __name__ == '__main__':
     unittest.main()
