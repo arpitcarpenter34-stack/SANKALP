@@ -10,17 +10,10 @@ from app.api.events import router as events_router
 from app.api.graph import router as graph_router
 from app.api import api_router
 
-# Explicit allowlist of documented local frontend development origins
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
-]
+from app.config import settings
+
+# Explicit allowlist of documented local and trusted LAN origins
+ALLOWED_ORIGINS = settings.CORS_ALLOWED_ORIGINS
 
 app = FastAPI(
     title="India Impact Graph API",
