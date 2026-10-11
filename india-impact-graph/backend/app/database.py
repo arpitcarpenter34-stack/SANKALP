@@ -6,9 +6,14 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from app.config import settings
 
 # Engine is created lazily; connections are not established at import time
+_connect_args = {}
+if "postgresql" in settings.DATABASE_URL:
+    _connect_args["connect_timeout"] = 2
+
 engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,
+    connect_args=_connect_args,
 )
 
 SessionLocal = sessionmaker(

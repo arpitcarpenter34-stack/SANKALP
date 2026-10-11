@@ -17,6 +17,8 @@ from what_to_watch.api import router as what_to_watch_router
 from app.api.calculator import router as calculator_router
 from app.api.registries import router as registries_router
 
+api_router = APIRouter()
+
 api_router.include_router(events_router)
 api_router.include_router(graph_router)
 

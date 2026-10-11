@@ -1,4 +1,4 @@
-﻿"""Composite Transmission Scenario Analysis API.
+"""Composite Transmission Scenario Analysis API.
 
 Coordinates event extraction, knowledge graph propagation, and deterministic
 household impact calculation into a unified API response matching the frontend
@@ -315,15 +315,19 @@ def analyze_scenario(
         canonical_id = SCENARIO_ALIAS_MAP.get(scenario_id_raw, scenario_id_raw)
 
         # 1. Try DB lookup
-        stmt = (
-            select(FinancialEventModel)
-            .where(FinancialEventModel.event_id == canonical_id)
-            .options(
-                selectinload(FinancialEventModel.entities),
-                selectinload(FinancialEventModel.evidence_snippets),
+        event_model = None
+        try:
+            stmt = (
+                select(FinancialEventModel)
+                .where(FinancialEventModel.event_id == canonical_id)
+                .options(
+                    selectinload(FinancialEventModel.entities),
+                    selectinload(FinancialEventModel.evidence_snippets),
+                )
             )
-        )
-        event_model = db.execute(stmt).scalar_one_or_none()
+            event_model = db.execute(stmt).scalar_one_or_none()
+        except Exception:
+            event_model = None
 
         # 2. Try preset in-memory catalog
         if not event_model:
