@@ -1,0 +1,609 @@
+/* =========================================================================
+   BharatImpact Authentication Screen — Mint-Green Fintech Visual System
+   Matching Reference Design (Image 2)
+   ========================================================================= */
+
+.authContainer {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F0FBF6 0%, #E6F7EF 35%, #FFFFFF 70%, #EDFAF3 100%);
+  padding: 32px 48px;
+  box-sizing: border-box;
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Ambient Mint Glows and Lighting Rays */
+.authContainer::before {
+  content: '';
+  position: absolute;
+  top: -15%;
+  left: 10%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(0, 134, 106, 0.12) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 70%);
+  pointer-events: none;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.authContainer::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  right: 15%;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(0, 134, 106, 0.10) 0%, rgba(203, 243, 219, 0.25) 50%, transparent 70%);
+  pointer-events: none;
+  filter: blur(80px);
+  z-index: 0;
+}
+
+/* Decorative Tricolor Wave at Bottom-Left (Matching Reference Design) */
+.tricolorSwoosh {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 580px;
+  height: 180px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+/* Two-Column Responsive Wrapper */
+.authLayoutWrapper {
+  display: grid;
+  grid-template-columns: minmax(560px, 1.25fr) minmax(400px, 460px);
+  gap: 48px;
+  max-width: 1360px;
+  width: 100%;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+}
+
+/* =========================================================================
+   LEFT PANEL: BHARATIMPACT INTRO & VISUALS (~58-62% Desktop Width)
+   ========================================================================= */
+
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  padding: 16px 0;
+}
+
+/* Brand Header: Logo + Wordmark + Tagline */
+.brandHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.brandLogo {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brandTextGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandWordmark {
+  font-size: 26px;
+  font-weight: 800;
+  color: #10233F;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.brandWordmarkHighlight {
+  color: #00866A;
+}
+
+.brandSubtitle {
+  font-size: 13px;
+  color: #52677F;
+  margin-top: 3px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Main Hero Typography */
+.heroHeading {
+  font-size: clamp(34px, 3.4vw, 48px);
+  font-weight: 800;
+  color: #10233F;
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+  margin-bottom: 20px;
+  max-width: 680px;
+}
+
+.heroHeadingEmerald {
+  color: #00866A;
+  display: inline-block;
+}
+
+.heroDescription {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #405365;
+  max-width: 600px;
+  margin-bottom: 28px;
+}
+
+/* Typewriter Pill Banner */
+.typewriterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid rgba(0, 134, 106, 0.25);
+  border-radius: 9999px;
+  padding: 10px 22px;
+  box-shadow: 0 4px 16px rgba(0, 134, 106, 0.08), 0 1px 3px rgba(16, 24, 40, 0.03);
+  margin-bottom: 36px;
+  backdrop-filter: blur(12px);
+  width: fit-content;
+}
+
+.typewriterIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.typewriterTextContainer {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #10233F;
+  display: inline-flex;
+  align-items: center;
+  min-width: 220px;
+  white-space: nowrap;
+}
+
+.typewriterKeyword {
+  color: #00866A;
+}
+
+.typewriterCursor {
+  display: inline-block;
+  margin-left: 2px;
+  font-weight: 300;
+  color: #00866A;
+  animation: blinkCursor 1s infinite;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typewriterCursor {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Background Composite Illustration (Globe + Pins + Skyline) */
+.illustrationContainer {
+  position: absolute;
+  right: -30px;
+  top: 60px;
+  width: 480px;
+  height: 480px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.95;
+}
+
+/* Feature Highlights Grid (Horizontal 4 Cards) */
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 10px;
+  max-width: 660px;
+}
+
+.featureCard {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 134, 106, 0.18);
+  border-radius: 14px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(0, 134, 106, 0.04);
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 134, 106, 0.08);
+}
+
+.featureIconCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #E6F7EF;
+  border: 1px solid rgba(0, 134, 106, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00866A;
+  flex-shrink: 0;
+}
+
+.featureTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #10233F;
+  line-height: 1.25;
+}
+
+.featureSubtitle {
+  font-size: 11.5px;
+  color: #52677F;
+  line-height: 1.35;
+}
+
+/* ==========================================================
+   RIGHT PANEL: AUTHENTICATION CARD (~38-42% Width)
+   ========================================================== */
+
+.rightPanel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.authCard {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid rgba(0, 134, 106, 0.20);
+  border-radius: 24px;
+  padding: 32px 32px 28px;
+  box-shadow: 0 24px 60px -8px rgba(4, 120, 87, 0.10), 0 6px 20px rgba(16, 35, 63, 0.04);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Segmented Top Tabs: Sign In | Create Account */
+.tabsContainer {
+  display: flex;
+  background: #F0FAF4;
+  border: 1.5px solid #D8EADF;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tabButton {
+  flex: 1;
+  padding: 9px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #52677F;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabButtonActive {
+  background: #FFFFFF;
+  color: #00866A;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 134, 106, 0.12), 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.tabButton:hover:not(.tabButtonActive) {
+  color: #10233F;
+}
+
+/* Card Header Text */
+.cardHeader {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: #10233F;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px 0;
+}
+
+.cardSubtitle {
+  font-size: 14px;
+  color: #52677F;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Clerk Component Mount Point */
+.clerkMountContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Guest Exploration Button */
+.guestButtonContainer {
+  margin-top: 14px;
+  width: 100%;
+}
+
+.guestButton {
+  width: 100%;
+  min-height: 46px;
+  background: #FFFFFF;
+  border: 1.5px solid #D8EADF;
+  border-radius: 12px;
+  color: #172B3A;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.02);
+}
+
+.guestButton:hover {
+  background: #F0FAF4;
+  border-color: #00866A;
+  color: #00866A;
+  box-shadow: 0 2px 8px rgba(0, 134, 106, 0.10);
+}
+
+/* Security & Legal Footer */
+.cardFooter {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #E8F2EC;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.securedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #52677F;
+  font-weight: 500;
+}
+
+.clerkLogoMark {
+  font-weight: 700;
+  color: #10233F;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legalNotice {
+  font-size: 11.5px;
+  color: #6B7F91;
+  line-height: 1.4;
+}
+
+.legalNotice a {
+  color: #00866A;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.legalNotice a:hover {
+  color: #006E57;
+}
+
+/* ==========================================================
+   SCOPED CLERK OVERRIDES (Preserving supported appearance)
+   ========================================================== */
+
+.clerkMountContainer :global(.cl-rootBox) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.clerkMountContainer :global(.cl-card) {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.clerkMountContainer :global(.cl-socialButtonsBlockButton) {
+  min-height: 46px !important;
+  height: 46px !important;
+  border: 1.5px solid #D8EADF !important;
+  border-radius: 12px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #172B3A !important;
+  box-sizing: border-box !important;
+  transition: all 0.15s ease !important;
+}
+
+.clerkMountContainer :global(.cl-socialButtonsBlockButton:hover) {
+  background-color: #F0FAF4 !important;
+  border-color: #00866A !important;
+}
+
+.clerkMountContainer :global(.cl-formFieldInput) {
+  min-height: 46px !important;
+  height: 46px !important;
+  font-size: 15px !important;
+  border: 1.5px solid #D8EADF !important;
+  border-radius: 12px !important;
+  color: #172B3A !important;
+  padding: 0 14px !important;
+  box-sizing: border-box !important;
+}
+
+.clerkMountContainer :global(.cl-formFieldInput:focus) {
+  border-color: #00866A !important;
+  box-shadow: 0 0 0 3px rgba(0, 134, 106, 0.15) !important;
+}
+
+.clerkMountContainer :global(.cl-formButtonPrimary) {
+  min-height: 46px !important;
+  height: 46px !important;
+  background: linear-gradient(135deg, #00866A 0%, #00745A 100%) !important;
+  border-radius: 12px !important;
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(0, 134, 106, 0.25) !important;
+  transition: all 0.15s ease !important;
+}
+
+.clerkMountContainer :global(.cl-formButtonPrimary:hover) {
+  background: linear-gradient(135deg, #00745A 0%, #00604A 100%) !important;
+  box-shadow: 0 6px 16px rgba(0, 134, 106, 0.35) !important;
+}
+
+/* ==========================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================== */
+
+/* Tablet & Smaller Laptops (900px - 1100px) */
+@media (max-width: 1100px) {
+  .authContainer {
+    padding: 24px;
+  }
+  .authLayoutWrapper {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    max-width: 580px;
+  }
+  .illustrationContainer {
+    display: none;
+  }
+  .heroHeading {
+    font-size: 32px;
+  }
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small Tablets & Large Phones (481px - 768px) */
+@media (max-width: 768px) {
+  .authContainer {
+    padding: 16px;
+  }
+  .authLayoutWrapper {
+    gap: 28px;
+  }
+  .heroHeading {
+    font-size: 28px;
+  }
+  .heroDescription {
+    font-size: 14.5px;
+    margin-bottom: 20px;
+  }
+  .typewriterPill {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  .authCard {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  .tricolorSwoosh {
+    width: 320px;
+    height: 100px;
+  }
+}
+
+/* Mobile Phones (< 480px) */
+@media (max-width: 480px) {
+  .authContainer {
+    padding: 12px;
+  }
+  .heroHeading {
+    font-size: 24px;
+  }
+  .featuresGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .featureCard {
+    padding: 12px 10px;
+  }
+  .featureTitle {
+    font-size: 12.5px;
+  }
+  .featureSubtitle {
+    font-size: 10.5px;
+  }
+  .authCard {
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+  .cardTitle {
+    font-size: 20px;
+  }
+}
+
+/* Small Mobile (< 360px) */
+@media (max-width: 360px) {
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+  .typewriterTextContainer {
+    min-width: 180px;
+    font-size: 13.5px;
+  }
+  .brandWordmark {
+    font-size: 22px;
+  }
+}

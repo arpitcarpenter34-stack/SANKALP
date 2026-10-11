@@ -1,26 +1,30 @@
 :root {
-  /* BharatImpact Light Mint & Emerald Design Tokens */
-  --bg-canvas: #F3FAF5;
+  /* BharatImpact Light Mint & Emerald Design Tokens (Fintech Glassmorphism) */
+  --bg-canvas: #EEF8F2;
   --bg-surface: #FFFFFF;
   --bg-panel: #FFFFFF;
   --bg-card: #FFFFFF;
+  --bg-card-glass: rgba(255, 255, 255, 0.92);
   --bg-card-subtle: #F7FCF9;
   --bg-elevated: #FFFFFF;
-  --bg-overlay: rgba(23, 43, 58, 0.4);
+  --bg-overlay: rgba(23, 43, 58, 0.45);
   --bg-input: #FFFFFF;
   --bg-mint: #E8F5EC;
   --bg-mint-hover: #DCF0E2;
-  --bg-mint-subtle: #F0F9F3;
+  --bg-mint-subtle: #F0FAF4;
+  --bg-mint-badge: #CBF3DB;
 
-  /* Refined Light Borders */
-  --border-subtle: #E2ECE5;
-  --border-medium: #D1E3D7;
-  --border-active: #047857;
-  --border-focus: #059669;
-  --border-glow: rgba(4, 120, 87, 0.2);
+  /* Refined Light Mint & Emerald Borders */
+  --border-subtle: #D8EADF;
+  --border-medium: #C3E2D0;
+  --border-active: #10B981;
+  --border-focus: #047857;
+  --border-glow: rgba(16, 185, 129, 0.25);
+  --border-glass: rgba(216, 234, 223, 0.85);
 
   /* Emerald, Teal & Accent Signals */
   --accent-emerald: #047857;
+  --accent-emerald-vivid: #10B981;
   --accent-emerald-hover: #065F46;
   --accent-emerald-light: #E8F5EC;
   --accent-teal: #0D9488;
@@ -28,29 +32,42 @@
   --accent-cyan: #0284C7;
   --accent-cyan-light: #E0F2FE;
   --accent-cyan-hover: #0369A1;
-  --accent-cyan-glow: rgba(2, 132, 199, 0.15);
+  --accent-cyan-glow: rgba(2, 132, 199, 0.18);
   --accent-blue: #2563EB;
   --accent-blue-light: #EFF6FF;
+  --accent-purple: #7C3AED;
+  --accent-purple-light: #F5F3FF;
   --accent-amber: #D97706;
   --accent-amber-light: #FEF3C7;
-  --accent-amber-glow: rgba(217, 119, 6, 0.15);
+  --accent-amber-glow: rgba(217, 119, 6, 0.18);
   --accent-rose: #E11D48;
   --accent-rose-light: #FFE4E6;
-  --accent-rose-glow: rgba(225, 29, 72, 0.15);
-  --accent-slate: #5A7184;
+  --accent-rose-glow: rgba(225, 29, 72, 0.18);
+  --accent-coral: #EF4444;
+  --accent-slate: #475569;
 
   /* Typography Contrast Hierarchy */
   --text-primary: #172B3A;
-  --text-secondary: #5A7184;
-  --text-muted: #8298A9;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-subtle: #94A3B8;
   --text-inverse: #FFFFFF;
   --text-emerald: #047857;
+  --text-emerald-vivid: #10B981;
 
-  /* Elevation Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
-  --shadow-card: 0 1px 3px 0 rgba(16, 24, 40, 0.06), 0 1px 2px -1px rgba(16, 24, 40, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(16, 24, 40, 0.07), 0 2px 4px -2px rgba(16, 24, 40, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(16, 24, 40, 0.08), 0 4px 6px -4px rgba(16, 24, 40, 0.03);
+  /* Elevation Shadows & Soft Layering */
+  --shadow-sm: 0 1px 2px 0 rgba(16, 24, 40, 0.04);
+  --shadow-card: 0 1px 3px 0 rgba(16, 24, 40, 0.04), 0 4px 14px 0 rgba(4, 120, 87, 0.04);
+  --shadow-card-hover: 0 4px 16px 0 rgba(4, 120, 87, 0.08), 0 1px 3px 0 rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 8px -1px rgba(16, 24, 40, 0.06), 0 2px 4px -2px rgba(16, 24, 40, 0.03);
+  --shadow-lg: 0 12px 24px -4px rgba(16, 24, 40, 0.08), 0 4px 8px -4px rgba(4, 120, 87, 0.05);
+  --shadow-glow-emerald: 0 0 24px rgba(16, 185, 129, 0.22);
+  --shadow-glow-cyan: 0 0 24px rgba(2, 132, 199, 0.22);
+
+  /* Glassmorphism */
+  --backdrop-blur: blur(12px);
+  --glass-surface: rgba(255, 255, 255, 0.9);
+  --glass-border: 1px solid rgba(216, 234, 223, 0.85);
 
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -61,7 +78,8 @@
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
   --radius-full: 9999px;
 
   --space-2xs: 2px;
@@ -84,4 +102,46 @@
     --transition-normal: 0ms !important;
     --transition-slow: 0ms !important;
   }
+}
+
+[data-theme="dark"] {
+  --bg-canvas: #0A121A;
+  --bg-surface: #111E2B;
+  --bg-panel: #111E2B;
+  --bg-card: #152433;
+  --bg-card-glass: rgba(21, 36, 51, 0.88);
+  --bg-card-subtle: #18293A;
+  --bg-elevated: #1C2F43;
+  --bg-overlay: rgba(5, 10, 16, 0.7);
+  --bg-input: #152433;
+  --bg-mint: #064E3B;
+  --bg-mint-hover: #065F46;
+  --bg-mint-subtle: #0B2920;
+  --bg-mint-badge: #065F46;
+
+  --border-subtle: #1E3347;
+  --border-medium: #27425C;
+  --border-active: #10B981;
+  --border-focus: #34D399;
+  --border-glow: rgba(16, 185, 129, 0.3);
+  --border-glass: rgba(30, 51, 71, 0.85);
+
+  --text-primary: #F0F6FC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-subtle: #475569;
+  --text-inverse: #0A121A;
+  --text-emerald: #34D399;
+  --text-emerald-vivid: #10B981;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 4px 16px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+  --shadow-glow-emerald: 0 0 24px rgba(16, 185, 129, 0.25);
+  --shadow-glow-cyan: 0 0 24px rgba(2, 132, 199, 0.25);
+
+  --glass-surface: rgba(21, 36, 51, 0.88);
+  --glass-border: 1px solid rgba(30, 51, 71, 0.85);
 }

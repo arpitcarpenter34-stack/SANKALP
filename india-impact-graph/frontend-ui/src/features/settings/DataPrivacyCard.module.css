@@ -1,0 +1,192 @@
+.card {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: var(--radius-lg, 12px);
+  padding: 20px 22px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(16, 24, 40, 0.05));
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: scale(1.012);
+  box-shadow: 0 6px 18px rgba(4, 120, 87, 0.08);
+  border-color: var(--border-medium, #d1e3d7);
+}
+
+.header {
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary, #172b3a);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #5a7184);
+  margin: 2px 0 0 0;
+}
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.itemBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-card-subtle, #f7fcf9);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 160ms ease;
+}
+
+.itemBtn:hover {
+  border-color: var(--border-medium, #d1e3d7);
+  background: var(--bg-mint-subtle, #f0f9f3);
+  transform: translateX(2px);
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.iconBadge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.iconBadgeBlue {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.iconBadgeIndigo {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.iconBadgeGreen {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.iconBadgeRed {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.itemText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary, #172b3a);
+  margin: 0;
+}
+
+.itemTitleDanger {
+  color: #dc2626 !important;
+}
+
+.itemDesc {
+  font-size: 0.72rem;
+  color: var(--text-secondary, #5a7184);
+  margin: 1px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chevron {
+  color: var(--text-muted, #8298a9);
+  font-size: 0.85rem;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modalContent {
+  background: var(--bg-surface, #ffffff);
+  border-radius: 14px;
+  padding: 24px 28px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-subtle, #e2ece5);
+}
+
+.modalTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary, #172b3a);
+  margin: 0 0 8px 0;
+}
+
+.modalText {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #5a7184);
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modalCloseBtn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  background: var(--bg-surface, #ffffff);
+  color: var(--text-primary, #172b3a);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.modalDeleteBtn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.82rem;
+}

@@ -16,9 +16,11 @@ from app.api.news import router as news_router
 from what_to_watch.api import router as what_to_watch_router
 from app.api.calculator import router as calculator_router
 from app.api.registries import router as registries_router
+from app.api.auth import router as auth_router
 
 api_router = APIRouter()
 
+api_router.include_router(auth_router)
 api_router.include_router(events_router)
 api_router.include_router(graph_router)
 
@@ -42,6 +44,7 @@ api_router.include_router(registries_router)
 
 __all__ = [
     "api_router",
+    "auth_router",
     "calculator_router",
     "consensus_router",
     "events_router",

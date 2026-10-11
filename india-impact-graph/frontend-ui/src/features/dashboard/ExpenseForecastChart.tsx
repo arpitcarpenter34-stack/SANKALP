@@ -3,21 +3,22 @@ import styles from './ExpenseForecastChart.module.css';
 
 export interface ExpenseForecastChartProps {
   scenarioTitle?: string;
+  forecastHorizon?: number;
 }
 
-export const ExpenseForecastChart: React.FC<ExpenseForecastChartProps> = () => {
+export const ExpenseForecastChart: React.FC<ExpenseForecastChartProps> = ({
+  forecastHorizon = 6,
+}) => {
   const [selectedInterval, setSelectedInterval] = useState<'monthly' | 'quarterly'>('monthly');
 
   // Chart coordinates & geometry
-  // Width: 920, Height: 240
-  // Left padding: 60, Right padding: 130, Top: 30, Bottom: 40
-  // Y range: 40,000 (y = 200) to 80,000 (y = 20)
-  // X range: 15 months (Jan 2024 to Mar 2025)
-
-  const MONTHS = [
+  // Actual data: Jan to Oct 2024 (indices 0 to 9)
+  // Dynamic forecast data adjusted by forecastHorizon (3, 6, or 12 months)
+  const ALL_MONTHS = [
     'Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024',
     'Jun 2024', 'Jul 2024', 'Aug 2024', 'Sep 2024', 'Oct 2024',
-    'Nov 2024', 'Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025'
+    'Nov 2024', 'Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025',
+    'Apr 2025', 'May 2025', 'Jun 2025', 'Jul 2025', 'Aug 2025', 'Sep 2025'
   ];
 
   // Actual data (Jan to Oct 2024 - indices 0 to 9)
@@ -25,21 +26,32 @@ export const ExpenseForecastChart: React.FC<ExpenseForecastChartProps> = () => {
     48500, 50200, 53800, 51900, 54600, 53200, 55800, 58000, 54500, 58000
   ];
 
-  // Forecast data (Oct 2024 to Mar 2025 - indices 9 to 14)
-  const FORECAST_VALUES = [
-    58000, 59500, 61200, 63400, 65500, 68000
+  // Full 12-month potential forecast trajectory
+  const FULL_FORECAST_VALUES = [
+    58000, 59500, 61200, 63400, 65500, 68000,
+    69200, 70100, 71500, 72800, 73500, 74200, 75000
   ];
 
-  // 1-sigma and 2-sigma bounds for forecast
-  // [upper2, upper1, center, lower1, lower2]
-  const UNCERTAINTY_BOUNDS = [
+  const FULL_UNCERTAINTY = [
     { idx: 9, u2: 58000, u1: 58000, val: 58000, l1: 58000, l2: 58000 },
     { idx: 10, u2: 62000, u1: 60800, val: 59500, l1: 58200, l2: 57000 },
     { idx: 11, u2: 65000, u1: 63100, val: 61200, l1: 59300, l2: 57500 },
     { idx: 12, u2: 68500, u1: 66000, val: 63400, l1: 60800, l2: 58500 },
     { idx: 13, u2: 71500, u1: 68500, val: 65500, l1: 62500, l2: 59800 },
     { idx: 14, u2: 74500, u1: 71200, val: 68000, l1: 64800, l2: 61500 },
+    { idx: 15, u2: 76000, u1: 72800, val: 69200, l1: 65800, l2: 62200 },
+    { idx: 16, u2: 77500, u1: 74000, val: 70100, l1: 66500, l2: 63000 },
+    { idx: 17, u2: 79200, u1: 75500, val: 71500, l1: 67600, l2: 63800 },
+    { idx: 18, u2: 81000, u1: 77000, val: 72800, l1: 68600, l2: 64500 },
+    { idx: 19, u2: 82000, u1: 78000, val: 73500, l1: 69200, l2: 65000 },
+    { idx: 20, u2: 83200, u1: 79000, val: 74200, l1: 69800, l2: 65500 },
   ];
+
+  // Slice based on forecastHorizon (3, 6, or 12 months)
+  const horizonMonthsCount = forecastHorizon === 3 ? 3 : forecastHorizon === 12 ? 12 : 6;
+  const FORECAST_VALUES = FULL_FORECAST_VALUES.slice(0, horizonMonthsCount + 1);
+  const UNCERTAINTY_BOUNDS = FULL_UNCERTAINTY.slice(0, horizonMonthsCount + 1);
+  const totalPoints = 9 + horizonMonthsCount;
 
   const chartW = 900;
   const chartH = 220;
@@ -51,7 +63,9 @@ export const ExpenseForecastChart: React.FC<ExpenseForecastChartProps> = () => {
   const usableW = chartW - padLeft - padRight;
   const usableH = chartH - padTop - padBottom;
 
-  const getX = (idx: number) => padLeft + (idx / 14) * usableW;
+  const MONTHS = ALL_MONTHS.slice(0, totalPoints + 1);
+
+  const getX = (idx: number) => padLeft + (idx / totalPoints) * usableW;
   const getY = (val: number) => {
     const min = 40000;
     const max = 80000;
@@ -84,17 +98,20 @@ export const ExpenseForecastChart: React.FC<ExpenseForecastChartProps> = () => {
   const ribbon1Sigma = `M ${u1Upper} L ${u1Lower} Z`;
 
   const octX = getX(9);
-  const marX = getX(14);
-  const marY = getY(68000);
+  const lastIdx = totalPoints;
+  const lastVal = FORECAST_VALUES[FORECAST_VALUES.length - 1];
+  const lastX = getX(lastIdx);
+  const lastY = getY(lastVal);
+  const lastMonthLabel = MONTHS[lastIdx] || 'Forecast End';
 
   return (
     <div className={styles.chartCard}>
       {/* Header with Title and Legend */}
       <div className={styles.header}>
         <div className={styles.titleCol}>
-          <h3 className={styles.title}>6-Month Expense Forecast</h3>
+          <h3 className={styles.title}>{forecastHorizon}-Month Expense Forecast</h3>
           <p className={styles.subtitle}>
-            Monthly household expenses (₹) with forecast and uncertainty range
+            Monthly household expenses (₹) projected across a {forecastHorizon}-month horizon with 1σ / 2σ uncertainty bounds
           </p>
         </div>
 
@@ -219,8 +236,8 @@ export const ExpenseForecastChart: React.FC<ExpenseForecastChartProps> = () => {
 
           {/* Forecast endpoint dot */}
           <circle
-            cx={marX}
-            cy={marY}
+            cx={lastX}
+            cy={lastY}
             r="4.5"
             fill="#047857"
             stroke="#FFFFFF"
@@ -245,8 +262,8 @@ export const ExpenseForecastChart: React.FC<ExpenseForecastChartProps> = () => {
             );
           })}
 
-          {/* Callout Bubble at Mar 2025 */}
-          <g transform={`translate(${marX + 10}, ${marY - 45})`}>
+          {/* Callout Bubble at Forecast End Point */}
+          <g transform={`translate(${Math.min(lastX + 8, chartW - padRight + 10)}, ${Math.max(lastY - 50, 10)})`}>
             <rect
               x="0"
               y="0"
@@ -259,16 +276,16 @@ export const ExpenseForecastChart: React.FC<ExpenseForecastChartProps> = () => {
               filter="drop-shadow(0 2px 4px rgba(16, 24, 40, 0.08))"
             />
             <text x="8" y="14" fill="#5A7184" fontSize="8.5" fontWeight="500">
-              Mar 2025 (Forecast)
+              {lastMonthLabel} (Forecast)
             </text>
             <text x="8" y="28" fill="#172B3A" fontSize="13" fontWeight="700">
-              ₹68,000
+              ₹{lastVal.toLocaleString('en-IN')}
             </text>
             <text x="8" y="40" fill="#8298A9" fontSize="8">
-              Range ₹62,000 – ₹74,000
+              Range ₹{(lastVal - 5000).toLocaleString('en-IN')} – ₹{(lastVal + 6000).toLocaleString('en-IN')}
             </text>
             <text x="8" y="51" fill="#059669" fontSize="8.5" fontWeight="600">
-              +9.1% vs. Oct 2024
+              +{(((lastVal - 58000) / 58000) * 100).toFixed(1)}% vs. Oct 2024
             </text>
           </g>
         </svg>

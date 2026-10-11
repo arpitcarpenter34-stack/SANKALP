@@ -14,6 +14,8 @@ _default_env = _backend_dir / ".env"
 DEFAULT_ALLOWED_ORIGINS: list[str] = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3002",
+    "http://127.0.0.1:3002",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:8080",
@@ -38,10 +40,29 @@ class Settings(BaseSettings):
         default="postgresql+psycopg://postgres:postgres@localhost:5432/india_impact_graph",
         description="PostgreSQL connection string using psycopg 3 format. Falls back to local development defaults.",
     )
-    CORS_ALLOWED_ORIGINS: list[str] = Field(
+    CORS_ALLOWED_ORIGINS: Any = Field(
         default_factory=lambda: list(DEFAULT_ALLOWED_ORIGINS),
         description="Explicit allowlist of permitted CORS origins. Extensible via CORS_ALLOWED_ORIGINS environment variable.",
     )
+
+    # Clerk Authentication Settings
+    CLERK_SECRET_KEY: Optional[str] = Field(
+        default=None,
+        description="Clerk Secret Key for verifying session JWTs and authenticating backend requests.",
+    )
+    CLERK_PUBLISHABLE_KEY: Optional[str] = Field(
+        default=None,
+        description="Clerk Publishable Key for backend client identification.",
+    )
+    CLERK_AUTHORIZED_PARTIES: Any = Field(
+        default_factory=lambda: list(DEFAULT_ALLOWED_ORIGINS),
+        description="Allowed authorized parties (azp) in Clerk session JWTs.",
+    )
+    CLERK_JWT_KEY: Optional[str] = Field(
+        default=None,
+        description="Optional Clerk public JWT key for offline cryptographic verification.",
+    )
+
     USE_LIVE_LLM: bool = Field(
         default=False,
         description="Whether to use live LLM for financial event extraction. Defaults to False for deterministic offline operation.",
@@ -79,7 +100,7 @@ class Settings(BaseSettings):
         description="Freshness threshold for sparse PPAC crude oil snapshots before flagged as stale.",
     )
 
-    @field_validator("CORS_ALLOWED_ORIGINS", mode="before")
+    @field_validator("CORS_ALLOWED_ORIGINS", "CLERK_AUTHORIZED_PARTIES", mode="before")
     @classmethod
     def parse_cors_origins(cls, v: Any) -> list[str]:
         """Parse comma-separated or JSON string origins and disallow wildcards."""

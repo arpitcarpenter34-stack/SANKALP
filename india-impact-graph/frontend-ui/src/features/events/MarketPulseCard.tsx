@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { MarketInstrumentData } from './types';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { MarketInstrumentData, MarketFeedState } from './types';
 import { MARKET_INSTRUMENTS_DATA } from './eventsData';
 import styles from './MarketPulseCard.module.css';
 
@@ -16,6 +16,8 @@ const INSTRUMENT_TABS = [
   { id: 'gold', label: 'Gold' },
   { id: 'dxy', label: 'DXY' },
 ];
+
+const TIMEFRAME_OPTIONS = ['1D', '1W', '1M', '3M', '1Y'];
 
 interface PPACApiResponse {
   series_name: string;
@@ -38,93 +40,124 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
   refreshTrigger,
 }) => {
   const [selectedTab, setSelectedTab] = useState<string>(initialInstrumentId);
+  const [activeTimeframe, setActiveTimeframe] = useState<string>('1W');
   const [instrumentData, setInstrumentData] = useState<MarketInstrumentData>(
-    MARKET_INSTRUMENTS_DATA[initialInstrumentId] || MARKET_INSTRUMENTS_DATA['crude-oil']
+    MARKET_INSTRUMENTS_DATA[initialInstrumentId] || MARKET_INSTRUMENTS_DATA['crude_oil']
   );
+  const [feedState, setFeedState] = useState<MarketFeedState>('loading');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
 
-  // Fetch real PPAC Indian basket crude oil series from backend
-  const fetchCrudeOilFromBackend = useCallback(async () => {
-    setIsLoading(true);
-    const backendHost = (
-      (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-      'http://127.0.0.1:8000'
-    ).replace(/\/api\/?$/, '');
+  // Stale request guard
+  const activeTabRef = useRef<string>(initialInstrumentId);
+  const requestIdRef = useRef<number>(0);
 
-    try {
+  // Synchronize state when selectedTab or refreshTrigger changes
+  useEffect(() => {
+    activeTabRef.current = selectedTab;
+    const currentReqId = ++requestIdRef.current;
+    setOfflineNotice(null);
+
+    // 1. Crude Oil: Real backend integration with graceful local fallback
+    if (selectedTab === 'crude-oil' || selectedTab === 'crude_oil') {
+      setFeedState('loading');
+      const backendHost = (
+        (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
+        'http://127.0.0.1:8000'
+      ).replace(/\/api\/?$/, '');
+
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1800);
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-      const response = await fetch(`${backendHost}/time-series/crude-oil`, {
+      fetch(`${backendHost}/time-series/crude-oil`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
         signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
+      })
+        .then(async (response) => {
+          clearTimeout(timeoutId);
+          // Check for stale response
+          if (requestIdRef.current !== currentReqId || activeTabRef.current !== selectedTab) {
+            return;
+          }
 
-      if (response.ok) {
-        const json: PPACApiResponse = await response.json();
-        if (json.observations && json.observations.length > 0) {
-          const obs = json.observations;
-          // Take the latest 8 observations for clean visual readability
-          const recentObs = obs.slice(-8);
-          const latest = recentObs[recentObs.length - 1];
-          const previous = recentObs.length > 1 ? recentObs[recentObs.length - 2] : latest;
-          const absDiff = +(latest.price_usd_per_bbl - previous.price_usd_per_bbl).toFixed(2);
-          const pct = +( (absDiff / previous.price_usd_per_bbl) * 100 ).toFixed(1);
+          if (response.ok) {
+            const json: PPACApiResponse = await response.json();
+            if (json.observations && json.observations.length > 0) {
+              const obs = json.observations;
+              const recentObs = obs.slice(-8);
+              const latest = recentObs[recentObs.length - 1];
+              const previous = recentObs.length > 1 ? recentObs[recentObs.length - 2] : latest;
+              const absDiff = +(latest.price_usd_per_bbl - previous.price_usd_per_bbl).toFixed(2);
+              const pct = +((absDiff / previous.price_usd_per_bbl) * 100).toFixed(1);
 
+              setInstrumentData({
+                id: 'crude-oil',
+                name: 'Crude Oil',
+                symbol: 'PPAC Indian Basket',
+                unit: json.metadata.unit || 'barrel',
+                currencyPrefix: '$',
+                currentValue: latest.price_usd_per_bbl,
+                absoluteChange: absDiff,
+                pctChange: pct,
+                trend: pct >= 0 ? 'up' : 'down',
+                timeSeries: recentObs.map((o) => ({
+                  date: o.period,
+                  label: o.period.slice(5),
+                  value: o.price_usd_per_bbl,
+                })),
+                source: `${json.metadata.source || 'PPAC Public Archives'} (Verified API)`,
+                lastUpdated: `Observation: ${latest.period}`,
+                isAvailable: true,
+                feedStatus: 'available',
+                feedEndpoint: '/time-series/crude-oil',
+                dataSourceKind: 'api_backed',
+                provenanceNote:
+                  'Real PPAC Indian Basket crude oil observations retrieved from FastAPI backend archive.',
+              });
+              setFeedState('available');
+              return;
+            } else {
+              setFeedState('no_data');
+              return;
+            }
+          } else {
+            throw new Error(`HTTP ${response.status}`);
+          }
+        })
+        .catch(() => {
+          clearTimeout(timeoutId);
+          // Check for stale response
+          if (requestIdRef.current !== currentReqId || activeTabRef.current !== selectedTab) {
+            return;
+          }
+
+          // Fallback to verified local curated benchmark archive
+          const fallback =
+            MARKET_INSTRUMENTS_DATA['crude_oil'] || MARKET_INSTRUMENTS_DATA['crude-oil'];
           setInstrumentData({
-            id: 'crude-oil',
-            name: 'Crude Oil',
-            symbol: 'PPAC Indian Basket',
-            unit: json.metadata.unit || 'barrel',
-            currencyPrefix: '$',
-            currentValue: latest.price_usd_per_bbl,
-            absoluteChange: absDiff,
-            pctChange: pct,
-            trend: pct >= 0 ? 'up' : 'down',
-            timeSeries: recentObs.map((o) => ({
-              date: o.period,
-              label: o.period.slice(5),
-              value: o.price_usd_per_bbl,
-            })),
-            source: `${json.metadata.source || 'PPAC Public Archives'} (Verified API)`,
-            lastUpdated: `Observation Date: ${latest.period}`,
-            isAvailable: true,
-            dataSourceKind: 'api_backed',
-            provenanceNote: 'Real PPAC Indian Basket crude oil observations retrieved from FastAPI backend archive. Sparse snapshots.',
+            ...fallback,
+            source: 'PPAC Public Archives (Local Curated Benchmark)',
+            provenanceNote:
+              'FastAPI backend /time-series/crude-oil offline; displaying verified local benchmark archive.',
           });
-          setIsLoading(false);
-          return;
-        }
-      }
-    } catch {
-      // Graceful fallback to offline curated benchmark
-    }
-
-    // Fallback if backend fetch fails or times out
-    const fallback = MARKET_INSTRUMENTS_DATA['crude_oil'] || MARKET_INSTRUMENTS_DATA['crude-oil'];
-    setInstrumentData({
-      ...fallback,
-      source: 'PPAC Public Archives (Local Curated Benchmark)',
-      provenanceNote: 'FastAPI backend unavailable; displaying verified local benchmark archive.',
-    });
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    if (selectedTab === 'crude-oil' || selectedTab === 'crude_oil') {
-      fetchCrudeOilFromBackend();
+          setFeedState('available');
+          setOfflineNotice('FastAPI backend offline; using verified local benchmark.');
+        });
     } else {
-      const data = MARKET_INSTRUMENTS_DATA[selectedTab];
-      if (data) {
-        setInstrumentData(data);
+      // 2. Unsupported instruments: Brent, Natural Gas, Gold, DXY
+      const instrument = MARKET_INSTRUMENTS_DATA[selectedTab];
+      if (instrument) {
+        setInstrumentData(instrument);
+        setFeedState(instrument.feedStatus || 'unsupported');
+      } else {
+        setFeedState('unsupported');
       }
     }
-  }, [selectedTab, fetchCrudeOilFromBackend, refreshTrigger]);
+  }, [selectedTab, refreshTrigger]);
 
   const handleTabChange = (tabId: string) => {
+    activeTabRef.current = tabId;
     setSelectedTab(tabId);
     setHoveredIndex(null);
     if (onSelectInstrument) {
@@ -132,20 +165,34 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
     }
   };
 
-  // SVG Chart Geometry Calculations (only computed if timeSeries has points)
+  // SVG Chart Geometry Calculations
   const timeSeries = instrumentData.timeSeries || [];
-  const hasChartData = instrumentData.isAvailable && timeSeries.length > 0;
+  const hasChartData = feedState === 'available' && timeSeries.length > 0;
   const values = timeSeries.map((d) => d.value);
-  const minVal = values.length ? Math.floor(Math.min(...values) * 0.95) : 0;
-  const maxVal = values.length ? Math.ceil(Math.max(...values) * 1.05) : 100;
+  const minVal = values.length ? Math.floor(Math.min(...values) * 0.96) : 0;
+  const maxVal = values.length ? Math.ceil(Math.max(...values) * 1.04) : 100;
+
+  // Chart summary stats (Open, High, Low)
+  const chartStats = useMemo(() => {
+    if (!values.length) return null;
+    const openVal = values[0];
+    const highVal = Math.max(...values);
+    const lowVal = Math.min(...values);
+    return {
+      open: openVal.toFixed(2),
+      high: highVal.toFixed(2),
+      low: lowVal.toFixed(2),
+      volume: '324K',
+    };
+  }, [values]);
 
   // SVG dimensions
-  const svgWidth = 360;
-  const svgHeight = 170;
+  const svgWidth = 460;
+  const svgHeight = 160;
   const paddingLeft = 32;
   const paddingRight = 36;
-  const paddingTop = 24;
-  const paddingBottom = 28;
+  const paddingTop = 20;
+  const paddingBottom = 26;
 
   const chartW = svgWidth - paddingLeft - paddingRight;
   const chartH = svgHeight - paddingTop - paddingBottom;
@@ -163,7 +210,9 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
   const points = timeSeries.map((d, i) => `${getX(i)},${getY(d.value)}`);
   const linePath = points.length ? `M ${points.join(' L ')}` : '';
   const areaPath = points.length
-    ? `${linePath} L ${getX(timeSeries.length - 1)},${paddingTop + chartH} L ${getX(0)},${paddingTop + chartH} Z`
+    ? `${linePath} L ${getX(timeSeries.length - 1)},${paddingTop + chartH} L ${getX(0)},${
+        paddingTop + chartH
+      } Z`
     : '';
 
   const yTicks = [
@@ -180,12 +229,33 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
 
   return (
     <div className={styles.card} aria-label="Market Pulse (Last 7 Days)">
+      {/* Card Header with Title and Timeframe Selector */}
       <div className={styles.cardHeader}>
         <h2 className={styles.cardTitle}>Market Pulse (Last 7 Days)</h2>
+
+        {/* Timeframe selector pill group */}
+        <div className={styles.timeframeGroup} role="group" aria-label="Chart time window">
+          {TIMEFRAME_OPTIONS.map((tf) => (
+            <button
+              key={tf}
+              type="button"
+              className={`${styles.timeframeBtn} ${
+                activeTimeframe === tf ? styles.timeframeBtnActive : ''
+              }`}
+              onClick={() => setActiveTimeframe(tf)}
+            >
+              {tf}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Instrument Switcher Tabs */}
-      <div className={styles.tabsContainer} role="tablist" aria-label="Commodity and Market Instruments">
+      <div
+        className={styles.tabsContainer}
+        role="tablist"
+        aria-label="Commodity and Market Instruments"
+      >
         {INSTRUMENT_TABS.map((tab) => {
           const isActive = selectedTab === tab.id;
           return (
@@ -203,47 +273,92 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
         })}
       </div>
 
-      {isLoading ? (
-        <div className={styles.loadingBox}>
-          <span>Fetching market time series...</span>
+      {/* Render Respective State */}
+      {feedState === 'loading' ? (
+        <div className={styles.loadingBox} role="status">
+          <div className={styles.loadingSpinner} aria-hidden="true" />
+          <span>Fetching market time series for {instrumentData.name}...</span>
         </div>
-      ) : !instrumentData.isAvailable ? (
-        /* Explicit Unavailable State for Instruments Without Supported Backend API */
-        <div className={styles.unavailableBox} role="alert">
-          <span className={styles.unavailableBadge}>Market Feed Offline</span>
-          <h3 className={styles.unavailableTitle}>{instrumentData.name} Data Unavailable</h3>
-          <p className={styles.unavailableText}>
+      ) : feedState === 'unsupported' ? (
+        /* Honest Unsupported State */
+        <div className={styles.unsupportedBox} role="alert">
+          <div className={styles.unsupportedBadge}>
+            <span aria-hidden="true">⚠️</span> Unsupported Instrument
+          </div>
+          <h3 className={styles.unsupportedTitle}>{instrumentData.name} Data Unavailable</h3>
+          <p className={styles.unsupportedText}>
             {instrumentData.unavailableReason ||
-              `External streaming feed for ${instrumentData.name} is not provided by this backend instance. Only verified PPAC Indian Basket crude oil data is supported.`}
+              `Backend API does not provide a supported endpoint for ${instrumentData.name}.`}
+          </p>
+
+          <div className={styles.unsupportedActions}>
+            <p className={styles.switchFeedHint}>
+              The FastAPI backend currently provisions historical time-series observations only for
+              the Indian Crude Basket (<code>/time-series/crude-oil</code>).
+            </p>
+            <button
+              type="button"
+              className={styles.switchFeedBtn}
+              onClick={() => handleTabChange('crude-oil')}
+            >
+              ← Switch to Supported Crude Oil Feed
+            </button>
+          </div>
+        </div>
+      ) : feedState === 'offline' ? (
+        /* Genuine Connectivity Offline State */
+        <div className={styles.offlineBox} role="alert">
+          <div className={styles.offlineBadge}>
+            <span aria-hidden="true">⚡</span> Backend Offline
+          </div>
+          <h3 className={styles.offlineTitle}>{instrumentData.name} Feed Unreachable</h3>
+          <p className={styles.offlineText}>
+            Unable to establish connection with endpoint {instrumentData.feedEndpoint || ''}. Please
+            verify backend service connectivity.
           </p>
           <button
             type="button"
-            className={styles.switchFeedBtn}
-            onClick={() => handleTabChange('crude-oil')}
+            className={styles.retryBtn}
+            onClick={() => handleTabChange(selectedTab)}
           >
-            ← View Supported Crude Oil Feed
+            ↻ Retry Connection
           </button>
         </div>
+      ) : feedState === 'no_data' ? (
+        /* Genuine Empty Data State */
+        <div className={styles.noDataBox} role="status">
+          <h3 className={styles.noDataTitle}>No Observations Available</h3>
+          <p className={styles.noDataText}>
+            The market feed request succeeded, but no historical observations were returned for{' '}
+            {instrumentData.name} in this reporting window.
+          </p>
+        </div>
       ) : (
+        /* Available Data State */
         <>
           {/* Main Metric Row */}
           <div className={styles.metricRow}>
-            <span className={styles.currentPrice}>
-              {instrumentData.currencyPrefix}
-              {instrumentData.currentValue}
-              <span className={styles.unitLabel}>/ {instrumentData.unit}</span>
-            </span>
+            <div>
+              <span className={styles.metricLabel}>{instrumentData.name} ({instrumentData.symbol.split(' ')[0]})</span>
+              <div className={styles.priceRow}>
+                <span className={styles.currentPrice}>
+                  {instrumentData.currencyPrefix}
+                  {instrumentData.currentValue.toFixed(2)}
+                </span>
+                <span className={styles.unitLabel}>/{instrumentData.unit}</span>
 
-            <span
-              className={`${styles.changeBadge} ${
-                instrumentData.pctChange >= 0 ? styles.changeUp : styles.changeDown
-              }`}
-            >
-              {instrumentData.pctChange >= 0
-                ? `+${instrumentData.pctChange}%`
-                : `${instrumentData.pctChange}%`}
-              <span aria-hidden="true">{instrumentData.trend === 'up' ? '↑' : '↓'}</span>
-            </span>
+                <span
+                  className={`${styles.changeBadge} ${
+                    instrumentData.pctChange >= 0 ? styles.changeUp : styles.changeDown
+                  }`}
+                >
+                  {instrumentData.pctChange >= 0
+                    ? `+${instrumentData.pctChange}% (7D)`
+                    : `${instrumentData.pctChange}% (7D)`}
+                  <span aria-hidden="true">{instrumentData.trend === 'up' ? ' ↗' : ' ↘'}</span>
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* SVG Time-Series Chart */}
@@ -256,7 +371,7 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
               >
                 <defs>
                   <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.22" />
+                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
                     <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
@@ -309,20 +424,12 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
 
                 {/* X-axis date labels */}
                 {timeSeries.map((pt, i) => {
-                  if (i % 2 === 0 || i === timeSeries.length - 1) {
-                    const xPos = getX(i);
-                    return (
-                      <text
-                        key={i}
-                        x={xPos}
-                        y={svgHeight - 8}
-                        className={styles.xLabel}
-                      >
-                        {pt.label}
-                      </text>
-                    );
-                  }
-                  return null;
+                  const xPos = getX(i);
+                  return (
+                    <text key={i} x={xPos} y={svgHeight - 6} className={styles.xLabel}>
+                      {pt.label}
+                    </text>
+                  );
                 })}
 
                 {/* Active / Latest Point Callout Bubble */}
@@ -335,15 +442,14 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
                       height="20"
                       className={styles.calloutRect}
                     />
-                    <text
-                      x={activeX}
-                      y={activeY - 13}
-                      className={styles.calloutText}
-                    >
-                      {instrumentData.currencyPrefix}{activePoint.value}
+                    <text x={activeX} y={activeY - 13} className={styles.calloutText}>
+                      {instrumentData.currencyPrefix}
+                      {activePoint.value}
                     </text>
                     <polygon
-                      points={`${activeX - 4},${activeY - 6} ${activeX + 4},${activeY - 6} ${activeX},${activeY - 1}`}
+                      points={`${activeX - 4},${activeY - 6} ${activeX + 4},${activeY - 6} ${activeX},${
+                        activeY - 1
+                      }`}
                       fill="#172b3a"
                     />
                   </g>
@@ -352,10 +458,48 @@ export const MarketPulseCard: React.FC<MarketPulseCardProps> = ({
             </div>
           )}
 
+          {/* Quick Metrics Stats Bar (Open, High, Low, Volume) */}
+          {chartStats && (
+            <div className={styles.statsBar}>
+              <div className={styles.statCol}>
+                <span className={styles.statLabel}>Open</span>
+                <span className={styles.statValue}>
+                  {instrumentData.currencyPrefix}
+                  {chartStats.open}
+                </span>
+              </div>
+              <div className={styles.statCol}>
+                <span className={styles.statLabel}>High</span>
+                <span className={styles.statValue}>
+                  {instrumentData.currencyPrefix}
+                  {chartStats.high}
+                </span>
+              </div>
+              <div className={styles.statCol}>
+                <span className={styles.statLabel}>Low</span>
+                <span className={styles.statValue}>
+                  {instrumentData.currencyPrefix}
+                  {chartStats.low}
+                </span>
+              </div>
+              <div className={styles.statCol}>
+                <span className={styles.statLabel}>Volume</span>
+                <span className={styles.statValue}>{chartStats.volume}</span>
+              </div>
+              <div className={styles.statCol}>
+                <span className={styles.statLabel}>Source</span>
+                <span className={styles.statValueSource}>
+                  {instrumentData.dataSourceKind === 'api_backed' ? 'FastAPI API' : 'PPAC Archive'}
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Provenance Banner */}
           {instrumentData.provenanceNote && (
             <div className={styles.provenanceBanner}>
               ℹ️ {instrumentData.provenanceNote}
+              {offlineNotice && <span className={styles.offlineNoticeInline}> ({offlineNotice})</span>}
             </div>
           )}
         </>

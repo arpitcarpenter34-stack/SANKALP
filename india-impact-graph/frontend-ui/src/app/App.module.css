@@ -2,22 +2,75 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 1700px;
+  max-width: 1720px;
   margin: 0 auto;
+  width: 100%;
 }
 
-/* Quick Scenario Bar */
+/* 1. Overview Page Title & Subtitle */
+.overviewPageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 2px 0;
+}
+
+.overviewHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.overviewIconBadge {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.1);
+}
+
+.overviewTitleCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.overviewTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.overviewSubtitle {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* 2. Active Scenario Switcher Bar */
 .scenarioBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   padding: 8px 16px;
   box-shadow: var(--shadow-sm);
   flex-wrap: wrap;
   gap: 10px;
+  transition: all var(--transition-fast);
+}
+
+.scenarioBar:hover {
+  box-shadow: var(--shadow-card);
+  border-color: var(--border-medium);
 }
 
 .scenarioBarLeft {
@@ -32,25 +85,27 @@
 
 .scenarioLabel {
   font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .scenarioSelect {
   background-color: var(--bg-mint-subtle);
   border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
-  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
   font-size: 12px;
   font-weight: 600;
   color: var(--accent-emerald);
   cursor: pointer;
   outline: none;
   font-family: var(--font-sans);
+  transition: all var(--transition-fast);
 }
 
 .scenarioSelect:focus {
   border-color: var(--accent-emerald);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
 }
 
 .scenarioBarRight {
@@ -65,8 +120,8 @@
   gap: 6px;
   background-color: var(--bg-mint-subtle);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  padding: 5px 14px;
   font-size: 11.5px;
   font-weight: 600;
   color: var(--accent-emerald);
@@ -82,8 +137,8 @@
 .resetBtn {
   background: transparent;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  padding: 5px 12px;
   font-size: 11.5px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -94,26 +149,29 @@
 .resetBtn:hover {
   background-color: var(--bg-mint-subtle);
   color: var(--text-primary);
+  border-color: var(--border-medium);
 }
 
-/* Master 2-Column Dashboard Center Grid */
-.dashboardCenterGrid {
+/* 3. Full-Width Economic Impact Graph Section */
+.fullWidthGraphSection {
+  width: 100%;
+}
+
+/* 4. Three Cards Row below Graph */
+.threeCardsRow {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(320px, 0.95fr);
-  gap: 18px;
-  align-items: start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: stretch;
 }
 
-.graphColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.threeCardsRow > * {
+  height: 100%;
 }
 
-.cardsColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* 5. Forecast Projections collapsible / bottom wrapper */
+.forecastChartWrapper {
+  margin-top: 4px;
 }
 
 /* Error Alert Container */
@@ -158,7 +216,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(23, 43, 58, 0.5);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -204,7 +262,7 @@
 }
 
 @media (max-width: 1200px) {
-  .dashboardCenterGrid {
+  .threeCardsRow {
     grid-template-columns: 1fr;
   }
 }

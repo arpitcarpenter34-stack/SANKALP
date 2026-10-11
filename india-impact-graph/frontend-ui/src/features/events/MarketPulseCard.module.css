@@ -7,7 +7,7 @@
   flex-direction: column;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   transition: box-shadow 0.2s ease;
-  min-height: 380px;
+  min-height: 410px;
 }
 
 .card:hover {
@@ -27,6 +27,38 @@
   color: #172b3a;
   margin: 0;
   letter-spacing: -0.01em;
+}
+
+/* Timeframe Selector Pill Group */
+.timeframeGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: #f1f5f9;
+  padding: 2px;
+  border-radius: 6px;
+}
+
+.timeframeBtn {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.timeframeBtn:hover {
+  color: #172b3a;
+}
+
+.timeframeBtnActive {
+  background: #047857;
+  color: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(4, 120, 87, 0.25);
 }
 
 /* Instrument Switcher Tabs */
@@ -64,19 +96,34 @@
 }
 
 .tabBtnActive {
-  background: #e8f5ec !important;
-  color: #047857 !important;
+  background: #047857 !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
-  border-color: #10b981 !important;
-  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.08);
+  border-color: #047857 !important;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.2);
 }
 
 /* Metric Display Row */
 .metricRow {
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+}
+
+.metricLabel {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .currentPrice {
@@ -90,7 +137,7 @@
   font-size: 13px;
   font-weight: 500;
   color: #64748b;
-  margin-left: 2px;
+  margin-right: 8px;
 }
 
 .changeBadge {
@@ -102,11 +149,11 @@
 }
 
 .changeUp {
-  color: #ef4444;
+  color: #10b981;
 }
 
 .changeDown {
-  color: #10b981;
+  color: #ef4444;
 }
 
 /* SVG Chart Section */
@@ -114,7 +161,7 @@
   position: relative;
   flex: 1;
   width: 100%;
-  min-height: 180px;
+  min-height: 160px;
   display: flex;
   flex-direction: column;
 }
@@ -122,7 +169,7 @@
 .chartSvg {
   width: 100%;
   height: 100%;
-  min-height: 170px;
+  min-height: 155px;
   overflow: visible;
 }
 
@@ -139,7 +186,7 @@
 }
 
 .xLabel {
-  font-size: 10.5px;
+  font-size: 10px;
   fill: #64748b;
   text-anchor: middle;
 }
@@ -167,7 +214,7 @@
   fill: #047857;
 }
 
-/* Callout Bubble (matching $82.4 / Oct 12 on reference chart) */
+/* Callout Bubble */
 .chartCallout {
   pointer-events: none;
 }
@@ -182,6 +229,59 @@
   font-size: 10px;
   font-weight: 600;
   text-anchor: middle;
+}
+
+/* Bottom Stats Bar (Open, High, Low, Volume) */
+.statsBar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #eef2f6;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 6px;
+}
+
+.statCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statLabel {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: #172b3a;
+}
+
+.statValueSource {
+  font-size: 11px;
+  font-weight: 600;
+  color: #047857;
+}
+
+/* Provenance Note Banner */
+.provenanceBanner {
+  font-size: 10px;
+  color: #065f46;
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 6px;
+  padding: 5px 8px;
+  margin-top: 8px;
+  line-height: 1.35;
+}
+
+.offlineNoticeInline {
+  color: #b45309;
+  font-weight: 600;
 }
 
 /* Footer Metadata */
@@ -200,34 +300,57 @@
   color: #64748b;
 }
 
-@media (max-width: 768px) {
-  .card {
-    min-height: 320px;
+/* Loading State Box */
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 190px;
+  color: #64748b;
+  font-size: 12px;
+  gap: 10px;
+}
+
+.loadingSpinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #047857;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* Unavailable Market Feed State */
-.unavailableBox {
+/* Unsupported Instrument Box */
+.unsupportedBox {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 30px 16px;
-  background: #fefce8;
-  border: 1px dashed #fde047;
+  padding: 24px 18px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
   border-radius: 10px;
-  margin: 12px 0;
+  margin: 10px 0;
   flex: 1;
 }
 
-.unavailableBadge {
+.unsupportedBadge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 3px 10px;
-  background: #fef08a;
-  color: #854d0e;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 700;
@@ -236,19 +359,46 @@
   margin-bottom: 10px;
 }
 
-.unavailableTitle {
-  font-size: 14px;
+.unsupportedTitle {
+  font-size: 14.5px;
   font-weight: 700;
   color: #172b3a;
   margin: 0 0 6px;
 }
 
-.unavailableText {
+.unsupportedText {
   font-size: 12px;
-  color: #713f12;
+  color: #475569;
   margin: 0 0 14px;
-  max-width: 280px;
+  max-width: 380px;
   line-height: 1.45;
+}
+
+.unsupportedActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  max-width: 380px;
+}
+
+.switchFeedHint {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.switchFeedHint code {
+  background: #f1f5f9;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #047857;
+  font-size: 10.5px;
 }
 
 .switchFeedBtn {
@@ -270,25 +420,99 @@
   background: #065f46;
 }
 
-/* Provenance Note Banner */
-.provenanceBanner {
-  font-size: 10px;
-  color: #065f46;
-  background: #ecfdf5;
-  border: 1px solid #d1fae5;
-  border-radius: 6px;
-  padding: 5px 8px;
-  margin-top: 8px;
-  line-height: 1.35;
-}
-
-.loadingBox {
+/* Genuine Offline Box */
+.offlineBox {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  padding: 24px 18px;
+  background: #fef2f2;
+  border: 1px dashed #fca5a5;
+  border-radius: 10px;
+  margin: 10px 0;
   flex: 1;
-  min-height: 180px;
-  color: #64748b;
+}
+
+.offlineBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.offlineTitle {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #7f1d1d;
+  margin: 0 0 6px;
+}
+
+.offlineText {
   font-size: 12px;
-  gap: 8px;
+  color: #991b1b;
+  margin: 0 0 14px;
+  max-width: 320px;
+  line-height: 1.45;
+}
+
+.retryBtn {
+  padding: 6px 14px;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.retryBtn:hover {
+  background: #b91c1c;
+}
+
+/* No Data Box */
+.noDataBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 18px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  margin: 10px 0;
+  flex: 1;
+}
+
+.noDataTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #172b3a;
+  margin: 0 0 6px;
+}
+
+.noDataText {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .card {
+    min-height: 340px;
+  }
+  .statsBar {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

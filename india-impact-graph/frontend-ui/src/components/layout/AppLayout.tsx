@@ -53,6 +53,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         activeNavTab={activeNavTab}
         onSelectNavTab={onSelectNavTab}
         activeSidebarTab={activeSidebarTab}
+        onSelectSidebarTab={onSelectSidebarTab}
       />
 
       {/* 2. Main Body with Sidebar + Content */}

@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EventScenario, TransmissionAnalysisState } from '../../types';
 import styles from './ScenarioWorkspace.module.css';
+
+export interface MacroCalibrations {
+  dieselPassThrough: string;
+  targetGeography: string;
+  policyCushion: string;
+}
 
 export interface ScenarioWorkspaceProps {
   scenarios: EventScenario[];
   analysisState: TransmissionAnalysisState;
   onAnalyze: (scenarioId: string, customText?: string, simulateError?: boolean) => void;
   onResetToIdle?: () => void;
+  onClose?: () => void;
 }
 
 export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
@@ -14,6 +21,7 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
   analysisState,
   onAnalyze,
   onResetToIdle,
+  onClose,
 }) => {
   const [activeTab, setActiveTab] = useState<'presets' | 'custom'>('presets');
   const [selectedId, setSelectedId] = useState<string>(analysisState.selectedScenario.id);
@@ -23,15 +31,43 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
   const [validationError, setValidationError] = useState<string | null>(null);
   const [testSimulateError, setTestSimulateError] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [analysisSuccessMsg, setAnalysisSuccessMsg] = useState<string | null>(null);
+
+  // Calibrations State
+  const [dieselPassThrough, setDieselPassThrough] = useState<string>('14–21 Days (Baseline)');
+  const [targetGeography, setTargetGeography] = useState<string>('Madhya Pradesh (Baseline)');
+  const [policyCushion, setPolicyCushion] = useState<string>('State VAT Buffer (Baseline)');
 
   const activeScenario =
     selectedId === 'custom'
       ? null
       : scenarios.find((s) => s.id === selectedId) || scenarios[0];
 
+  // Sync selectedId with incoming analysisState when not analyzing custom
+  useEffect(() => {
+    if (analysisState.selectedScenario?.id && analysisState.selectedScenario.id !== 'custom') {
+      setSelectedId(analysisState.selectedScenario.id);
+      if (analysisState.selectedScenario.fullArticleText) {
+        setCustomText(analysisState.selectedScenario.fullArticleText);
+      }
+    }
+  }, [analysisState.selectedScenario]);
+
+  // Handle successful analysis completion
+  useEffect(() => {
+    if (analysisState.status === 'analyzed') {
+      setAnalysisSuccessMsg('✓ Transmission evaluated successfully. Graph and household models updated.');
+      const timer = setTimeout(() => {
+        setAnalysisSuccessMsg(null);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [analysisState.status]);
+
   const handleScenarioChange = (newId: string) => {
     setSelectedId(newId);
     setValidationError(null);
+    setAnalysisSuccessMsg(null);
     if (newId !== 'custom') {
       const match = scenarios.find((s) => s.id === newId);
       if (match?.fullArticleText) {
@@ -46,6 +82,7 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
   const handleTabSwitch = (tab: 'presets' | 'custom') => {
     setActiveTab(tab);
     setValidationError(null);
+    setAnalysisSuccessMsg(null);
     if (tab === 'custom') {
       setSelectedId('custom');
       if (activeScenario && customText === activeScenario.fullArticleText) {
@@ -62,41 +99,99 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
   };
 
   const handleTriggerAnalysis = () => {
-    if (activeTab === 'custom' && (!customText || customText.trim().length === 0)) {
-      setValidationError('Please paste or type a financial news excerpt before running custom analysis.');
-      return;
+    if (activeTab === 'custom') {
+      const trimmed = customText.trim();
+      if (!trimmed) {
+        setValidationError('Please paste or type a financial news excerpt before running custom analysis.');
+        return;
+      }
+      if (trimmed.length < 15) {
+        setValidationError('Excerpt is too short (minimum 15 characters required for causal extraction).');
+        return;
+      }
+      if (trimmed.length > 3000) {
+        setValidationError(`Excerpt exceeds 3,000 characters limit (${trimmed.length} characters entered).`);
+        return;
+      }
     }
     setValidationError(null);
+    setAnalysisSuccessMsg(null);
     onAnalyze(selectedId, customText, testSimulateError);
   };
 
-  const handleRestoreScenarioText = () => {
-    if (activeScenario?.fullArticleText) {
-      setCustomText(activeScenario.fullArticleText);
-      setValidationError(null);
+  const handleRetryAfterError = () => {
+    setTestSimulateError(false);
+    setValidationError(null);
+    onAnalyze(selectedId, customText, false);
+  };
+
+  const handleResetToDefaults = () => {
+    const defaultSc = scenarios[0];
+    setSelectedId(defaultSc.id);
+    setActiveTab('presets');
+    if (defaultSc.fullArticleText) {
+      setCustomText(defaultSc.fullArticleText);
     }
+    setDieselPassThrough('14–21 Days (Baseline)');
+    setTargetGeography('Madhya Pradesh (Baseline)');
+    setPolicyCushion('State VAT Buffer (Baseline)');
+    setTestSimulateError(false);
+    setValidationError(null);
+    setAnalysisSuccessMsg('Restored benchmark scenario defaults.');
+    setTimeout(() => setAnalysisSuccessMsg(null), 2000);
     if (onResetToIdle) {
       onResetToIdle();
     }
   };
 
+  // Node & Edge estimation based on scenario
+  const getNodeEdgeCounts = () => {
+    if (selectedId === 'crude-oil-12pct') return { nodes: 9, edges: 7 };
+    if (selectedId === 'edible-oil-tariff') return { nodes: 6, edges: 5 };
+    if (selectedId === 'wheat-procurement-spike') return { nodes: 6, edges: 5 };
+    return { nodes: 5, edges: 4 };
+  };
+  const { nodes: estNodes, edges: estEdges } = getNodeEdgeCounts();
+
   return (
-    <div className={styles.scenarioCard}>
-      {/* 1. Header with Icon */}
+    <div
+      className={styles.scenarioCard}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="scenario-workspace-title"
+    >
+      {/* 1. Header with Icon and Close Button */}
       <div className={styles.header}>
-        <div className={styles.headerIcon}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d9ff" strokeWidth="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" y1="13" x2="8" y2="13" />
-            <line x1="16" y1="17" x2="8" y2="17" />
-            <polyline points="10 9 9 9 8 9" />
-          </svg>
+        <div className={styles.headerLeft}>
+          <div className={styles.headerIcon}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d9ff" strokeWidth="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+          </div>
+          <div className={styles.headerText}>
+            <h2 id="scenario-workspace-title" className={styles.title}>
+              Scenario Input &amp; Testbench
+            </h2>
+            <p className={styles.subtitle}>
+              Analyze global events and evaluate macroeconomic transmission onto India
+            </p>
+          </div>
         </div>
-        <div className={styles.headerText}>
-          <h2 className={styles.title}>Scenario Input</h2>
-          <p className={styles.subtitle}>Analyze global events and see their impact on India</p>
-        </div>
+
+        {onClose && (
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label="Close Scenario Testbench"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       <div className={styles.body}>
@@ -122,7 +217,7 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
           </button>
         </div>
 
-        {/* 3. Scenario Selector Dropdown */}
+        {/* 3. Preset Scenario Selector Dropdown */}
         {activeTab === 'presets' ? (
           <div className={styles.sectionGroup}>
             <label htmlFor="benchmark-select" className={styles.sectionLabel}>
@@ -150,14 +245,20 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
               <span className={styles.selectChevron}>▾</span>
             </div>
 
-            {/* Badges Row */}
+            {/* Badges Row with truthful provenance distinctions */}
             <div className={styles.badgeRow}>
               <span className={styles.cyanBadge}>
                 ★ Magnitude: {activeScenario?.magnitude || '+12.0%'}
               </span>
-              <span className={styles.amberBadge}>
-                ★ Hypothetical (Demo)
-              </span>
+              {activeScenario?.isHypotheticalScenario ? (
+                <span className={styles.amberBadge}>
+                  ★ Synthetic Benchmark (Demo Fixture)
+                </span>
+              ) : (
+                <span className={styles.greenBadge}>
+                  ✓ Verified Historical Event
+                </span>
+              )}
             </div>
           </div>
         ) : null}
@@ -167,13 +268,13 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
           <div className={styles.sectionHeaderBetween}>
             <label htmlFor="article-text-box" className={styles.sectionLabel}>
               <span className={styles.sectionLabelBar} />
-              {activeTab === 'custom' ? 'Custom Financial News Excerpt' : 'Scenario Reference'}
+              {activeTab === 'custom' ? 'Custom Financial News Excerpt' : 'Scenario Reference & Provenance'}
             </label>
             <button
               type="button"
-              onClick={handleRestoreScenarioText}
+              onClick={handleResetToDefaults}
               className={styles.resetLink}
-              title="Reset to scenario defaults"
+              title="Reset to benchmark scenario defaults"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -193,25 +294,35 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
                   setCustomText(e.target.value);
                   if (validationError) setValidationError(null);
                 }}
-                placeholder="Paste financial news dispatch (e.g. Brent crude escalates past $90/bbl as OPEC+ reduces output...)"
+                placeholder="Paste financial news dispatch (e.g., Brent crude escalates past $90/bbl as OPEC+ reduces output by 1.2M barrels/day...)"
                 rows={4}
+                maxLength={3200}
                 disabled={analysisState.status === 'loading'}
               />
-              {validationError && (
-                <div className={styles.errorMessage} role="alert">
-                  ⚠️ {validationError}
-                </div>
-              )}
+              <div className={styles.textareaMetaRow}>
+                <p className={styles.customDisclaimer}>
+                  ℹ️ Custom user text evaluated via Reader NLP pipeline (FastAPI) or deterministic keyword parser. Unverified dispatches carry [UNVERIFIED] receipt.
+                </p>
+                <span className={styles.charCount}>
+                  {customText.length} / 3000 chars
+                </span>
+              </div>
             </div>
           ) : (
             <div className={styles.referenceCard}>
+              {activeScenario?.headline && (
+                <p className={styles.referenceHeadline}>
+                  {activeScenario.headline}
+                </p>
+              )}
+
               <p className={styles.referenceText}>
                 {isExpanded
                   ? customText
-                  : customText.length > 180
-                  ? `${customText.slice(0, 180)}...`
+                  : customText.length > 200
+                  ? `${customText.slice(0, 200)}...`
                   : customText}
-                {customText.length > 180 && (
+                {customText.length > 200 && (
                   <button
                     type="button"
                     className={styles.readMoreBtn}
@@ -221,6 +332,47 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
                   </button>
                 )}
               </p>
+
+              {/* Verified Source Provenance Metadata */}
+              {activeScenario?.sourceReceipt && (
+                <div className={styles.provenanceBox}>
+                  <div className={styles.provenanceRow}>
+                    <span>
+                      <strong>Provenance:</strong> {activeScenario.sourceReceipt.publisher} ({activeScenario.sourceReceipt.vintageYear})
+                    </span>
+                    <span style={{ color: '#047857', fontWeight: 600 }}>
+                      {activeScenario.sourceReceipt.verificationStatus}
+                    </span>
+                  </div>
+
+                  {activeScenario.sourceReceipt.sourceUrl && (
+                    <div className={styles.provenanceRow}>
+                      <a
+                        href={activeScenario.sourceReceipt.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={styles.provenanceLink}
+                      >
+                        Official Benchmark Documentation ↗
+                      </a>
+                    </div>
+                  )}
+
+                  {activeScenario.sourceReceipt.caveats && activeScenario.sourceReceipt.caveats.length > 0 && (
+                    <ul className={styles.caveatsList}>
+                      {activeScenario.sourceReceipt.caveats.map((c, i) => (
+                        <li key={i}>{c}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {validationError && (
+            <div className={styles.errorMessage} role="alert">
+              <span>⚠️ {validationError}</span>
             </div>
           )}
         </div>
@@ -241,43 +393,65 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
                     ? 'Import Tariff Pass-through'
                     : selectedId === 'wheat-procurement-spike'
                     ? 'Mandi MSP+ Spread'
-                    : 'OMC: Diesel Pass-through'}
+                    : 'OMC Diesel Pass-through'}
+                  <span className={styles.paramBadge}>Lag</span>
                 </span>
               </div>
-              <span className={styles.calValue}>
-                {selectedId === 'edible-oil-tariff'
-                  ? '10–15 Days'
-                  : selectedId === 'wheat-procurement-spike'
-                  ? 'Localized Lag'
-                  : '14–21 Days'}
-              </span>
+              <select
+                className={styles.calSelect}
+                value={dieselPassThrough}
+                onChange={(e) => setDieselPassThrough(e.target.value)}
+                aria-label="OMC Diesel Pass-through Lag"
+              >
+                <option value="14–21 Days (Baseline)">14–21 Days (Baseline)</option>
+                <option value="7–10 Days (Accelerated)">7–10 Days (Accelerated)</option>
+                <option value="Immediate (Direct Wholesale)">Immediate (Direct Wholesale)</option>
+              </select>
             </div>
 
             <div className={styles.calibrationItem}>
               <div className={styles.calibrationLeft}>
                 <span className={styles.calIcon}>📍</span>
-                <span>Target Geography</span>
+                <span>
+                  Target Geography
+                  <span className={styles.paramBadge}>Archetype</span>
+                </span>
               </div>
-              <span className={styles.calValue}>Madhya Pradesh (Baseline)</span>
+              <select
+                className={styles.calSelect}
+                value={targetGeography}
+                onChange={(e) => setTargetGeography(e.target.value)}
+                aria-label="Target Geography Archetype"
+              >
+                <option value="Madhya Pradesh (Baseline)">Madhya Pradesh (Baseline)</option>
+                <option value="All-India Urban">All-India Urban</option>
+                <option value="All-India Rural">All-India Rural</option>
+              </select>
             </div>
 
             <div className={styles.calibrationItem}>
               <div className={styles.calibrationLeft}>
                 <span className={styles.calIcon}>🛡</span>
-                <span>Policy Cushion</span>
+                <span>
+                  Policy Cushion
+                  <span className={styles.paramBadge}>Fiscal</span>
+                </span>
               </div>
-              <span className={styles.calValue}>
-                {selectedId === 'wheat-procurement-spike'
-                  ? 'PMGKAY Free Grain'
-                  : selectedId === 'edible-oil-tariff'
-                  ? 'PDS Cooking Oil'
-                  : 'State VAT Buffer'}
-              </span>
+              <select
+                className={styles.calSelect}
+                value={policyCushion}
+                onChange={(e) => setPolicyCushion(e.target.value)}
+                aria-label="Fiscal Policy Cushion Buffer"
+              >
+                <option value="State VAT Buffer (Baseline)">State VAT Buffer (Baseline)</option>
+                <option value="Excise Cut Absorption">Excise Cut Absorption</option>
+                <option value="No Cushion (Direct Shock)">No Cushion (Direct Shock)</option>
+              </select>
             </div>
           </div>
         </div>
 
-        {/* 6. Error Simulation Checkbox */}
+        {/* 6. Test-Only Failure Simulation Checkbox */}
         <div className={styles.checkboxRow}>
           <label className={styles.checkboxLabel}>
             <input
@@ -286,9 +460,33 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
               onChange={(e) => setTestSimulateError(e.target.checked)}
               className={styles.styledCheckbox}
             />
-            <span>Simulate transmission evaluation failure <span className={styles.testNote}>(test error state)</span></span>
+            <span>
+              [Testbench Only] Simulate transmission evaluation failure{' '}
+              <span className={styles.testNote}>(verifies error boundaries &amp; retry)</span>
+            </span>
           </label>
         </div>
+
+        {/* Dynamic Error State with Retry Button */}
+        {analysisState.status === 'error' && (
+          <div className={styles.errorMessage} role="alert">
+            <span>⚠️ {analysisState.errorMessage}</span>
+            <button
+              type="button"
+              className={styles.retryBtn}
+              onClick={handleRetryAfterError}
+            >
+              ↻ Retry
+            </button>
+          </div>
+        )}
+
+        {/* Success Banner */}
+        {analysisSuccessMsg && (
+          <div className={styles.successBanner} role="status">
+            {analysisSuccessMsg}
+          </div>
+        )}
 
         {/* 7. Primary Action Button */}
         <button
@@ -314,11 +512,15 @@ export const ScenarioWorkspace: React.FC<ScenarioWorkspaceProps> = ({
         <div className={styles.footerNotes}>
           <div className={styles.footerNoteItem}>
             <span>⏱</span>
-            <span>Estimated analysis time: ~10 seconds</span>
+            <span>
+              Estimated analysis time: ~350ms (Deterministic Engine) • Live API: ~1.2s
+            </span>
           </div>
           <div className={styles.footerNoteItem}>
             <span>ℹ</span>
-            <span>Evaluates 9 nodes and 7 causal edges</span>
+            <span>
+              Evaluates {estNodes} nodes and {estEdges} causal edges for &quot;{activeScenario?.title || 'Selected Scenario'}&quot;
+            </span>
           </div>
         </div>
       </div>

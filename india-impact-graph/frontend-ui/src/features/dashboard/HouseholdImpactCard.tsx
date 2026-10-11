@@ -9,12 +9,11 @@ export interface HouseholdImpactCardProps {
 }
 
 const SPENDING_CATEGORIES = [
-  { id: 'food', label: 'Food & Groceries', pct: 45, color: '#10B981' },
-  { id: 'transport', label: 'Transport (Fuel)', pct: 15, color: '#0D9488' },
-  { id: 'housing', label: 'Housing & Utilities', pct: 20, color: '#0284C7' },
-  { id: 'healthcare', label: 'Healthcare', pct: 8, color: '#2DD4BF' },
-  { id: 'education', label: 'Education', pct: 7, color: '#60A5FA' },
-  { id: 'others', label: 'Others', pct: 5, color: '#94A3B8' },
+  { id: 'food', label: 'Food & Groceries', pct: 28, color: '#047857' },
+  { id: 'housing', label: 'Housing & Utilities', pct: 22, color: '#0284C7' },
+  { id: 'education', label: 'Education', pct: 12, color: '#0D9488' },
+  { id: 'healthcare', label: 'Healthcare', pct: 10, color: '#2DD4BF' },
+  { id: 'others', label: 'Others', pct: 10, color: '#94A3B8' },
 ];
 
 export const HouseholdImpactCard: React.FC<HouseholdImpactCardProps> = ({
@@ -35,9 +34,23 @@ export const HouseholdImpactCard: React.FC<HouseholdImpactCardProps> = ({
 
   return (
     <div className={styles.card}>
-      {/* 1. Header */}
+      {/* 1. Header with Title & Subtitle + Edit button */}
       <div className={styles.header}>
-        <h3 className={styles.title}>Household Impact</h3>
+        <div className={styles.headerLeft}>
+          <div className={styles.iconCircle}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <div className={styles.titleCol}>
+            <h3 className={styles.title}>Household Impact</h3>
+            <span className={styles.subtitle}>Estimated impact on your monthly budget and expenses</span>
+          </div>
+        </div>
+
         <button
           type="button"
           className={styles.editBtn}
@@ -90,7 +103,8 @@ export const HouseholdImpactCard: React.FC<HouseholdImpactCardProps> = ({
             className={styles.viewDetailsBtn}
             onClick={onViewDetails}
           >
-            View details
+            <span>View details</span>
+            <span aria-hidden="true">→</span>
           </button>
         </div>
 
@@ -100,7 +114,7 @@ export const HouseholdImpactCard: React.FC<HouseholdImpactCardProps> = ({
             <div
               key={cat.id}
               className={styles.segment}
-              style={{ width: `${cat.pct}%`, backgroundColor: cat.color }}
+              style={{ width: `${cat.pct * 1.4}%`, backgroundColor: cat.color }}
               title={`${cat.label}: ${cat.pct}%`}
             />
           ))}
@@ -111,7 +125,9 @@ export const HouseholdImpactCard: React.FC<HouseholdImpactCardProps> = ({
           {SPENDING_CATEGORIES.map((cat) => (
             <div key={cat.id} className={styles.legendItem}>
               <span className={styles.legendDot} style={{ backgroundColor: cat.color }} />
-              <span className={styles.legendLabel}>{cat.label}</span>
+              <span className={styles.legendLabel}>
+                {cat.label} <strong>{cat.pct}%</strong>
+              </span>
             </div>
           ))}
         </div>

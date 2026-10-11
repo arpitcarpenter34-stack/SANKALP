@@ -1,0 +1,148 @@
+.card {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: var(--radius-lg, 12px);
+  padding: 20px 22px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(16, 24, 40, 0.05));
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: scale(1.012);
+  box-shadow: 0 6px 18px rgba(4, 120, 87, 0.08);
+  border-color: var(--border-medium, #d1e3d7);
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary, #172b3a);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #5a7184);
+  margin: 2px 0 0 0;
+}
+
+.sectionLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a7184);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.defaultViewGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.viewTile {
+  background: var(--bg-card-subtle, #f7fcf9);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 8px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 180ms ease;
+}
+
+.viewTile:hover {
+  border-color: var(--accent-emerald, #047857);
+  background: var(--bg-mint-subtle, #f0f9f3);
+}
+
+.viewTileSelected {
+  border-color: #047857 !important;
+  background: #ecfdf5 !important;
+  box-shadow: 0 0 0 1px #047857;
+}
+
+.checkBadge {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #047857;
+  color: #ffffff;
+  font-size: 0.58rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tileIcon {
+  font-size: 1.15rem;
+}
+
+.tileLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-primary, #172b3a);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.selectGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 14px;
+  margin-top: auto;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a7184);
+  margin-bottom: 4px;
+}
+
+.select {
+  padding: 7px 10px;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  background: var(--bg-card-subtle, #f7fcf9);
+  color: var(--text-primary, #172b3a);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.select:focus {
+  border-color: var(--accent-emerald, #047857);
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+  background: var(--bg-surface, #ffffff);
+}
+
+@media (max-width: 600px) {
+  .defaultViewGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .selectGrid {
+    grid-template-columns: 1fr;
+  }
+}

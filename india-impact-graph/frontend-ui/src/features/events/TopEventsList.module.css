@@ -7,7 +7,7 @@
   flex-direction: column;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   transition: box-shadow 0.2s ease;
-  min-height: 380px;
+  min-height: 410px;
 }
 
 .card:hover {
@@ -15,7 +15,10 @@
 }
 
 .cardHeader {
-  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
 .cardTitle {
@@ -24,6 +27,23 @@
   color: #172b3a;
   margin: 0;
   letter-spacing: -0.01em;
+}
+
+.viewAllBtn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #047857;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.viewAllBtn:hover {
+  text-decoration: underline;
+  background: #e8f5ec;
 }
 
 .eventsList {
@@ -36,10 +56,10 @@
 .eventRow {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 8px 12px;
   border-radius: 10px;
-  border: 1px solid transparent;
+  border: 1px solid #edf2ee;
   background: #ffffff;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -58,13 +78,28 @@
   box-shadow: 0 1px 4px rgba(4, 120, 87, 0.08);
 }
 
-.rankNumber {
-  font-size: 14px;
+.rankBadge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
   font-weight: 700;
   color: #172b3a;
-  width: 18px;
-  text-align: center;
   flex-shrink: 0;
+}
+
+.rankBadgeFirst {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.eventRowSelected .rankBadge {
+  background: #10b981;
+  color: #ffffff;
 }
 
 .eventContent {
@@ -77,7 +112,7 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 .eventTitle {
@@ -94,20 +129,11 @@
   font-weight: 700;
 }
 
-.eventExplanation {
-  font-size: 11.5px;
-  color: #64748b;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .badgeRow {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 .severityBadge {
@@ -160,21 +186,58 @@
   color: #64748b;
 }
 
+.eventExplanation {
+  font-size: 11.5px;
+  color: #64748b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .eventDate {
   font-size: 11px;
   color: #94a3b8;
   white-space: nowrap;
   flex-shrink: 0;
+  margin-right: 4px;
 }
 
-@media (max-width: 768px) {
-  .eventRow {
-    gap: 10px;
-    padding: 8px 10px;
-  }
-  .eventTitleRow {
-    gap: 6px;
-  }
+.thumbWrapper {
+  width: 52px;
+  height: 34px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #e2e8f0;
+}
+
+.eventThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.viewMoreRowBtn {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.viewMoreRowBtn:hover {
+  background: #e8f5ec;
+  color: #047857;
+  border-color: #a7f3d0;
 }
 
 .emptyState {
@@ -185,4 +248,14 @@
   background: #f8fafc;
   border-radius: 8px;
   border: 1px dashed #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .eventRow {
+    gap: 8px;
+    padding: 8px 8px;
+  }
+  .thumbWrapper {
+    display: none;
+  }
 }

@@ -3,9 +3,10 @@
   flex-direction: column;
   width: 220px;
   min-width: 220px;
-  background-color: var(--bg-surface);
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
   border-right: 1px solid var(--border-subtle);
-  padding: 16px 12px;
+  padding: 14px 10px;
   box-sizing: border-box;
   transition: width var(--transition-normal);
   overflow-y: auto;
@@ -15,50 +16,26 @@
 .sidebar.collapsed {
   width: 64px;
   min-width: 64px;
-  padding: 16px 8px;
+  padding: 14px 6px;
 }
 
-.brandRow {
+.topControlRow {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 8px 16px 8px;
-  border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 12px;
-}
-
-.brandLogo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.brandTitleCol {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.brandName {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
+  justify-content: flex-end;
+  padding: 0 4px 8px 4px;
 }
 
 .collapseToggle {
-  margin-left: auto;
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px;
   border-radius: var(--radius-sm);
-  transition: background-color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .collapseToggle:hover {
@@ -74,7 +51,7 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   padding: 0;
   margin: 0;
 }
@@ -93,7 +70,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
@@ -110,6 +87,7 @@
   background-color: var(--bg-mint) !important;
   color: var(--accent-emerald) !important;
   font-weight: 600;
+  box-shadow: 0 1px 2px rgba(4, 120, 87, 0.06);
 }
 
 .navIcon {
@@ -126,7 +104,6 @@
 }
 
 .collapsed .navLabel,
-.collapsed .brandTitleCol,
 .collapsed .statusSection,
 .collapsed .sidebarFooter {
   display: none;
@@ -140,11 +117,11 @@
 /* Status section */
 .statusSection {
   margin-top: 14px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .statusCard {
-  background-color: var(--bg-mint-subtle);
+  background-color: #F0FAF4;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 8px 10px;
@@ -173,10 +150,11 @@
   color: var(--text-primary);
 }
 
-.signalIcon {
+.infoHint {
   margin-left: auto;
-  color: var(--accent-emerald);
-  display: flex;
+  font-size: 11px;
+  color: #94A3B8;
+  cursor: help;
 }
 
 .statusSubtitle {
@@ -200,7 +178,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .footerBrandCol {
@@ -213,12 +191,20 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .footerTagline {
-  font-size: 10px;
+  font-size: 9.5px;
   color: var(--text-muted);
   line-height: 1.3;
+}
+
+.footerVersion {
+  font-size: 9px;
+  color: #94A3B8;
+  font-family: var(--font-mono);
+  margin-top: 2px;
 }
 
 @media (max-width: 768px) {
@@ -231,7 +217,7 @@
     border-bottom: 1px solid var(--border-subtle);
   }
 
-  .brandRow,
+  .topControlRow,
   .statusSection,
   .sidebarFooter {
     display: none;

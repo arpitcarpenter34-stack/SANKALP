@@ -61,9 +61,14 @@ export const GlobalEventsView: React.FC<GlobalEventsViewProps> = ({
   // Filtered Events based on active category AND genuine date filtering
   const filteredEvents = useMemo(() => {
     return GLOBAL_EVENTS_DATA.filter((ev) => {
-      // 1. Category check
-      if (activeCategory !== 'all' && ev.category !== activeCategory) {
-        return false;
+      // 1. Category check (matches primary category or categories array)
+      if (activeCategory !== 'all') {
+        const matchesPrimary = ev.category === activeCategory;
+        const matchesSecondary =
+          Array.isArray(ev.categories) && ev.categories.includes(activeCategory);
+        if (!matchesPrimary && !matchesSecondary) {
+          return false;
+        }
       }
 
       // 2. Date filtering
@@ -384,15 +389,18 @@ export const GlobalEventsView: React.FC<GlobalEventsViewProps> = ({
         </div>
       )}
 
-      {/* 3. Upper Grid (3 Columns: Map, Top Events List, Market Pulse) */}
-      <div className={styles.upperGrid}>
+      {/* 3. Global Event Map (Full Available Content Width) */}
+      <div className={styles.mapRow}>
         <GlobalEventMap
           events={filteredEvents}
           selectedEventId={activeEvent?.id}
           onSelectEvent={handleSelectEvent}
           reportingPeriodLabel={periodLabel}
         />
+      </div>
 
+      {/* 4. Mid Grid (Top Global Events & Market Pulse Below Map) */}
+      <div className={styles.midGrid}>
         <TopEventsList
           events={filteredEvents}
           selectedEventId={activeEvent?.id}

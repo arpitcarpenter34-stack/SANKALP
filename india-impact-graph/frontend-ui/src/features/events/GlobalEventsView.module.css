@@ -271,10 +271,15 @@
   border-color: #047857;
 }
 
-/* Upper 3-Column Grid */
-.upperGrid {
+/* Full Content Width Map Row */
+.mapRow {
+  width: 100%;
+}
+
+/* Mid 2-Column Grid (Top Global Events & Market Pulse) */
+.midGrid {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 0.9fr;
+  grid-template-columns: 1.15fr 0.85fr;
   gap: 16px;
   align-items: stretch;
 }
@@ -282,7 +287,7 @@
 /* Lower 2-Column Grid */
 .lowerGrid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.15fr 0.85fr;
   gap: 16px;
   align-items: stretch;
 }
@@ -301,12 +306,9 @@
   font-weight: 500;
 }
 
-@media (max-width: 1200px) {
-  .upperGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .upperGrid > :nth-child(3) {
-    grid-column: span 2;
+@media (max-width: 1024px) {
+  .midGrid {
+    grid-template-columns: 1fr;
   }
   .lowerGrid {
     grid-template-columns: 1fr;
@@ -314,12 +316,6 @@
 }
 
 @media (max-width: 768px) {
-  .upperGrid {
-    grid-template-columns: 1fr;
-  }
-  .upperGrid > :nth-child(3) {
-    grid-column: span 1;
-  }
   .dateRangeWrapper {
     margin-left: 0;
   }

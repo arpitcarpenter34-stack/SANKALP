@@ -1,0 +1,93 @@
+.card {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: var(--radius-lg, 12px);
+  padding: 20px 22px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(16, 24, 40, 0.05));
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: scale(1.012);
+  box-shadow: 0 6px 18px rgba(4, 120, 87, 0.08);
+  border-color: var(--border-medium, #d1e3d7);
+}
+
+.header {
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary, #172b3a);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #5a7184);
+  margin: 2px 0 0 0;
+}
+
+.groupList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.groupItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.groupLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a7184);
+}
+
+.segmentedRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.segmentBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  background: var(--bg-card-subtle, #f7fcf9);
+  color: var(--text-secondary, #5a7184);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+  white-space: nowrap;
+}
+
+.segmentBtn:hover {
+  background: var(--bg-mint-subtle, #f0f9f3);
+  color: var(--text-primary, #172b3a);
+  border-color: var(--border-medium, #d1e3d7);
+}
+
+.segmentBtnActive {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.15);
+}
+
+.segmentIcon {
+  font-size: 0.85rem;
+}

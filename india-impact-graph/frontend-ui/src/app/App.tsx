@@ -3,6 +3,7 @@ import { AppLayout } from '../components/layout/AppLayout';
 import { SummaryMetrics } from '../features/dashboard/SummaryMetrics';
 import { HouseholdImpactCard } from '../features/dashboard/HouseholdImpactCard';
 import { SipAffordabilityCard } from '../features/dashboard/SipAffordabilityCard';
+import { ForecastHorizonCard } from '../features/dashboard/ForecastHorizonCard';
 import { NewsSignalsCard } from '../features/dashboard/NewsSignalsCard';
 import { ExpenseForecastChart } from '../features/dashboard/ExpenseForecastChart';
 import { AiAssistantDrawer } from '../features/dashboard/AiAssistantDrawer';
@@ -12,10 +13,12 @@ import { ImpactGraphView } from '../features/graph/ImpactGraphView';
 import { SectorsView } from '../features/sectors/SectorsView';
 import { HouseholdView } from '../features/household/HouseholdView';
 import { SipForecastsView } from '../features/forecasts/SipForecastsView';
+import { ForecastHorizonModal } from '../features/forecasts/ForecastHorizonModal';
 import { NewsInsightsView } from '../features/news/NewsInsightsView';
 import { ConsumptionView } from '../features/consumption';
 import { ComparisonView } from '../features/comparison';
 import { MethodologyView } from '../features/methodology';
+import { SettingsView, loadSettingsFromStorage, applyTheme } from '../features/settings';
 import { HouseholdAssumptions } from '../features/household/types';
 import { PROFILE_PRESETS } from '../features/household/householdData';
 import { scenarioService } from '../services/api/scenarioService';
@@ -32,7 +35,31 @@ import {
   HouseholdImpactSlotProps,
   EvidencePanelSlotProps,
 } from '../types';
+import { useAuth } from '@clerk/react';
+import { AuthScreen } from '../features/auth/AuthScreen';
 import styles from './App.module.css';
+
+interface ClerkAuthSyncProps {
+  onAuthStateChange: (state: { isSignedIn: boolean; isLoaded: boolean }) => void;
+}
+
+const ClerkAuthSync: React.FC<ClerkAuthSyncProps> = ({ onAuthStateChange }) => {
+  const { getToken, isSignedIn, isLoaded } = useAuth();
+
+  useEffect(() => {
+    onAuthStateChange({ isSignedIn: Boolean(isSignedIn), isLoaded: Boolean(isLoaded) });
+  }, [isSignedIn, isLoaded, onAuthStateChange]);
+
+  useEffect(() => {
+    if (isSignedIn && getToken) {
+      apiClient.setTokenGetter(getToken);
+    } else {
+      apiClient.setTokenGetter(null);
+    }
+  }, [isSignedIn, getToken]);
+
+  return null;
+};
 
 export interface AppProps {
   customGraphCanvas?: React.ComponentType<GraphCanvasSlotProps>;
@@ -45,6 +72,17 @@ export const App: React.FC<AppProps> = ({
   customHouseholdImpact: CustomHouseholdImpact,
   customEvidencePanel: CustomEvidencePanel,
 }) => {
+  const isClerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+  const [isGuestMode, setIsGuestMode] = useState<boolean>(false);
+  const [clerkState, setClerkState] = useState<{ isSignedIn: boolean; isLoaded: boolean }>({
+    isSignedIn: false,
+    isLoaded: !isClerkConfigured,
+  });
+
+  const handleAuthStateChange = React.useCallback((state: { isSignedIn: boolean; isLoaded: boolean }) => {
+    setClerkState(state);
+  }, []);
+
   const [scenarios] = useState<EventScenario[]>(MOCK_SCENARIOS);
   const [isAiOff, setIsAiOff] = useState<boolean>(false);
   const [selectedPath, setSelectedPath] = useState<PropagationPathCategory | 'all'>('all');
@@ -55,15 +93,21 @@ export const App: React.FC<AppProps> = ({
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState<boolean>(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState<boolean>(false);
   const [isScenarioWorkspaceOpen, setIsScenarioWorkspaceOpen] = useState<boolean>(false);
+  const [forecastHorizon, setForecastHorizon] = useState<number>(6);
+  const [isForecastModalOpen, setIsForecastModalOpen] = useState<boolean>(false);
   const [activeSidebarTab, setActiveSidebarTab] = useState<string>(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get('tab');
       if (tab) return tab;
+      const initialSettings = loadSettingsFromStorage();
+      if (initialSettings?.preferences?.defaultView) {
+        return initialSettings.preferences.defaultView;
+      }
     } catch {
       // ignore
     }
-    return 'impact-graph';
+    return 'overview';
   });
   const [selectedSectorDomain, setSelectedSectorDomain] = useState<string>('semiconductors');
   const [activeNavTab, setActiveNavTab] = useState<string>('dashboard');
@@ -94,9 +138,11 @@ export const App: React.FC<AppProps> = ({
     isAiOff: false,
   });
 
-  // Check backend health on initial mount
+  // Check backend health and apply theme on initial mount
   useEffect(() => {
     scenarioService.checkBackend().then(setBackendStatus);
+    const initialSettings = loadSettingsFromStorage();
+    applyTheme(initialSettings.display.theme);
   }, []);
 
   const handleToggleForceOffline = async () => {
@@ -217,8 +263,49 @@ export const App: React.FC<AppProps> = ({
     }
   }
 
+  if (isClerkConfigured && !clerkState.isLoaded) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        background: 'var(--bg-canvas, #F7FAF8)',
+        color: 'var(--text-primary, #172B3A)',
+        fontFamily: 'var(--font-sans, system-ui, sans-serif)',
+        gap: '16px',
+      }}>
+        <div style={{
+          width: '36px',
+          height: '36px',
+          border: '3px solid #D8EADF',
+          borderTopColor: '#047857',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <span style={{ fontSize: '13px', fontWeight: 600, color: '#047857' }}>
+          Initializing BharatImpact Secure Workspace...
+        </span>
+        <ClerkAuthSync onAuthStateChange={handleAuthStateChange} />
+      </div>
+    );
+  }
+
+  if (isClerkConfigured && !clerkState.isSignedIn && !isGuestMode) {
+    return (
+      <>
+        <ClerkAuthSync onAuthStateChange={handleAuthStateChange} />
+        <AuthScreen onContinueAsGuest={() => setIsGuestMode(true)} />
+      </>
+    );
+  }
+
   return (
-    <AppLayout
+    <>
+      {isClerkConfigured && <ClerkAuthSync onAuthStateChange={handleAuthStateChange} />}
+      <AppLayout
       isAiOff={isAiOff}
       onToggleAi={handleToggleAi}
       activeScenarioTitle={analysisState.selectedScenario.title}
@@ -367,9 +454,43 @@ export const App: React.FC<AppProps> = ({
             else setActiveSidebarTab(sectionId);
           }}
         />
+      ) : activeSidebarTab === 'settings' ? (
+        <SettingsView
+          onNavigateSection={(sectionId) => {
+            if (sectionId === 'global-events') setActiveSidebarTab('global-events');
+            else if (sectionId === 'impact-graph') setActiveSidebarTab('impact-graph');
+            else if (sectionId === 'sectors') setActiveSidebarTab('sectors');
+            else if (sectionId === 'household-impact') setActiveSidebarTab('household-impact');
+            else if (sectionId === 'sip-forecasts') setActiveSidebarTab('sip-forecasts');
+            else if (sectionId === 'consumption') setActiveSidebarTab('consumption');
+            else if (sectionId === 'comparison') setActiveSidebarTab('comparison');
+            else if (sectionId === 'methodology') setActiveSidebarTab('methodology');
+            else setActiveSidebarTab(sectionId);
+          }}
+        />
       ) : (
+        /* Overview Page: Closest Visual Match to Supplied Reference Screenshot */
         <div className={styles.dashboardContainer}>
-          {/* 1. Quick Scenario Switcher Header Bar */}
+          {/* 1. Page Title & Description */}
+          <div className={styles.overviewPageHeader}>
+            <div className={styles.overviewHeaderLeft}>
+              <div className={styles.overviewIconBadge} aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#047857" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+              </div>
+              <div className={styles.overviewTitleCol}>
+                <h1 className={styles.overviewTitle}>Overview</h1>
+                <p className={styles.overviewSubtitle}>
+                  Track global events and understand their impact on the Indian economy, sectors, household expenses and investments.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Active Scenario Switcher Bar */}
           <div className={styles.scenarioBar}>
             <div className={styles.scenarioBarLeft}>
               <span className={styles.scenarioIcon} aria-hidden="true">🌐</span>
@@ -396,8 +517,7 @@ export const App: React.FC<AppProps> = ({
                 title="Open full scenario testbench & custom news input"
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                  <path d="M10 2v7.31M14 2v7.31M8.5 2h7M14 9.3l5.5 8.7a2 2 0 0 1-1.7 3H6.2a2 2 0 0 1-1.7-3L10 9.3" />
                 </svg>
                 <span>Scenario Testbench</span>
               </button>
@@ -408,75 +528,82 @@ export const App: React.FC<AppProps> = ({
                 onClick={handleResetToIdle}
                 title="Reset dashboard to default scenario"
               >
-                Reset
+                ↻ Reset
               </button>
             </div>
           </div>
 
-          {/* 2. Top Summary Metric Cards */}
+          {/* 3. Top Summary Metric Cards (4 cards across full width) */}
           <SummaryMetrics
             personaData={analysisState.personaData}
             graphData={analysisState.graphData}
-            onEditForecast={() => setIsScenarioWorkspaceOpen(true)}
+            forecastHorizon={forecastHorizon}
+            onEditForecast={() => setIsForecastModalOpen(true)}
           />
 
-          {/* 3. Center Dashboard Grid: Left Graph & Right Stack */}
-          <div className={styles.dashboardCenterGrid}>
-            {/* Left Column: Economic Impact Graph */}
-            <div className={styles.graphColumn}>
-              {analysisState.status === 'error' && (
-                <div className={styles.slotErrorContainer} role="alert">
-                  <span className={styles.slotErrorText}>
-                    ⚠️ {analysisState.errorMessage}
-                  </span>
-                  <button
-                    type="button"
-                    className={styles.slotRetryBtn}
-                    onClick={() => handleAnalyze(analysisState.selectedScenario.id)}
-                  >
-                    ↻ Retry Transmission Evaluation
-                  </button>
-                </div>
-              )}
+          {/* 4. Full-width Economic Impact Graph */}
+          <div className={styles.fullWidthGraphSection}>
+            {analysisState.status === 'error' && (
+              <div className={styles.slotErrorContainer} role="alert">
+                <span className={styles.slotErrorText}>
+                  ⚠️ {analysisState.errorMessage}
+                </span>
+                <button
+                  type="button"
+                  className={styles.slotRetryBtn}
+                  onClick={() => handleAnalyze(analysisState.selectedScenario.id)}
+                >
+                  ↻ Retry Transmission Evaluation
+                </button>
+              </div>
+            )}
 
-              {CustomGraphCanvas && (
-                <CustomGraphCanvas
-                  data={analysisState.graphData || null}
-                  selectedPath={selectedPath}
-                  onSelectPath={setSelectedPath}
-                  selectedNodeId={selectedNodeId}
-                  onSelectNode={setSelectedNodeId}
-                  selectedEdgeId={selectedEdgeId}
-                  onSelectEdge={setSelectedEdgeId}
-                  isLoading={analysisState.status === 'loading'}
-                />
-              )}
-            </div>
-
-            {/* Right Column: Household Impact + SIP Affordability + News Signals */}
-            <div className={styles.cardsColumn}>
-              <HouseholdImpactCard
-                data={analysisState.personaData}
-                onEdit={() => setIsPersonaModalOpen(true)}
-                onViewDetails={() => setIsPersonaModalOpen(true)}
+            {CustomGraphCanvas && (
+              <CustomGraphCanvas
+                data={analysisState.graphData || null}
+                selectedPath={selectedPath}
+                onSelectPath={setSelectedPath}
+                selectedNodeId={selectedNodeId}
+                onSelectNode={setSelectedNodeId}
+                selectedEdgeId={selectedEdgeId}
+                onSelectEdge={setSelectedEdgeId}
+                isLoading={analysisState.status === 'loading'}
               />
-
-              <SipAffordabilityCard
-                onOpenCalculator={() => setActiveSidebarTab('sip-forecasts')}
-              />
-
-              <NewsSignalsCard />
-            </div>
+            )}
           </div>
 
-          {/* 4. Bottom Row: 6-Month Expense Forecast Chart */}
-          <ExpenseForecastChart
-            scenarioTitle={analysisState.selectedScenario.title}
-          />
+          {/* 5. Three-Column Cards Row below Graph (Household Impact, SIP Affordability, Forecast Horizon) */}
+          <div className={styles.threeCardsRow}>
+            <HouseholdImpactCard
+              data={analysisState.personaData}
+              onEdit={() => setIsPersonaModalOpen(true)}
+              onViewDetails={() => setIsPersonaModalOpen(true)}
+            />
+
+            <SipAffordabilityCard
+              onOpenCalculator={() => setActiveSidebarTab('sip-forecasts')}
+            />
+
+            <ForecastHorizonCard
+              forecastHorizon={forecastHorizon}
+              onEdit={() => setIsForecastModalOpen(true)}
+            />
+          </div>
+
+          {/* 6. Full-Width Bottom Row: News & Signals */}
+          <NewsSignalsCard />
+
+          {/* 7. Collapsible / Secondary Expense Forecast Projections */}
+          <div className={styles.forecastChartWrapper}>
+            <ExpenseForecastChart
+              scenarioTitle={analysisState.selectedScenario.title}
+              forecastHorizon={forecastHorizon}
+            />
+          </div>
         </div>
       )}
 
-      {/* 5. Interactive AI Assistant Drawer */}
+      {/* Interactive AI Assistant Drawer */}
       <AiAssistantDrawer
         isOpen={isAiAssistantOpen}
         onClose={() => setIsAiAssistantOpen(false)}
@@ -489,7 +616,7 @@ export const App: React.FC<AppProps> = ({
         }}
       />
 
-      {/* 6. Contextual Evidence Receipt Drawer (when node or edge selected) */}
+      {/* Contextual Evidence Receipt Drawer (when node or edge selected) */}
       {CustomEvidencePanel && (selectedNodeId || selectedEdgeId) && (
         <CustomEvidencePanel
           receipt={activeEvidenceReceipt || null}
@@ -502,7 +629,7 @@ export const App: React.FC<AppProps> = ({
         />
       )}
 
-      {/* 7. Household Archetype Modal (when Edit clicked) */}
+      {/* Household Archetype Modal (when Edit clicked) */}
       {isPersonaModalOpen && CustomHouseholdImpact && (
         <div className={styles.modalBackdrop} onClick={() => setIsPersonaModalOpen(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -525,7 +652,7 @@ export const App: React.FC<AppProps> = ({
         </div>
       )}
 
-      {/* 8. Full Scenario Workspace Modal (when Testbench clicked) */}
+      {/* Full Scenario Workspace Modal (when Testbench clicked) */}
       {isScenarioWorkspaceOpen && (
         <div className={styles.modalBackdrop} onClick={() => setIsScenarioWorkspaceOpen(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -542,10 +669,20 @@ export const App: React.FC<AppProps> = ({
               analysisState={analysisState}
               onAnalyze={handleAnalyze}
               onResetToIdle={handleResetToIdle}
+              onClose={() => setIsScenarioWorkspaceOpen(false)}
             />
           </div>
         </div>
       )}
+
+      {/* Forecast Horizon Modal (when Edit clicked on Forecast Horizon metric) */}
+      <ForecastHorizonModal
+        isOpen={isForecastModalOpen}
+        currentHorizon={forecastHorizon}
+        onClose={() => setIsForecastModalOpen(false)}
+        onApplyHorizon={(horizon) => setForecastHorizon(horizon)}
+      />
     </AppLayout>
+    </>
   );
 };

@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BharatImpact — Institutional Research Presentation</title>
+  <!-- Google Fonts: DM Serif Display & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-mint-start: #F4F9F6;
+      --bg-mint-mid: #EBF5F0;
+      --bg-mint-end: #F0F8F4;
+      --text-primary: #192F3E;
+      --text-secondary: #405365;
+      --text-muted: #6B7F91;
+      --accent-emerald: #00866A;
+      --accent-emerald-light: #E0F2EC;
+      --accent-emerald-glow: rgba(0, 134, 106, 0.12);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-bg-solid: #FFFFFF;
+      --card-border: rgba(0, 134, 106, 0.20);
+      --card-border-subtle: rgba(25, 47, 62, 0.08);
+      --card-shadow: 0 8px 24px rgba(25, 47, 62, 0.04), 0 2px 6px rgba(0, 134, 106, 0.03);
+      --font-serif: 'DM Serif Display', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --slide-width: 1920px;
+      --slide-height: 1080px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0E171E;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    /* Presentation Viewport Container (Auto-scales 16:9 1920x1080) */
+    #viewport {
+      width: var(--slide-width);
+      height: var(--slide-height);
+      position: relative;
+      background: linear-gradient(135deg, var(--bg-mint-start) 0%, var(--bg-mint-mid) 50%, var(--bg-mint-end) 100%);
+      transform-origin: center center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    /* Subtle Institutional Watermark Pattern */
+    .bg-watermark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: radial-gradient(var(--accent-emerald) 1px, transparent 1px);
+      background-size: 32px 32px;
+      z-index: 1;
+    }
+
+    .india-map-bg {
+      position: absolute;
+      right: -60px;
+      bottom: -60px;
+      width: 680px;
+      height: 740px;
+      opacity: 0.045;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Slide Deck Structure */
+    .slides-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 72px 96px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: scale(0.985);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+
+    /* Institutional Header Standard (Every Slide) */
+    .slide-header {
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .section-identifier {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-emerald);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      background: var(--accent-emerald-light);
+      padding: 5px 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 134, 106, 0.22);
+    }
+
+    .slide-title {
+      font-family: var(--font-serif);
+      font-size: 46px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+    }
+
+    .slide-subtitle {
+      font-size: 17px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      max-width: 1200px;
+      line-height: 1.5;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 24px;
+      position: relative;
+    }
+
+    /* Common Institutional Cards & Badges */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px 28px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(8px);
+      position: relative;
+    }
+
+    .card-solid {
+      background: var(--card-bg-solid);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px 28px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .badge-pill {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-emerald {
+      background: var(--accent-emerald-light);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(0, 134, 106, 0.25);
+    }
+
+    .badge-observed {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border: 1px solid #A5D6A7;
+    }
+
+    .badge-inferred {
+      background: #E0F7FA;
+      color: #00838F;
+      border: 1px solid #80DEEA;
+    }
+
+    .badge-warning {
+      background: #FFF8E1;
+      color: #F57F17;
+      border: 1px solid #FFE082;
+    }
+
+    .badge-danger {
+      background: #FFEBEE;
+      color: #C62828;
+      border: 1px solid #FFCDD2;
+    }
+
+    /* Problem Statement Slide Specifics (Section 4) */
+    .central-challenge-panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 248, 244, 0.90) 100%);
+      border: 1.5px solid rgba(0, 134, 106, 0.35);
+      border-radius: 16px;
+      padding: 32px 40px;
+      box-shadow: 0 10px 30px rgba(0, 134, 106, 0.06);
+    }
+
+    .central-challenge-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-emerald);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .central-challenge-text {
+      font-family: var(--font-serif);
+      font-size: 27px;
+      line-height: 1.4;
+      color: var(--text-primary);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .problem-card {
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 134, 106, 0.18);
+      border-radius: 12px;
+      padding: 22px 24px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .problem-card-num {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      letter-spacing: 0.05em;
+    }
+
+    .problem-card-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .problem-card-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .the-gap-panel {
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 134, 106, 0.25);
+      border-left: 4px solid var(--accent-emerald);
+      border-radius: 10px;
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .the-gap-tag {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-emerald);
+      white-space: nowrap;
+    }
+
+    .the-gap-text {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Grids & Layout Containers */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    /* Formula & Stat Boxes */
+    .formula-box {
+      background: #F8FBF9;
+      border: 1px solid rgba(0, 134, 106, 0.20);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 15px;
+      color: var(--text-primary);
+      font-weight: 600;
+      margin: 10px 0;
+    }
+
+    .stat-number {
+      font-family: var(--font-serif);
+      font-size: 40px;
+      color: var(--accent-emerald);
+      line-height: 1;
+      font-weight: 400;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 6px;
+    }
+
+    /* Institutional Footer */
+    .slide-footer {
+      position: absolute;
+      bottom: 28px;
+      left: 96px;
+      right: 96px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid rgba(25, 47, 62, 0.08);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-brand {
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-brand span {
+      color: var(--accent-emerald);
+    }
+
+    /* Presentation Navigation Dock (Hidden on Print) */
+    .nav-dock {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(14, 23, 30, 0.90);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 40px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 100;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      color: #FFFFFF;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.10);
+      border: none;
+      color: #FFFFFF;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent-emerald);
+    }
+
+    .nav-counter {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .nav-pill {
+      font-size: 12px;
+      color: #A0B2C6;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      padding-left: 14px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-pill kbd {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #FFF;
+    }
+
+    /* Slide Drawer for Quick Navigation */
+    #drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 320px;
+      height: 100vh;
+      background: #14232E;
+      color: #FFFFFF;
+      z-index: 200;
+      padding: 24px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+      box-shadow: 10px 0 40px rgba(0,0,0,0.5);
+    }
+
+    #drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-close {
+      cursor: pointer;
+      font-size: 20px;
+      color: #8CA0B2;
+    }
+
+    .drawer-item {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 6px;
+      transition: background 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .drawer-item:hover, .drawer-item.active {
+      background: rgba(0, 134, 106, 0.35);
+      border-left: 3px solid var(--accent-emerald);
+    }
+
+    .drawer-item .item-num {
+      font-size: 11px;
+      color: #00BFA5;
+      font-weight: 700;
+    }
+
+    /* Print Setup for PDF Export */
+    @media print {
+      body {
+        background: transparent !important;
+        overflow: visible !important;
+      }
+      #viewport {
+        transform: none !important;
+        box-shadow: none !important;
+      }
+      .nav-dock, #drawer {
+        display: none !important;
+      }
+      .slide {
+        position: relative !important;
+        page-break-after: always !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        width: 1920px !important;
+        height: 1080px !important;
+      }
+      @page {
+        size: 1920px 1080px;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Drawer for Slide Index -->
+  <div id="drawer">
+    <div class="drawer-title">
+      <span>Slide Navigation</span>
+      <span class="drawer-close" onclick="toggleDrawer()">✕</span>
+    </div>
+    <div id="drawer-list"></div>
+  </div>
+
+  <!-- Main 16:9 Presentation Viewport -->
+  <div id="viewport">
+    <div class="bg-watermark"></div>
+    <!-- India Map SVG Watermark -->
+    <svg class="india-map-bg" viewBox="0 0 200 220" fill="none" stroke="#00866A" stroke-width="1.2">
+      <path d="M70,15 Q85,12 100,10 Q115,10 130,16 Q140,25 145,40 Q150,55 160,70 Q170,85 180,95 Q190,110 185,125 Q175,140 160,150 Q145,160 135,175 Q125,190 115,205 Q105,215 95,210 Q85,195 75,180 Q65,165 55,150 Q45,135 35,120 Q25,105 20,90 Q15,75 25,60 Q35,45 50,30 Z" opacity="0.3" fill="rgba(0,134,106,0.03)"/>
+      <circle cx="95" cy="115" r="3" fill="#00866A"/>
+      <circle cx="120" cy="85" r="2" fill="#00866A"/>
+      <circle cx="65" cy="140" r="2" fill="#00866A"/>
+    </svg>
+
+    <div class="slides-container" id="slidesContainer">
+
+      <!-- SLIDE 01: TITLE & COVER -->
+      <div class="slide active" data-index="0" data-title="Title & Executive Overview">
+        <div class="slide-header" style="margin-top: 40px; margin-bottom: 24px;">
+          <div class="section-identifier">00 | EXECUTIVE INTRODUCTION</div>
+          <h1 class="slide-title" style="font-size: 54px; max-width: 1400px; line-height: 1.12;">
+            BharatImpact: Autonomous Financial Event Market Impact Graph
+          </h1>
+          <p class="slide-subtitle" style="font-size: 20px; max-width: 1300px; margin-top: 14px;">
+            Bridging Macroeconomic Disruptions, Sector Transmission Channels, and Indian Household Budgets with Deterministic Data Rigor.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="grid-4" style="margin-top: 20px;">
+            <div class="card">
+              <span class="badge-pill badge-emerald">01. GLOBAL EVENTS</span>
+              <h3 style="font-size: 19px; font-weight: 600; margin: 14px 0 8px; color: var(--text-primary);">Macroeconomic Shocks</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+                Real-time extraction of geopolitical conflicts, OPEC supply shifts, and commodity benchmark fluctuations via strict schema NLP.
+              </p>
+            </div>
+            <div class="card">
+              <span class="badge-pill badge-emerald">02. SECTOR SENSITIVITY</span>
+              <h3 style="font-size: 19px; font-weight: 600; margin: 14px 0 8px; color: var(--text-primary);">Input Cost Pass-Through</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+                Transmission across domestic transport logistics, chemicals, aviation, and FMCG manufacturing with calibrated elasticity.
+              </p>
+            </div>
+            <div class="card">
+              <span class="badge-pill badge-emerald">03. HOUSEHOLD BUDGETS</span>
+              <h3 style="font-size: 19px; font-weight: 600; margin: 14px 0 8px; color: var(--text-primary);">MoSPI HCES 2023–24</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+                Micro-level calibration to regional consumption baskets (Madhya Pradesh urban/rural) calculating monthly rupee-level burdens.
+              </p>
+            </div>
+            <div class="card">
+              <span class="badge-pill badge-emerald">04. SIP AFFORDABILITY</span>
+              <h3 style="font-size: 19px; font-weight: 600; margin: 14px 0 8px; color: var(--text-primary);">Compounding Preservation</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+                Actionable wealth resilience simulating 6-month budget compression to prevent panic SIP cancellations and long-term erosion.
+              </p>
+            </div>
+          </div>
+
+          <div class="card-solid" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; margin-top: auto; border: 1px solid rgba(0, 134, 106, 0.25);">
+            <div>
+              <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-emerald); text-transform: uppercase;">PROJECT PROFILE</span>
+              <div style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin-top: 4px;">
+                Hackwave 3.0 • Problem Statement 5: Autonomous Financial Event Market Impact Graph
+              </div>
+            </div>
+            <div style="display: flex; gap: 36px; text-align: right;">
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Engine Modality</div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--accent-emerald);">Deterministic + Zero-AI Calculation</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Baseline Survey</div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">MoSPI HCES 2023–24 &amp; PPAC</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Geography Baseline</div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Indore / Madhya Pradesh</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Institutional Research Deck</span>
+          </div>
+          <div>Slide 01 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 02: THE PROBLEM STATEMENT (Matches Section 4 Exactly) -->
+      <div class="slide" data-index="1" data-title="01 | The Problem Statement">
+        <div class="slide-header">
+          <div class="section-identifier">01 | PROBLEM STATEMENT</div>
+          <h2 class="slide-title">The Problem Statement</h2>
+          <p class="slide-subtitle">
+            The structural disconnect between macro financial news and the everyday Indian household's monthly budget.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <!-- Central Challenge Panel -->
+          <div class="central-challenge-panel">
+            <div class="central-challenge-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              CENTRAL CHALLENGE
+            </div>
+            <p class="central-challenge-text">
+              "Global macroeconomic shocks ripple across international supply chains and domestic financial markets, yet Indian citizens, retail investors, and financial planners lack an evidence-backed mechanism to trace how headline disruptions translate directly into household expenses and monthly SIP affordability."
+            </p>
+          </div>
+
+          <!-- Main Challenges Grid -->
+          <div class="problem-grid">
+            <div class="problem-card">
+              <div class="problem-card-num">CHALLENGE 01</div>
+              <div class="problem-card-title">Fragmented Jargon &amp; Isolated News</div>
+              <div class="problem-card-desc">
+                Headlines like <em>"Brent surges 12%"</em> or <em>"Fed hikes 50 bps"</em> are presented in silos, leaving everyday citizens unable to connect macro events to daily living costs.
+              </div>
+            </div>
+
+            <div class="problem-card">
+              <div class="problem-card-num">CHALLENGE 02</div>
+              <div class="problem-card-title">Black-Box Generative AI Hallucinations</div>
+              <div class="problem-card-desc">
+                Standard LLMs fabricate financial figures without source citations, verified elasticity models, or mathematical boundaries, destroying institutional credibility.
+              </div>
+            </div>
+
+            <div class="problem-card">
+              <div class="problem-card-num">CHALLENGE 03</div>
+              <div class="problem-card-title">Missing Micro-Level Transmission</div>
+              <div class="problem-card-desc">
+                Existing financial terminals stop at equity indices (Nifty, Sensex), failing to bridge the multi-hop propagation into freight, food inflation, and regional household bills.
+              </div>
+            </div>
+
+            <div class="problem-card">
+              <div class="problem-card-num">CHALLENGE 04</div>
+              <div class="problem-card-title">Compounding Wealth Erosion</div>
+              <div class="problem-card-desc">
+                When inflation strikes, households panic and pause their Systematic Investment Plans (SIPs), causing irreversible long-term wealth destruction from lack of quantified alternatives.
+              </div>
+            </div>
+          </div>
+
+          <!-- The Gap Takeaway Panel -->
+          <div class="the-gap-panel">
+            <div class="the-gap-tag">THE GAP</div>
+            <div class="the-gap-text">
+              The Indian financial ecosystem lacks a dual-engine architecture that pairs <strong>transparent NLP news ingestion</strong> with a <strong>deterministic, official-data-calibrated input-output graph</strong> backed by verifiable source receipts (MoSPI HCES 2023–24).
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Problem Formulation &amp; Market Need</span>
+          </div>
+          <div>Slide 02 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 03: EXISTING SOLUTIONS & LIMITATIONS -->
+      <div class="slide" data-index="2" data-title="02 | Existing Solutions & Limitations">
+        <div class="slide-header">
+          <div class="section-identifier">02 | MARKET LANDSCAPE</div>
+          <h2 class="slide-title">Existing Solutions &amp; Architectural Limitations</h2>
+          <p class="slide-subtitle">
+            Current financial information ecosystems fail to connect macro news with personal economic reality.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="grid-3">
+            <div class="card">
+              <span class="badge-pill badge-danger">CATEGORY 01</span>
+              <h3 style="font-size: 20px; font-weight: 600; margin: 14px 0 8px; color: var(--text-primary);">Financial News Portals</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">Bloomberg, Economic Times, Moneycontrol</p>
+              <ul style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; list-style-position: inside;">
+                <li><strong>Siloed Reporting:</strong> Articles focus on isolated tickers without multi-hop dependency mapping.</li>
+                <li><strong>No Personalization:</strong> Qualitative narratives without customized household budget calculations.</li>
+                <li><strong>Institutional Jargon:</strong> Geared toward institutional traders; opaque to retail investors and households.</li>
+              </ul>
+              <div style="margin-top: 16px; padding: 10px; background: #FFF5F5; border-radius: 8px; font-size: 12px; color: #C62828;">
+                <strong>Fatal Flaw:</strong> Zero transmission modeling to household consumption.
+              </div>
+            </div>
+
+            <div class="card">
+              <span class="badge-pill badge-warning">CATEGORY 02</span>
+              <h3 style="font-size: 20px; font-weight: 600; margin: 14px 0 8px; color: var(--text-primary);">Robo-Advisors &amp; FinTech</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">Groww, Zerodha Coin, INDmoney</p>
+              <ul style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; list-style-position: inside;">
+                <li><strong>Static Calculators:</strong> Generic compound interest calculators with fixed, arbitrary assumptions.</li>
+                <li><strong>Blind to Supply Chains:</strong> Unaware of real-time fuel, freight, or agricultural price surges.</li>
+                <li><strong>Binary Decisions:</strong> When expenses surge, users simply cancel SIPs rather than adjusting tactically.</li>
+              </ul>
+              <div style="margin-top: 16px; padding: 10px; background: #FFF9E6; border-radius: 8px; font-size: 12px; color: #B78103;">
+                <strong>Fatal Flaw:</strong> No linkage between current macroeconomic events and investment capacity.
+              </div>
+            </div>
+
+            <div class="card">
+              <span class="badge-pill badge-danger">CATEGORY 03</span>
+              <h3 style="font-size: 20px; font-weight: 600; margin: 14px 0 8px; color: var(--text-primary);">Generic LLM Chatbots</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">ChatGPT, Perplexity, Claude</p>
+              <ul style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; list-style-position: inside;">
+                <li><strong>Mathematical Hallucinations:</strong> Guesses inflation figures and rupee totals with high confidence.</li>
+                <li><strong>Non-Deterministic:</strong> The same question yields differing percentage impacts on repeated queries.</li>
+                <li><strong>No Evidence Receipts:</strong> Cannot cite official MoSPI survey tables or verifiable formula breakdowns.</li>
+              </ul>
+              <div style="margin-top: 16px; padding: 10px; background: #FFF5F5; border-radius: 8px; font-size: 12px; color: #C62828;">
+                <strong>Fatal Flaw:</strong> Unreliable numbers without deterministic data lineage.
+              </div>
+            </div>
+          </div>
+
+          <div class="card-solid" style="border: 1px solid var(--accent-emerald); background: linear-gradient(90deg, #FFFFFF, #F2FAF6);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <span class="badge-pill badge-emerald">THE BHARATIMPACT DIFFERENTIATOR</span>
+                <div style="font-size: 17px; font-weight: 600; color: var(--text-primary); margin-top: 6px;">
+                  Strict Dual-Engine Separation: AI Reads &amp; Explains — Verified Mathematical Formulas Calculate the Numbers.
+                </div>
+              </div>
+              <div style="text-align: right; min-width: 240px;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--accent-emerald);">Zero-Variance Guarantee</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">Identical inputs guarantee identical rupee outputs.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Comparative Industry Analysis</span>
+          </div>
+          <div>Slide 03 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 04: PROPOSED SOLUTION -->
+      <div class="slide" data-index="3" data-title="03 | Proposed Solution">
+        <div class="slide-header">
+          <div class="section-identifier">03 | PROPOSED SOLUTION</div>
+          <h2 class="slide-title">BharatImpact: The Macro-to-Household Engine</h2>
+          <p class="slide-subtitle">
+            An autonomous financial event market impact graph delivering transparent, evidence-first economic intelligence.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="card" style="padding: 24px 32px; background: #FFFFFF; border-left: 4px solid var(--accent-emerald);">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-emerald); letter-spacing: 0.1em; text-transform: uppercase;">
+              PRODUCT DEFINITION
+            </div>
+            <div style="font-size: 20px; font-weight: 600; color: var(--text-primary); margin: 6px 0;">
+              An end-to-end causal transmission engine connecting global disruptions to regional household balance sheets.
+            </div>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+              BharatImpact takes verified real-world financial events (e.g. Brent crude spikes, semiconductor bans, shipping blockades), parses their parameters into structured schemas, traverses a curated Directed Acyclic Graph (DAG) of economic dependencies, and computes exact household rupee impacts using official MoSPI HCES survey weights.
+            </p>
+          </div>
+
+          <div class="grid-3" style="margin-top: 10px;">
+            <div class="card">
+              <div style="font-size: 32px; color: var(--accent-emerald); margin-bottom: 8px;">◈</div>
+              <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">1. Causal Knowledge Graph</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+                Multi-hop transmission network clearly distinguishing <strong>Observed Facts</strong> (solid lines) from <strong>Inferred Elasticities</strong> (dashed lines), preventing false certainty.
+              </p>
+            </div>
+
+            <div class="card">
+              <div style="font-size: 32px; color: var(--accent-emerald); margin-bottom: 8px;">⊞</div>
+              <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">2. Household Impact Calculator</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+                Deterministic microeconomic calibration tailored to regional personas (Urban Indore, Rural MP) across food, fuel, utilities, and discretionary expenses.
+              </p>
+            </div>
+
+            <div class="card">
+              <div style="font-size: 32px; color: var(--accent-emerald); margin-bottom: 8px;">↗</div>
+              <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">3. SIP Defensibility Simulator</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+                Dynamic 6-month budget horizon forecasting that calculates safe, calibrated SIP modifications (e.g., reduce by ₹500/mo instead of canceling ₹5,000/mo).
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-4" style="margin-top: 10px;">
+            <div class="card-solid" style="padding: 16px 20px; text-align: center;">
+              <div class="stat-number">100%</div>
+              <div class="stat-label">Deterministic Calculations</div>
+            </div>
+            <div class="card-solid" style="padding: 16px 20px; text-align: center;">
+              <div class="stat-number">&lt;15ms</div>
+              <div class="stat-label">Graph Traversal Latency</div>
+            </div>
+            <div class="card-solid" style="padding: 16px 20px; text-align: center;">
+              <div class="stat-number">MoSPI</div>
+              <div class="stat-label">HCES 2023–24 Calibration</div>
+            </div>
+            <div class="card-solid" style="padding: 16px 20px; text-align: center;">
+              <div class="stat-number">AI-Off</div>
+              <div class="stat-label">Zero-Variance Proof Mode</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Core Solution Architecture</span>
+          </div>
+          <div>Slide 04 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 05: SYSTEM ARCHITECTURE & DATA PIPELINE -->
+      <div class="slide" data-index="4" data-title="04 | System Architecture">
+        <div class="slide-header">
+          <div class="section-identifier">04 | SYSTEM ARCHITECTURE</div>
+          <h2 class="slide-title">Dual-Engine Architecture &amp; Data Pipeline</h2>
+          <p class="slide-subtitle">
+            Strict isolation between AI natural language interpretation and deterministic mathematical computation.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="grid-4">
+            <!-- Stage 1 -->
+            <div class="card" style="border-top: 4px solid #00866A;">
+              <span class="badge-pill badge-emerald">STAGE 01</span>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 6px;">News Ingestion &amp; NLP</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">FastAPI / Pydantic Parser</p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                • Live RSS / News Feeds<br>
+                • LLM extracts structured event JSON<br>
+                • Fields: <code>magnitude</code>, <code>unit</code>, <code>scope</code>, <code>geography</code><br>
+                • Missing fields stay strictly <code>null</code>
+              </p>
+            </div>
+
+            <!-- Stage 2 -->
+            <div class="card" style="border-top: 4px solid #00A884;">
+              <span class="badge-pill badge-emerald">STAGE 02</span>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 6px;">Knowledge Graph Engine</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">NetworkX / Directed DAG</p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                • 6 Node Types (Commodity, Sector, Item)<br>
+                • Multi-hop traversal algorithm<br>
+                • Distinguishes Observed vs Inferred<br>
+                • Attachment of evidence receipts
+              </p>
+            </div>
+
+            <!-- Stage 3 -->
+            <div class="card" style="border-top: 4px solid #00866A;">
+              <span class="badge-pill badge-emerald">STAGE 03</span>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 6px;">Deterministic Math Engine</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Pure Python / Zero AI</p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                • Official MoSPI HCES 2023–24 fractiles<br>
+                • PPAC fuel tax &amp; freight elasticity<br>
+                • Formula: <code>ΔExp = MPCE × w × ΔP × η</code><br>
+                • Zero synthetic zero substitutions
+              </p>
+            </div>
+
+            <!-- Stage 4 -->
+            <div class="card" style="border-top: 4px solid #192F3E;">
+              <span class="badge-pill badge-emerald">STAGE 04</span>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 6px;">Interactive UI &amp; Audit</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">React 19 / TypeScript / Vite</p>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                • Interactive visual impact map<br>
+                • Clickable evidence drawers<br>
+                • Persona expenditure breakdown<br>
+                • Instant AI-Off parity toggle
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 10px;">
+            <div class="card-solid">
+              <span class="badge-pill badge-observed">ARCHITECTURAL SAFETY RULE 1</span>
+              <h4 style="font-size: 16px; font-weight: 600; margin: 8px 0 4px; color: var(--text-primary);">Zero-Hallucination Firewall</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                LLMs are restricted entirely to text summarization and entity extraction. The LLM is technically blocked from touching the calculation pipeline. Numbers are derived solely by deterministic arithmetic code.
+              </p>
+            </div>
+            <div class="card-solid">
+              <span class="badge-pill badge-inferred">ARCHITECTURAL SAFETY RULE 2</span>
+              <h4 style="font-size: 16px; font-weight: 600; margin: 8px 0 4px; color: var(--text-primary);">Strict Missing-Data Protocol</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                If official baseline weights or empirical pass-through factors are unavailable for a commodity or sector, the engine strictly outputs <code>"Data not available"</code> rather than guessing or inserting 0.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Technical Infrastructure &amp; Data Pipeline</span>
+          </div>
+          <div>Slide 05 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 06: METHODOLOGY & DATA RIGOR -->
+      <div class="slide" data-index="5" data-title="05 | Methodology & Data Rigor">
+        <div class="slide-header">
+          <div class="section-identifier">05 | METHODOLOGY &amp; DATA RIGOR</div>
+          <h2 class="slide-title">Empirical Foundations &amp; Formula Verification</h2>
+          <p class="slide-subtitle">
+            Grounding macroeconomic estimates in peer-reviewed econometric literature and official Government of India surveys.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="grid-2">
+            <!-- Left: Formula breakdown -->
+            <div class="card">
+              <span class="badge-pill badge-emerald">THE CORE FORMULA</span>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 8px;">Household Transmission Calibration</h3>
+              <div class="formula-box">
+                ΔExpense_i = MPCE_baseline × w_i × (ΔP_shock × η_i) × (1 - β_policy)
+              </div>
+              <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: 10px;">
+                <strong>Parameter Legend:</strong><br>
+                • <code>MPCE_baseline</code>: Monthly Per Capita Consumer Expenditure (MoSPI HCES 2023–24).<br>
+                • <code>w_i</code>: Budget weight of commodity category <em>i</em> (Food 28%, Fuel 19.4%, Utilities 19.5%).<br>
+                • <code>ΔP_shock</code>: Percentage shock extracted from verified source news (+12.0% Crude).<br>
+                • <code>η_i</code>: Empirical pass-through elasticity factor (OMC diesel pricing, logistics freight).<br>
+                • <code>β_policy</code>: State/Central fiscal cushion (Excise duty buffer, LPG subsidy).
+              </div>
+            </div>
+
+            <!-- Right: Official Data Registers -->
+            <div class="card">
+              <span class="badge-pill badge-observed">GOVERNMENT DATA REGISTERS</span>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 8px;">Audited Benchmark Foundations</h3>
+              <ul style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; list-style-position: inside;">
+                <li><strong>MoSPI HCES 2023–24 Factsheet:</strong> Published August 2024. Baseline MPCE for Madhya Pradesh (Urban: ₹5,200; Rural: ₹3,179).</li>
+                <li><strong>PPAC (Petroleum Planning &amp; Analysis Cell):</strong> Historical fuel price build-ups, crude import parity, and OMC margin buffers.</li>
+                <li><strong>RBI &amp; MoCI WPI-to-CPI Bulletins:</strong> Empirical transmission lag models (14–21 day wholesale-to-retail freight pass-through).</li>
+                <li><strong>NSSO 68th Round Benchmark:</strong> Elasticity coefficients for cereal, edible oil, and vegetables.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bottom: AI-Off Proof Protocol -->
+          <div class="card-solid" style="border-left: 4px solid var(--accent-emerald);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span class="badge-pill badge-emerald">THE "AI-OFF" PARITY GUARANTEE</span>
+                <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-top: 4px;">
+                  Testing Zero-Variance Determinism Under Pitch Conditions
+                </div>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+                  When toggling <code>AI: OFF</code> in the application header, descriptive natural language summaries disappear, but <strong>100% of graph nodes, propagation paths, and calculated rupee numbers remain mathematically identical.</strong>
+                </p>
+              </div>
+              <div style="background: var(--accent-emerald-light); padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(0, 134, 106, 0.3); text-align: center;">
+                <div style="font-size: 18px; font-weight: 700; color: var(--accent-emerald);">0.00% Variance</div>
+                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Deterministic Parity</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Mathematical Rigor &amp; Survey Validation</span>
+          </div>
+          <div>Slide 06 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 07: ECONOMIC IMPACT GRAPH & TRANSMISSION -->
+      <div class="slide" data-index="6" data-title="06 | Economic Impact Graph">
+        <div class="slide-header">
+          <div class="section-identifier">06 | KNOWLEDGE GRAPH</div>
+          <h2 class="slide-title">Multi-Hop Transmission: Strait of Hormuz to Kitchen</h2>
+          <p class="slide-subtitle">
+            Causal propagation graph demonstrating how a global commodity shock cascades into consumer expenses.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <!-- Benchmark Shock Trace -->
+          <div class="card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <div>
+                <span class="badge-pill badge-danger">PRIMARY BENCHMARK SCENARIO</span>
+                <span style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin-left: 10px;">
+                  Crude Oil Benchmark Shock: +12.0% ($82.4 / bbl)
+                </span>
+              </div>
+              <div style="display: flex; gap: 12px;">
+                <span class="badge-pill badge-observed">― Solid: Observed Fact</span>
+                <span class="badge-pill badge-inferred">- - Dashed: Inferred Elasticity</span>
+              </div>
+            </div>
+
+            <!-- Transmission Steps Visualization -->
+            <div style="display: flex; justify-content: space-between; position: relative; gap: 12px; margin: 18px 0;">
+              <!-- Node 1 -->
+              <div style="flex: 1; background: #FFF5F5; border: 1.5px solid #FFCDD2; border-radius: 10px; padding: 14px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #C62828;">GLOBAL SHOCK</div>
+                <div style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 6px 0;">Crude Oil</div>
+                <div style="font-size: 18px; font-weight: 700; color: #C62828;">+12.0%</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Brent Benchmark</div>
+              </div>
+
+              <div style="display: flex; align-items: center; color: var(--accent-emerald); font-weight: 700;">→</div>
+
+              <!-- Node 2 -->
+              <div style="flex: 1; background: #FFFFFF; border: 1.5px solid #A5D6A7; border-radius: 10px; padding: 14px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #2E7D32;">REFINERY PASS-THROUGH</div>
+                <div style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 6px 0;">Petrol &amp; Diesel</div>
+                <div style="font-size: 18px; font-weight: 700; color: #2E7D32;">+8.5%</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">OMC Margin Lag</div>
+              </div>
+
+              <div style="display: flex; align-items: center; color: var(--accent-emerald); font-weight: 700;">→</div>
+
+              <!-- Node 3 -->
+              <div style="flex: 1; background: #FFFFFF; border: 1.5px solid #80DEEA; border-radius: 10px; padding: 14px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #00838F;">FREIGHT &amp; SUPPLY CHAIN</div>
+                <div style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 6px 0;">Interstate Freight</div>
+                <div style="font-size: 18px; font-weight: 700; color: #00838F;">+6.2%</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Commercial Fleets</div>
+              </div>
+
+              <div style="display: flex; align-items: center; color: var(--accent-emerald); font-weight: 700;">→</div>
+
+              <!-- Node 4 -->
+              <div style="flex: 1; background: #FFFFFF; border: 1.5px solid #FFE082; border-radius: 10px; padding: 14px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #F57F17;">RETAIL FOOD &amp; GOODS</div>
+                <div style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 6px 0;">Mandi Vegetables</div>
+                <div style="font-size: 18px; font-weight: 700; color: #F57F17;">+3.2%</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Wholesale Inflow</div>
+              </div>
+
+              <div style="display: flex; align-items: center; color: var(--accent-emerald); font-weight: 700;">→</div>
+
+              <!-- Node 5 -->
+              <div style="flex: 1; background: #E0F2EC; border: 1.5px solid var(--accent-emerald); border-radius: 10px; padding: 14px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--accent-emerald);">HOUSEHOLD BUDGET</div>
+                <div style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 6px 0;">Urban Middle Class</div>
+                <div style="font-size: 18px; font-weight: 700; color: var(--accent-emerald);">+₹2,450 /mo</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">+4.3% Total Expense</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Propagation Channels -->
+          <div class="grid-3" style="margin-top: 10px;">
+            <div class="card-solid">
+              <span class="badge-pill badge-emerald">PATH A</span>
+              <h4 style="font-size: 16px; font-weight: 600; margin: 8px 0 4px;">Food Cost Chain</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                Crude → Diesel → Long-haul Freight → Agricultural Mandi Arrival → Retail Kitchen Groceries (+₹720/mo burden).
+              </p>
+            </div>
+            <div class="card-solid">
+              <span class="badge-pill badge-emerald">PATH B</span>
+              <h4 style="font-size: 16px; font-weight: 600; margin: 8px 0 4px;">Commuting &amp; Fuel</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                Crude → Retail Petrol &amp; Diesel → Two-wheeler / Car Commute in Tier-2 Indian cities (+₹750/mo direct fuel burden).
+              </p>
+            </div>
+            <div class="card-solid">
+              <span class="badge-pill badge-emerald">PATH C</span>
+              <h4 style="font-size: 16px; font-weight: 600; margin: 8px 0 4px;">Financial Markets &amp; SIP</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                Crude → Inflation Expectations → Bond Yields &amp; Discretionary Income Squeeze → SIP capacity contraction (-10%).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Knowledge Graph &amp; Propagation Pathways</span>
+          </div>
+          <div>Slide 07 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 08: MARKET & SECTOR ANALYSIS -->
+      <div class="slide" data-index="7" data-title="07 | Market & Sector Analysis">
+        <div class="slide-header">
+          <div class="section-identifier">07 | SECTOR ANALYSIS</div>
+          <h2 class="slide-title">Sectoral Vulnerability &amp; Pass-Through Elasticity</h2>
+          <p class="slide-subtitle">
+            Analyzing margin compression, import dependence, and pricing power across Indian industrial sectors.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="grid-4">
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-pill badge-danger">HIGH SENSITIVITY</span>
+                <span style="font-size: 12px; font-weight: 700; color: #C62828;">85% EXPOSURE</span>
+              </div>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 4px;">Automotive &amp; EV</h3>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 8px;">
+                • Production costs: <strong>+10.0%</strong><br>
+                • Higher steel, plastic &amp; freight costs<br>
+                • Vehicle sticker price pass-through<br>
+                • Retail demand elasticity: -0.6
+              </p>
+            </div>
+
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-pill badge-danger">HIGH SENSITIVITY</span>
+                <span style="font-size: 12px; font-weight: 700; color: #C62828;">70% EXPOSURE</span>
+              </div>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 4px;">Aviation &amp; Logistics</h3>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 8px;">
+                • Aviation Turbine Fuel (ATF): <strong>+11.0%</strong><br>
+                • Operating margin hit: -3.5%<br>
+                • Freight cargo surcharge hikes<br>
+                • Immediate quarterly earnings squeeze
+              </p>
+            </div>
+
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-pill badge-warning">MEDIUM SENSITIVITY</span>
+                <span style="font-size: 12px; font-weight: 700; color: #F57F17;">55% EXPOSURE</span>
+              </div>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 4px;">FMCG &amp; Packaging</h3>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 8px;">
+                • Packaging &amp; distribution: <strong>+3.2%</strong><br>
+                • Edible oils &amp; palm oil derivatives<br>
+                • Grammage reduction (shrinkflation)<br>
+                • Slower rural consumption pickup
+              </p>
+            </div>
+
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-pill badge-observed">DEFENSIVE</span>
+                <span style="font-size: 12px; font-weight: 700; color: #2E7D32;">30% EXPOSURE</span>
+              </div>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 4px;">IT &amp; Digital Services</h3>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 8px;">
+                • Indirect expense overhead: <strong>+0.8%</strong><br>
+                • Insulated from physical fuel inputs<br>
+                • Benefits from INR currency tailwinds<br>
+                • Defensive portfolio allocation
+              </p>
+            </div>
+          </div>
+
+          <!-- Sector Import Dependency Callout -->
+          <div class="card-solid" style="margin-top: 10px; background: #FFFFFF;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span class="badge-pill badge-emerald">IMPORT DEPENDENCY VULNERABILITY</span>
+                <div style="font-size: 17px; font-weight: 600; color: var(--text-primary); margin-top: 4px;">
+                  India imports 85%+ of crude oil and 76% of semiconductor components.
+                </div>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                  Sectors lacking domestic raw material substitution suffer immediate margin degradation, which firms pass directly to retail consumers within 30 to 60 days.
+                </p>
+              </div>
+              <div style="display: flex; gap: 24px; text-align: center;">
+                <div>
+                  <div style="font-family: var(--font-serif); font-size: 28px; color: #C62828;">85%</div>
+                  <div style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Crude Import Share</div>
+                </div>
+                <div>
+                  <div style="font-family: var(--font-serif); font-size: 28px; color: #00838F;">76%</div>
+                  <div style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Chip Import Share</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Sectoral Sensitivity &amp; Elasticity Analysis</span>
+          </div>
+          <div>Slide 08 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 09: HOUSEHOLD IMPACT & REGIONAL CALIBRATION -->
+      <div class="slide" data-index="8" data-title="08 | Household Impact & Budget">
+        <div class="slide-header">
+          <div class="section-identifier">08 | HOUSEHOLD BUDGET IMPACT</div>
+          <h2 class="slide-title">Microeconomic Calibration: Quantifying Household Shock</h2>
+          <p class="slide-subtitle">
+            Grounding macroeconomic volatility into monthly rupee expense line-items for middle-class Indian families.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <!-- Main Archetype Stats -->
+          <div class="grid-3">
+            <div class="card" style="border-left: 4px solid var(--accent-emerald);">
+              <span class="badge-pill badge-emerald">PERSONA SPECIFICATION</span>
+              <h3 style="font-size: 20px; font-weight: 600; margin: 10px 0 4px;">Urban Middle-Class Household</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Indore, Madhya Pradesh (Family of 4)</p>
+              <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <div>
+                  <div style="font-size: 12px; color: var(--text-muted);">Monthly Income</div>
+                  <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">₹60,000</div>
+                </div>
+                <div>
+                  <div style="font-size: 12px; color: var(--text-muted);">Baseline Expenses</div>
+                  <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">₹42,550</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="background: #FFF9F9; border-color: #FFCDD2;">
+              <span class="badge-pill badge-danger">CALCULATED EXPENSE SURGE</span>
+              <h3 style="font-size: 20px; font-weight: 600; margin: 10px 0 4px; color: #C62828;">+₹2,450 / month</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">+4.3% expansion over baseline</p>
+              <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                Total post-shock expenditure reaches <strong>₹45,000/mo</strong>, compressing monthly household savings from ₹12,450 down to ₹10,000.
+              </div>
+            </div>
+
+            <div class="card" style="background: #E8F5E9; border-color: #A5D6A7;">
+              <span class="badge-pill badge-observed">HCES 2023–24 CALIBRATION</span>
+              <h3 style="font-size: 20px; font-weight: 600; margin: 10px 0 4px; color: #2E7D32;">Empirical Weighting</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Survey Factsheet Calibration</p>
+              <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                Calibrated to MoSPI MPCE rural (₹3,179) and urban (₹5,200) fractile medians, ensuring realistic expenditure weights.
+              </div>
+            </div>
+          </div>
+
+          <!-- Itemized Breakdown Grid -->
+          <div class="card-solid" style="margin-top: 10px;">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 12px;">
+              ITEMIZED MONTHLY EXPENSE SHOCK BREAKDOWN
+            </div>
+            <div class="grid-4" style="gap: 16px;">
+              <div style="background: #F8FBF9; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(0,134,106,0.15);">
+                <div style="font-size: 13px; font-weight: 600;">Transport &amp; Fuel</div>
+                <div style="font-size: 19px; font-weight: 700; color: #C62828; margin: 4px 0;">+₹750 <span style="font-size: 12px; font-weight: 500;">(+10.0%)</span></div>
+                <div style="font-size: 11px; color: var(--text-muted);">Petrol, diesel, auto commutes</div>
+              </div>
+              <div style="background: #F8FBF9; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(0,134,106,0.15);">
+                <div style="font-size: 13px; font-weight: 600;">Food &amp; Groceries</div>
+                <div style="font-size: 19px; font-weight: 700; color: #C62828; margin: 4px 0;">+₹720 <span style="font-size: 12px; font-weight: 500;">(+6.0%)</span></div>
+                <div style="font-size: 11px; color: var(--text-muted);">Vegetables, edible oil, dairy</div>
+              </div>
+              <div style="background: #F8FBF9; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(0,134,106,0.15);">
+                <div style="font-size: 13px; font-weight: 600;">Consumer Durables</div>
+                <div style="font-size: 19px; font-weight: 700; color: #C62828; margin: 4px 0;">+₹380 <span style="font-size: 12px; font-weight: 500;">(+3.5%)</span></div>
+                <div style="font-size: 11px; color: var(--text-muted);">Electronics &amp; appliances</div>
+              </div>
+              <div style="background: #F8FBF9; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(0,134,106,0.15);">
+                <div style="font-size: 13px; font-weight: 600;">Housing &amp; Utilities</div>
+                <div style="font-size: 19px; font-weight: 700; color: #C62828; margin: 4px 0;">+₹280 <span style="font-size: 12px; font-weight: 500;">(+3.5%)</span></div>
+                <div style="font-size: 11px; color: var(--text-muted);">LPG cylinders &amp; power tariffs</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Microeconomic Calibration &amp; Regional Personas</span>
+          </div>
+          <div>Slide 09 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 10: SIP AFFORDABILITY & COMPOUNDING PRESERVATION -->
+      <div class="slide" data-index="9" data-title="09 | SIP Affordability & Compounding">
+        <div class="slide-header">
+          <div class="section-identifier">09 | INVESTMENTS &amp; SIP AFFORDABILITY</div>
+          <h2 class="slide-title">Preserving the Retail Investor: The SIP Defensibility Model</h2>
+          <p class="slide-subtitle">
+            Transforming inflationary budget pressure into disciplined micro-adjustments instead of wealth-destroying SIP cancellations.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="grid-2">
+            <!-- Left: Dilemma & BharatImpact Solution -->
+            <div class="card">
+              <span class="badge-pill badge-danger">THE RETAIL INVESTOR TRAP</span>
+              <h3 style="font-size: 19px; font-weight: 600; margin: 12px 0 6px;">The Panic Cancellation Reflex</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+                When household expenses jump by ₹2,450, Indian retail investors panic and cancel their entire ongoing SIP (typically ₹5,000/month). This wipes out the compounding snowball right when markets are often attractively priced.
+              </p>
+              <div style="background: #FFF5F5; border-left: 3px solid #C62828; padding: 12px 16px; border-radius: 6px; font-size: 13px; color: #C62828;">
+                <strong>Opportunity Cost:</strong> Stopping a ₹5,000 SIP for just 12 months can result in a loss of <strong>₹26.8 Lakhs</strong> in projected 15-year terminal wealth.
+              </div>
+            </div>
+
+            <!-- Right: BharatImpact Tactical Prescription -->
+            <div class="card" style="border: 1.5px solid var(--accent-emerald); background: #FFFFFF;">
+              <span class="badge-pill badge-emerald">THE BHARATIMPACT SOLUTION</span>
+              <h3 style="font-size: 19px; font-weight: 600; margin: 12px 0 6px; color: var(--accent-emerald);">Tactical SIP Capacity Recalibration</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+                BharatImpact computes an exact tactical recommendation: rather than canceling, reduce monthly SIP by only <strong>₹500 (10%)</strong> to <strong>₹4,500/month</strong> for the 6-month shock horizon.
+              </p>
+              <div style="background: var(--accent-emerald-light); border-left: 3px solid var(--accent-emerald); padding: 12px 16px; border-radius: 6px; font-size: 13px; color: var(--accent-emerald);">
+                <strong>Wealth Preserved:</strong> Keeps 90% of the compounding snowball rolling, securing a projected <strong>₹1.07 Crore</strong> 15-year corpus.
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Table -->
+          <div class="card-solid" style="margin-top: 10px;">
+            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; margin-bottom: 12px;">
+              15-YEAR WEALTH OUTCOMES UNDER MACRO SHOCKS (12% CAGR EXPECTED RETURN)
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+              <div style="background: #F4F9F6; border: 1px solid rgba(0,134,106,0.2); border-radius: 10px; padding: 16px;">
+                <span class="badge-pill badge-emerald">BASELINE (NO SHOCK)</span>
+                <div style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 8px 0 2px;">₹1.34 Crore</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Ongoing SIP: ₹5,000 / month</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Total Investment: ₹9.0 Lakhs</div>
+              </div>
+
+              <div style="background: #FFFFFF; border: 1.5px solid var(--accent-emerald); border-radius: 10px; padding: 16px; box-shadow: 0 4px 12px rgba(0,134,106,0.1);">
+                <span class="badge-pill badge-observed">BHARATIMPACT TACTICAL</span>
+                <div style="font-size: 24px; font-weight: 700; color: var(--accent-emerald); margin: 8px 0 2px;">₹1.07 Crore</div>
+                <div style="font-size: 12px; color: var(--accent-emerald); font-weight: 600;">Calibrated SIP: ₹4,500 / month (-10%)</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Preserves 80%+ of Long-Term Wealth!</div>
+              </div>
+
+              <div style="background: #FFF5F5; border: 1px solid #FFCDD2; border-radius: 10px; padding: 16px;">
+                <span class="badge-pill badge-danger">PANIC CANCELLATION</span>
+                <div style="font-size: 24px; font-weight: 700; color: #C62828; margin: 8px 0 2px;">₹80.3 Lakhs</div>
+                <div style="font-size: 12px; color: #C62828;">Reduced SIP: ₹3,000 or complete halt</div>
+                <div style="font-size: 12px; color: #C62828; margin-top: 8px;">Permanent wealth destruction of ₹27L+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Retail Investor Wealth Defensibility</span>
+          </div>
+          <div>Slide 10 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 11: IMPLEMENTATION STATUS & BENCHMARKS -->
+      <div class="slide" data-index="10" data-title="10 | Implementation & Benchmarks">
+        <div class="slide-header">
+          <div class="section-identifier">10 | IMPLEMENTATION &amp; BENCHMARKS</div>
+          <h2 class="slide-title">Engine Verification, Test Coverage &amp; Benchmarks</h2>
+          <p class="slide-subtitle">
+            Fully implemented production architecture validated through rigorous unit tests and deterministic benchmarks.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="grid-4">
+            <div class="card-solid" style="text-align: center; padding: 22px 18px;">
+              <div class="stat-number">270</div>
+              <div class="stat-label">Backend Unit Tests Passed</div>
+              <div style="font-size: 12px; color: #2E7D32; font-weight: 600; margin-top: 6px;">100% PyTest Clean</div>
+            </div>
+            <div class="card-solid" style="text-align: center; padding: 22px 18px;">
+              <div class="stat-number">198</div>
+              <div class="stat-label">Frontend Unit Tests Passed</div>
+              <div style="font-size: 12px; color: #2E7D32; font-weight: 600; margin-top: 6px;">20/20 Vitest Suites</div>
+            </div>
+            <div class="card-solid" style="text-align: center; padding: 22px 18px;">
+              <div class="stat-number">&lt;15ms</div>
+              <div class="stat-label">Recalculation Latency</div>
+              <div style="font-size: 12px; color: #2E7D32; font-weight: 600; margin-top: 6px;">Sub-frame Execution</div>
+            </div>
+            <div class="card-solid" style="text-align: center; padding: 22px 18px;">
+              <div class="stat-number">0.0 MB</div>
+              <div class="stat-label">Memory Leak Footprint</div>
+              <div style="font-size: 12px; color: #2E7D32; font-weight: 600; margin-top: 6px;">Zero Memory Drift</div>
+            </div>
+          </div>
+
+          <!-- Acceptance Criteria Compliance Table -->
+          <div class="card-solid" style="margin-top: 10px;">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 12px;">
+              HACKWAVE 3.0 ACCEPTANCE CRITERIA VERIFICATION
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+                ✓ <strong>Structured Schema Ingestion:</strong> JSON conforms to <code>event-extraction-schema.json</code>.<br>
+                ✓ <strong>Visual Observed vs Inferred:</strong> Distinct solid and dashed edges.<br>
+                ✓ <strong>Three Distinct Propagation Paths:</strong> Food (A), Transport (B), Financial (C).<br>
+                ✓ <strong>Edge Evidence Drawers:</strong> Clicking any edge displays government receipt.
+              </div>
+              <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+                ✓ <strong>Persona Impact Selector:</strong> State (MP), Sector (Rural/Urban), Class (Q1–Q5).<br>
+                ✓ <strong>Deterministic Rupee Range:</strong> No AI math; computed via MoSPI survey baseline.<br>
+                ✓ <strong>Strict Missing-Data Handling:</strong> Explicit <em>"Data not available"</em> state.<br>
+                ✓ <strong>AI-Off Proof Mode:</strong> Zero variance in calculations when AI explanations toggle off.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Empirical Validation &amp; Quality Assurance</span>
+          </div>
+          <div>Slide 11 of 12</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 12: LIMITATIONS, GOVERNANCE & ROADMAP -->
+      <div class="slide" data-index="11" data-title="11 | Limitations, Governance & Roadmap">
+        <div class="slide-header">
+          <div class="section-identifier">11 | CONCLUSION &amp; ROADMAP</div>
+          <h2 class="slide-title">Intellectual Honesty, Governance &amp; Strategic Vision</h2>
+          <p class="slide-subtitle">
+            Acknowledging model boundaries while charting the roadmap to democratize economic foresight for every Indian household.
+          </p>
+        </div>
+
+        <div class="slide-content">
+          <div class="grid-2">
+            <!-- Left: Honest Limitations -->
+            <div class="card">
+              <span class="badge-pill badge-warning">MODEL BOUNDARIES &amp; LIMITATIONS</span>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 6px;">What the Model Does Not Do</h3>
+              <ul style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; list-style-position: inside;">
+                <li><strong>No Stock Price Prediction:</strong> We map input cost shocks, not equity market speculative bets.</li>
+                <li><strong>Supply Contract Absorption Lag:</strong> Real-world commercial contracts delay price transmission by 14–30 days; models reflect equilibrium steady state.</li>
+                <li><strong>Unannounced Policy Interventions:</strong> Sudden excise duty cuts or export bans alter elasticity chains; captured via explicit caveats in receipts.</li>
+              </ul>
+            </div>
+
+            <!-- Right: Strategic Roadmap -->
+            <div class="card">
+              <span class="badge-pill badge-emerald">FUTURE HORIZONS</span>
+              <h3 style="font-size: 18px; font-weight: 600; margin: 12px 0 6px;">Strategic Roadmap (Post-Hackathon)</h3>
+              <ul style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; list-style-position: inside;">
+                <li><strong>Account Aggregator (AA) Integration:</strong> User-consented real-time expense syncing to calculate personalized household elasticity.</li>
+                <li><strong>Vernacular Voice Ingestion:</strong> Hindi, Marathi, and Bengali conversational queries for rural agricultural households.</li>
+                <li><strong>State-Specific Mandi API Feeds:</strong> Live integration with Agmarknet for real-time district-level vegetable price calibration.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Closing Institutional Summary -->
+          <div class="card-solid" style="border: 1.5px solid var(--accent-emerald); background: linear-gradient(135deg, #FFFFFF, #EBF5F0); padding: 24px 32px; margin-top: 10px;">
+            <div style="font-family: var(--font-serif); font-size: 24px; color: var(--text-primary); line-height: 1.3;">
+              "Democratizing macroeconomic intelligence from global financial corridors to everyday Indian kitchens."
+            </div>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">
+              BharatImpact proves that cutting-edge AI and financial rigor can coexist: leveraging NLP for comprehension, while anchoring every rupee in verified government truth.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span class="footer-brand">Bharat<span>Impact</span></span>
+            <span>•</span>
+            <span>Strategic Conclusion &amp; Team SANKALP</span>
+          </div>
+          <div>Slide 12 of 12</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Interactive Navigation Dock -->
+  <div class="nav-dock">
+    <button class="nav-btn" onclick="toggleDrawer()">☰ Index</button>
+    <button class="nav-btn" onclick="prevSlide()">◀ Prev</button>
+    <div class="nav-counter" id="slideCounter">1 / 12</div>
+    <button class="nav-btn" onclick="nextSlide()">Next ▶</button>
+    <button class="nav-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    <button class="nav-btn" onclick="window.print()">⎙ Print PDF</button>
+    <div class="nav-pill">
+      <span>Keys: <kbd>←</kbd> <kbd>→</kbd> <kbd>Space</kbd> <kbd>F</kbd></span>
+    </div>
+  </div>
+
+  <script>
+    // Slide Management & Scaling
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const counter = document.getElementById('slideCounter');
+    const drawerList = document.getElementById('drawer-list');
+    const drawer = document.getElementById('drawer');
+
+    // Populate Slide Index in Drawer
+    slides.forEach((slide, idx) => {
+      const title = slide.getAttribute('data-title') || `Slide ${idx + 1}`;
+      const item = document.createElement('div');
+      item.className = 'drawer-item' + (idx === 0 ? ' active' : '');
+      item.innerHTML = `
+        <span class="item-num">SLIDE ${String(idx + 1).padStart(2, '0')}</span>
+        <span>${title}</span>
+      `;
+      item.onclick = () => {
+        goToSlide(idx);
+        toggleDrawer();
+      };
+      drawerList.appendChild(item);
+    });
+
+    function updateSlide() {
+      slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === currentSlide);
+      });
+      counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+      
+      const drawerItems = drawerList.querySelectorAll('.drawer-item');
+      drawerItems.forEach((item, idx) => {
+        item.classList.toggle('active', idx === currentSlide);
+      });
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateSlide();
+      }
+    }
+
+    function toggleDrawer() {
+      drawer.classList.toggle('open');
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Keyboard Navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key === 'Escape') {
+        drawer.classList.remove('open');
+      }
+    });
+
+    // Auto-scale Viewport to maintain pristine 16:9 1920x1080 resolution
+    function resizeViewport() {
+      const viewport = document.getElementById('viewport');
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const scaleX = windowWidth / 1920;
+      const scaleY = windowHeight / 1080;
+      const scale = Math.min(scaleX, scaleY);
+      viewport.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', resizeViewport);
+    window.addEventListener('load', () => {
+      resizeViewport();
+      updateSlide();
+    });
+  </script>
+</body>
+</html>

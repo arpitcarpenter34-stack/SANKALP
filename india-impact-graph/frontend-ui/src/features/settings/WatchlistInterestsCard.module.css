@@ -1,0 +1,159 @@
+.card {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: var(--radius-lg, 12px);
+  padding: 20px 22px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(16, 24, 40, 0.05));
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: scale(1.012);
+  box-shadow: 0 6px 18px rgba(4, 120, 87, 0.08);
+  border-color: var(--border-medium, #d1e3d7);
+}
+
+.header {
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary, #172b3a);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #5a7184);
+  margin: 2px 0 0 0;
+}
+
+.subTabsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle, #e2ece5);
+  padding-bottom: 8px;
+}
+
+.subTabBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary, #5a7184);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.subTabBtn:hover {
+  color: var(--text-primary, #172b3a);
+  background: var(--bg-mint-subtle, #f0f9f3);
+}
+
+.subTabActive {
+  background: #047857 !important;
+  color: #ffffff !important;
+}
+
+.searchBox {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #8298a9);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 6px 10px 6px 28px;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  background: var(--bg-card-subtle, #f7fcf9);
+  color: var(--text-primary, #172b3a);
+  font-size: 0.78rem;
+  outline: none;
+  transition: border-color 160ms ease;
+}
+
+.searchInput:focus {
+  border-color: var(--accent-emerald, #047857);
+  background: var(--bg-surface, #ffffff);
+}
+
+.chipsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 2px;
+  margin-bottom: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  background: var(--bg-card-subtle, #f7fcf9);
+  color: var(--text-primary, #172b3a);
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 160ms ease;
+  user-select: none;
+}
+
+.chip:hover {
+  border-color: var(--border-medium, #d1e3d7);
+  background: var(--bg-mint-subtle, #f0f9f3);
+}
+
+.chipSelected {
+  background: #ecfdf5 !important;
+  border-color: #10b981 !important;
+  color: #065f46 !important;
+  font-weight: 700;
+}
+
+.chipIcon {
+  font-size: 0.85rem;
+}
+
+.chipName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  color: var(--text-muted, #8298a9);
+}
+
+.selectedBadge {
+  color: #047857;
+  font-weight: 600;
+}

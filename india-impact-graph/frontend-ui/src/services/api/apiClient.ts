@@ -36,10 +36,11 @@ export function isValidAnalysisPayload(data: unknown): data is AnalysisResponse 
   return true;
 }
 
-class ApiClient {
+export class ApiClient {
   private baseUrl: string = DEFAULT_API_URL;
   private forceOffline: boolean = false;
   private lastAnalysisOperationLive: boolean = false;
+  private tokenGetter: (() => Promise<string | null>) | null = null;
 
   private lastStatus: BackendConnectionStatus = {
     isLive: false,
@@ -49,6 +50,35 @@ class ApiClient {
     label: 'OFFLINE DEMO ENGINE // LOCAL DETERMINISTIC FIXTURES',
     latencyMs: null,
   };
+
+  constructor(baseUrl?: string) {
+    if (baseUrl) {
+      this.baseUrl = baseUrl;
+    }
+  }
+
+  /**
+   * Registers a token provider callback (e.g. from Clerk useAuth().getToken).
+   */
+  setTokenGetter(getter: (() => Promise<string | null>) | null): void {
+    this.tokenGetter = getter;
+  }
+
+  /**
+   * Resolves current Authorization header if an active token getter is registered.
+   */
+  async getAuthHeaders(): Promise<Record<string, string>> {
+    if (!this.tokenGetter) return {};
+    try {
+      const token = await this.tokenGetter();
+      if (token) {
+        return { Authorization: `Bearer ${token}` };
+      }
+    } catch (err) {
+      console.warn('Failed to retrieve Clerk session token:', err);
+    }
+    return {};
+  }
 
   /**
    * Check basic server reachability.
@@ -159,6 +189,7 @@ class ApiClient {
       throw new Error('Backend forced offline for demonstration testing.');
     }
 
+    const authHeaders = await this.getAuthHeaders();
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 2000);
 
@@ -168,11 +199,16 @@ class ApiClient {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
+          ...authHeaders,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
+
+      if (response.status === 401) {
+        throw new Error('Unauthorized: Session token invalid or expired (HTTP 401).');
+      }
 
       if (!response.ok) {
         throw new Error(`Backend returned HTTP status ${response.status}`);
@@ -202,6 +238,42 @@ class ApiClient {
     } catch (err) {
       clearTimeout(timeoutId);
       this.lastAnalysisOperationLive = false;
+      throw err;
+    }
+  }
+
+  /**
+   * Verified user identity endpoint calling GET /api/auth/me with Bearer token.
+   */
+  async getCurrentUser(): Promise<{ authenticated: boolean; user_id: string; session_id?: string }> {
+    const authHeaders = await this.getAuthHeaders();
+    if (!authHeaders.Authorization) {
+      throw new Error('No active Clerk session token available.');
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/me`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          ...authHeaders,
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (response.status === 401) {
+        throw new Error('Unauthorized: Invalid or expired Clerk session token.');
+      }
+      if (!response.ok) {
+        throw new Error(`Backend returned HTTP ${response.status}`);
+      }
+      return await response.json();
+    } catch (err) {
+      clearTimeout(timeoutId);
       throw err;
     }
   }

@@ -42,6 +42,8 @@ export interface GlobalEventRecord {
   fullSummary: string;
   category: EventCategory;
   categoryLabel: string;
+  categories?: EventCategory[];
+  tags?: string[];
   region: GeographicRegion;
   regionLabel: string;
   locationName: string;
@@ -70,6 +72,14 @@ export interface GlobalEventRecord {
   linkedScenarioId?: string;
 }
 
+export type MarketFeedState =
+  | 'loading'
+  | 'available'
+  | 'no_data'
+  | 'offline'
+  | 'unsupported'
+  | 'error';
+
 export interface MarketInstrumentData {
   id: string;
   name: string;
@@ -91,6 +101,8 @@ export interface MarketInstrumentData {
   unavailableReason?: string;
   dataSourceKind: DataSourceProvenance;
   provenanceNote?: string;
+  feedStatus?: MarketFeedState;
+  feedEndpoint?: string;
 }
 
 export interface NewsArticleRecord {

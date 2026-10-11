@@ -1,0 +1,234 @@
+.card {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: var(--radius-lg, 12px);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(16, 24, 40, 0.05));
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: scale(1.012);
+  box-shadow: 0 6px 18px rgba(4, 120, 87, 0.08);
+  border-color: var(--border-medium, #d1e3d7);
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: var(--text-primary, #172b3a);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #5a7184);
+  margin: 2px 0 0 0;
+}
+
+.columnsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 16px;
+  flex: 1;
+}
+
+.currentPlanBox {
+  background: var(--bg-card-subtle, #f7fcf9);
+  border: 1px solid var(--border-subtle, #e2ece5);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.planBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.crownBadgeBlue {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #e0f2fe;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.planTypeLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted, #8298a9);
+  text-transform: uppercase;
+}
+
+.planName {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary, #172b3a);
+  margin: 0;
+}
+
+.planDescription {
+  font-size: 0.76rem;
+  color: var(--text-secondary, #5a7184);
+  margin: 0 0 12px 0;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: var(--text-primary, #172b3a);
+}
+
+.checkIconGreen {
+  color: #10b981;
+  font-weight: bold;
+}
+
+.upgradeBox {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.upgradeHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.crownBadgeAmber {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #fef3c7;
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.upgradeTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #166534;
+  margin: 0;
+}
+
+.upgradeDesc {
+  font-size: 0.75rem;
+  color: #15803d;
+  margin: 0 0 12px 0;
+  line-height: 1.35;
+}
+
+.upgradeBtn {
+  margin-top: auto;
+  padding: 8px 16px;
+  border-radius: var(--radius-md, 8px);
+  background: #047857;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 180ms ease;
+  width: fit-content;
+  align-self: flex-end;
+}
+
+.upgradeBtn:hover {
+  background: #065f46;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modalContent {
+  background: var(--bg-surface, #ffffff);
+  border-radius: 14px;
+  padding: 24px 28px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-subtle, #e2ece5);
+}
+
+.modalTitle {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary, #172b3a);
+  margin: 0 0 8px 0;
+}
+
+.modalText {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #5a7184);
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modalCloseBtn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle, #e2ece5);
+  background: var(--bg-surface, #ffffff);
+  color: var(--text-primary, #172b3a);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 680px) {
+  .columnsGrid {
+    grid-template-columns: 1fr;
+  }
+}
