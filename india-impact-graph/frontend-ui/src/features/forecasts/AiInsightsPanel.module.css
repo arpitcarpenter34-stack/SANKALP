@@ -1,0 +1,130 @@
+.panelContainer {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.panelContainer:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aiRobotIcon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent-emerald);
+}
+
+.panelTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.aiBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: var(--bg-mint);
+  color: var(--accent-emerald);
+  border: 1px solid #D1E3D7;
+}
+
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insightItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.iconCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.iconBulb {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.iconTarget {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.iconShield {
+  background: #E6FFFA;
+  color: #0D9488;
+}
+
+.iconTrending {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+.insightText {
+  flex: 1;
+}
+
+.askAiBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--accent-emerald);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 4px rgba(4, 120, 87, 0.2);
+}
+
+.askAiBtn:hover {
+  background: var(--accent-emerald-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(4, 120, 87, 0.25);
+}
+
+.askAiBtn:active {
+  transform: translateY(0);
+}

@@ -1,0 +1,144 @@
+.cardContainer {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cardContainer:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.tooltipBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  cursor: help;
+  display: flex;
+  align-items: center;
+}
+
+.waterfallList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.waterfallRow {
+  display: grid;
+  grid-template-columns: 160px 1fr 100px;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8125rem;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.waterfallRow:hover {
+  background: var(--bg-card-subtle);
+}
+
+.rowLabel {
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.barTrack {
+  height: 18px;
+  background: #F1F5F2;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.barFillBaseline {
+  background: #047857;
+}
+
+.barFillDriver {
+  background: #EF4444;
+}
+
+.barFillEstimated {
+  background: #0284C7;
+}
+
+.rowValue {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.valBaseline {
+  color: #047857;
+}
+
+.valDriver {
+  color: #DC2626;
+}
+
+.valEstimated {
+  color: #0284C7;
+}
+
+.driverDetails {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  grid-column: 1 / -1;
+  padding-left: 4px;
+  margin-top: -4px;
+}
+
+.navHint {
+  color: var(--accent-emerald);
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 6px;
+}
+
+.rangeExplanation {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  line-height: 1.35;
+  margin-top: 2px;
+  border-left: 3px solid var(--accent-emerald);
+}

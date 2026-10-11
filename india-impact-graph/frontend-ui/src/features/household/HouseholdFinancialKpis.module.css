@@ -1,0 +1,191 @@
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+  width: 100%;
+}
+
+.kpiCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  will-change: transform;
+  cursor: default;
+}
+
+/* Smooth subtle card hover animation (Section 7) */
+.kpiCard:hover {
+  transform: translateY(-2px) scale(1.018);
+  box-shadow: 0 8px 20px rgba(4, 120, 87, 0.08);
+  border-color: rgba(4, 120, 87, 0.28);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconCircleMint {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--bg-mint);
+  color: var(--accent-emerald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 180ms ease;
+}
+
+.kpiCard:hover .iconCircleMint {
+  transform: scale(1.08);
+}
+
+.iconCircleCart {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: #ECFDF5;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 180ms ease;
+}
+
+.kpiCard:hover .iconCircleCart {
+  transform: scale(1.08);
+}
+
+.iconCircleGreen {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: #F0FDF4;
+  color: #16A34A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 180ms ease;
+}
+
+.kpiCard:hover .iconCircleGreen {
+  transform: scale(1.08);
+}
+
+.kpiTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.25;
+  transition: color 160ms ease;
+}
+
+.kpiCard:hover .kpiTitle {
+  color: var(--text-primary);
+}
+
+.titleWithInfo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.infoIcon {
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: help;
+}
+
+.kpiValueRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpiValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.impactHighlight {
+  color: #DC2626;
+}
+
+.perMo {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.badgeNegative {
+  align-self: flex-start;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  background: #FEE2E2;
+  color: #DC2626;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.kpiFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.subtext {
+  color: var(--text-muted);
+}
+
+.subtextNeutral {
+  color: var(--text-muted);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .kpiCard {
+    transition: none !important;
+  }
+  .kpiCard:hover {
+    transform: none !important;
+  }
+  .iconCircleMint, .iconCircleCart, .iconCircleGreen {
+    transform: none !important;
+  }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1280px) {
+  .kpiRow {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .kpiRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .kpiRow {
+    grid-template-columns: 1fr;
+  }
+}

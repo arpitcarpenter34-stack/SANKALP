@@ -1,0 +1,244 @@
+.panelCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow var(--transition-normal);
+}
+
+.panelCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sectorIconSmall {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-emerald);
+  flex-shrink: 0;
+}
+
+.sectorNameHeading {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.activeBadge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: var(--bg-mint);
+  color: var(--accent-emerald);
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid rgba(4, 120, 87, 0.2);
+}
+
+.summaryText {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+/* Tabs */
+.tabsBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 6px;
+}
+
+.tabBtn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tabBtn:hover:not(.activeTab) {
+  color: var(--text-primary);
+  background: var(--bg-card-subtle);
+}
+
+.activeTab {
+  background: var(--bg-mint) !important;
+  color: var(--accent-emerald) !important;
+  font-weight: 700;
+}
+
+/* Fact Items */
+.factsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.factRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.clickableFactRow {
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+  margin: -4px -6px;
+  transition: background-color var(--transition-fast);
+}
+
+.clickableFactRow:hover {
+  background: var(--bg-mint-subtle);
+}
+
+.factIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-mint-subtle);
+  color: var(--accent-emerald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.factContent {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.factLabel {
+  color: var(--text-secondary);
+}
+
+.factValue {
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+/* Indicators List */
+.indicatorsList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.indicatorCard {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.indLabel {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.indValue {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.indTrend {
+  font-size: 10px;
+  color: var(--accent-emerald);
+  font-weight: 600;
+}
+
+/* Related sectors */
+.relatedList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.relatedItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: var(--bg-card-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+}
+
+.relatedName {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.relatedImpact {
+  font-weight: 700;
+  color: var(--accent-amber);
+}
+
+.analysisBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 14px;
+  background: var(--bg-mint-subtle);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  color: var(--accent-emerald);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: 4px;
+}
+
+.analysisBtn:hover {
+  background: var(--bg-mint);
+  border-color: var(--border-active);
+  transform: translateY(-1px);
+}

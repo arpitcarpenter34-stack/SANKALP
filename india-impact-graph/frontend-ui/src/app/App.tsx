@@ -9,6 +9,12 @@ import { AiAssistantDrawer } from '../features/dashboard/AiAssistantDrawer';
 import { ScenarioWorkspace } from '../features/workspace/ScenarioWorkspace';
 import { GlobalEventsView } from '../features/events/GlobalEventsView';
 import { ImpactGraphView } from '../features/graph/ImpactGraphView';
+import { SectorsView } from '../features/sectors/SectorsView';
+import { HouseholdView } from '../features/household/HouseholdView';
+import { SipForecastsView } from '../features/forecasts/SipForecastsView';
+import { NewsInsightsView } from '../features/news/NewsInsightsView';
+import { HouseholdAssumptions } from '../features/household/types';
+import { PROFILE_PRESETS } from '../features/household/householdData';
 import { scenarioService } from '../services/api/scenarioService';
 import { apiClient } from '../services/api/apiClient';
 import { MOCK_SCENARIOS, getScenarioGraph, calculatePersonaImpact } from '../services/api/mockData';
@@ -46,13 +52,27 @@ export const App: React.FC<AppProps> = ({
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState<boolean>(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState<boolean>(false);
   const [isScenarioWorkspaceOpen, setIsScenarioWorkspaceOpen] = useState<boolean>(false);
-  const [activeSidebarTab, setActiveSidebarTab] = useState<string>('impact-graph');
+  const [activeSidebarTab, setActiveSidebarTab] = useState<string>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab) return tab;
+    } catch {
+      // ignore
+    }
+    return 'impact-graph';
+  });
+  const [selectedSectorDomain, setSelectedSectorDomain] = useState<string>('semiconductors');
   const [activeNavTab, setActiveNavTab] = useState<string>('dashboard');
 
   // Backend connection state
   const [backendStatus, setBackendStatus] = useState<BackendConnectionStatus>(apiClient.getStatus());
 
   // Household Archetype Configuration (Anchored to MoSPI HCES 2023-24)
+  const [householdAssumptions, setHouseholdAssumptions] = useState<HouseholdAssumptions>(
+    PROFILE_PRESETS.urban_middle
+  );
+
   const [personaConfig, setPersonaConfig] = useState<HouseholdPersonaConfig>({
     state: 'Madhya Pradesh',
     sector: 'Rural',
@@ -218,9 +238,73 @@ export const App: React.FC<AppProps> = ({
         />
       ) : activeSidebarTab === 'impact-graph' ? (
         <ImpactGraphView
+          initialDomainId={selectedSectorDomain}
           onNavigateToScenario={() => {
             setIsScenarioWorkspaceOpen(true);
           }}
+        />
+      ) : activeSidebarTab === 'sectors' ? (
+        <SectorsView
+          onNavigateToGraph={(domainId) => {
+            setSelectedSectorDomain(domainId);
+            setActiveSidebarTab('impact-graph');
+          }}
+          onNavigateToHousehold={() => {
+            setActiveSidebarTab('household-impact');
+          }}
+          onNavigateToNews={() => {
+            setActiveSidebarTab('global-events');
+          }}
+        />
+      ) : activeSidebarTab === 'household-impact' ? (
+        <HouseholdView
+          assumptions={householdAssumptions}
+          onAssumptionsChange={setHouseholdAssumptions}
+          onNavigateToSectors={(sectorId) => {
+            if (sectorId) setSelectedSectorDomain(sectorId);
+            setActiveSidebarTab('sectors');
+          }}
+          onNavigateToGraph={() => {
+            setActiveSidebarTab('impact-graph');
+          }}
+          onNavigateToSipForecasts={() => {
+            setActiveSidebarTab('sip-forecasts');
+          }}
+          onNavigateToConsumption={() => {
+            setActiveSidebarTab('overview');
+          }}
+          selectedEventId={analysisState.selectedScenario.id}
+        />
+      ) : activeSidebarTab === 'sip-forecasts' ? (
+        <SipForecastsView
+          selectedScenarioTitle={analysisState.selectedScenario.title}
+          householdIncome={householdAssumptions.monthlyIncome}
+          initialMonthlySip={householdAssumptions.currentSip}
+          onSipAmountChange={(amount) => {
+            setHouseholdAssumptions((prev) => ({ ...prev, currentSip: amount }));
+          }}
+          onChangeScenario={() => setIsScenarioWorkspaceOpen(true)}
+          onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
+          onNavigateToHousehold={() => setActiveSidebarTab('household-impact')}
+          onNavigateToSectors={(sectorId) => {
+            if (sectorId) setSelectedSectorDomain(sectorId);
+            setActiveSidebarTab('sectors');
+          }}
+          onNavigateToGraph={() => setActiveSidebarTab('impact-graph')}
+        />
+      ) : activeSidebarTab === 'news-insights' ? (
+        <NewsInsightsView
+          onNavigateToSector={(sectorId) => {
+            if (sectorId) setSelectedSectorDomain(sectorId);
+            setActiveSidebarTab('sectors');
+          }}
+          onNavigateToEvent={(eventId) => {
+            setActiveSidebarTab('impact-graph');
+            if (eventId) {
+              handleAnalyze(eventId);
+            }
+          }}
+          onNavigateToGraph={() => setActiveSidebarTab('impact-graph')}
         />
       ) : (
         <div className={styles.dashboardContainer}>
@@ -317,7 +401,7 @@ export const App: React.FC<AppProps> = ({
               />
 
               <SipAffordabilityCard
-                onOpenCalculator={() => setIsAiAssistantOpen(true)}
+                onOpenCalculator={() => setActiveSidebarTab('sip-forecasts')}
               />
 
               <NewsSignalsCard />
@@ -337,6 +421,11 @@ export const App: React.FC<AppProps> = ({
         onClose={() => setIsAiAssistantOpen(false)}
         onApplyDomainFilter={handleDomainFilterFromAi}
         activeScenarioTitle={analysisState.selectedScenario.title}
+        sipContext={{
+          monthlySip: householdAssumptions.currentSip,
+          householdIncome: householdAssumptions.monthlyIncome,
+          selectedScenarioName: analysisState.selectedScenario.title,
+        }}
       />
 
       {/* 6. Contextual Evidence Receipt Drawer (when node or edge selected) */}

@@ -1,0 +1,51 @@
+.sectorsContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 4px;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.twoColRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+@media (max-width: 1200px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .twoColRow {
+    grid-template-columns: 1fr;
+  }
+}

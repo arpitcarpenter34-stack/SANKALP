@@ -1,0 +1,272 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.titleCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.legendItem:hover {
+  background-color: #f1f5f9;
+}
+
+.legendDisabled {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+.incomeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #059669;
+}
+
+.expensesDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #0284c7;
+}
+
+.savingsDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background-color: #a7f3d0;
+}
+
+.rangeSelect {
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.rangeSelect:hover {
+  border-color: #94a3b8;
+}
+
+.chartWrapper {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 180px;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: #f1f5f9;
+  stroke-width: 1;
+}
+
+.yTickText {
+  font-size: 10px;
+  fill: #94a3b8;
+  font-weight: 500;
+}
+
+.xTickText {
+  font-size: 11px;
+  fill: #64748b;
+  font-weight: 500;
+  transition: fill 0.15s ease, font-weight 0.15s ease;
+}
+
+.xTickActive {
+  fill: #0f172a;
+  font-weight: 700;
+}
+
+.savingsBar {
+  fill: #a7f3d0;
+  transition: fill 0.18s ease, transform 0.18s ease;
+  cursor: pointer;
+}
+
+.savingsBar:hover,
+.savingsBarActive {
+  fill: #6ee7b7;
+}
+
+.incomeLine {
+  fill: none;
+  stroke: #059669;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.expenseLine {
+  fill: none;
+  stroke: #0284c7;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.incomeCircle {
+  fill: #059669;
+  stroke: #ffffff;
+  stroke-width: 2;
+  transition: r 0.15s ease;
+}
+
+.expenseCircle {
+  fill: #0284c7;
+  stroke: #ffffff;
+  stroke-width: 2;
+  transition: r 0.15s ease;
+}
+
+.hoverTarget {
+  cursor: pointer;
+}
+
+/* Floating dark tooltip card matching reference screenshot */
+.tooltipCard {
+  position: absolute;
+  top: 15px;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 10;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 135px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.tooltipHeader {
+  font-weight: 700;
+  color: #cbd5e1;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 3px;
+  margin-bottom: 2px;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #f8fafc;
+}
+
+.tooltipIncomeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.tooltipExpenseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+}
+
+.tooltipSavingsDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6ee7b7;
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

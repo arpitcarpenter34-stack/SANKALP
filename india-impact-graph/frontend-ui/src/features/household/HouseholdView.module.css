@@ -1,0 +1,88 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 4px 32px 4px;
+  box-sizing: border-box;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Charts Grid Row: 65% breakdown, 35% donut */
+.chartsGridRow {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.breakdownCol,
+.donutCol {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Middle Row 2: 3 cards (Assumptions, Drivers, Trend) */
+.threeCardsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.threeCardCol {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bottom Row 3: 65% SIP, 35% Insights */
+.bottomGridRow {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.sipCol,
+.insightsCol {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .chartsGridRow {
+    grid-template-columns: 1fr;
+  }
+  .threeCardsRow {
+    grid-template-columns: 1fr;
+  }
+  .bottomGridRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    gap: 12px;
+    padding: 0 0 24px 0;
+  }
+  .chartsGridRow,
+  .threeCardsRow,
+  .bottomGridRow {
+    gap: 12px;
+  }
+}

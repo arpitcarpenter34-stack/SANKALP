@@ -1,0 +1,132 @@
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.leftCol {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.headerIconCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.headerIconCircle:hover {
+  transform: scale(1.05);
+}
+
+.titleCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.controlBox {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.controlLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 10px;
+  pointer-events: none;
+  color: var(--accent-emerald);
+  display: flex;
+  align-items: center;
+}
+
+.headerSelect {
+  padding: 8px 14px 8px 32px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  appearance: auto;
+}
+
+.headerSelect:hover {
+  border-color: var(--accent-emerald);
+  background: var(--bg-card-subtle);
+  transform: translateY(-1px);
+}
+
+.headerSelect:focus {
+  border-color: var(--accent-emerald);
+  box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.2);
+}
+
+@media (max-width: 768px) {
+  .headerContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rightControls {
+    width: 100%;
+  }
+
+  .controlBox {
+    flex: 1;
+  }
+
+  .headerSelect {
+    width: 100%;
+  }
+}

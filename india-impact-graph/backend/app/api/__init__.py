@@ -12,6 +12,7 @@ from app.api.graph import router as graph_router
 from app.api.consensus import router as consensus_router
 from app.api.time_series import router as time_series_router
 from app.api.scenarios import router as scenarios_router
+from app.api.news import router as news_router
 from what_to_watch.api import router as what_to_watch_router
 
 api_router = APIRouter()
@@ -20,6 +21,7 @@ api_router.include_router(graph_router)
 api_router.include_router(consensus_router)
 api_router.include_router(time_series_router)
 api_router.include_router(scenarios_router)
+api_router.include_router(news_router)
 api_router.include_router(what_to_watch_router)
 
 __all__ = [
@@ -29,6 +31,7 @@ __all__ = [
     "consensus_router",
     "time_series_router",
     "scenarios_router",
+    "news_router",
     "what_to_watch_router",
 ]
 

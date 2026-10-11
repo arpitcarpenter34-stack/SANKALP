@@ -1,0 +1,121 @@
+.selectorWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.scrollContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  padding: 4px 2px;
+  width: 100%;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.sectorTab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-normal);
+  text-align: left;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+}
+
+.sectorTab:hover:not(.activeTab) {
+  background: var(--bg-card-subtle);
+  border-color: var(--border-medium);
+  transform: translateY(-1px);
+}
+
+.activeTab {
+  background: var(--accent-emerald) !important;
+  border-color: var(--accent-emerald) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
+}
+
+.iconWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--bg-mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-emerald);
+  flex-shrink: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.activeTab .iconWrapper {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.labelCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.tabTitle {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.tabSubtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+.activeTab .tabSubtitle {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.scrollBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.scrollBtn:hover:not(:disabled) {
+  background: var(--bg-card-subtle);
+  color: var(--accent-emerald);
+  border-color: var(--border-active);
+}
+
+.scrollBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

@@ -1,0 +1,145 @@
+.tableCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--transition-normal);
+  height: 100%;
+}
+
+.tableCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.cardTitle {
+  margin: 0 0 14px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.tableResponsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.impactTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+
+.thCell {
+  padding: 8px 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+
+.trRow {
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.trRow:hover {
+  background: var(--bg-card-subtle);
+}
+
+.trRow:last-child {
+  border-bottom: none;
+}
+
+.tdCell {
+  padding: 10px 10px;
+  vertical-align: middle;
+}
+
+.sectorCol {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sectorIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-emerald);
+  flex-shrink: 0;
+}
+
+.badgeHigh {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: #FEE2E2;
+  color: #DC2626;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.badgeMedium {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: #FEF3C7;
+  color: #D97706;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.badgeLow {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-mint);
+  color: var(--accent-emerald);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.keyEffectWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.effectBarTrack {
+  width: 60px;
+  height: 6px;
+  background: #F1F5F9;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.effectBarFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-normal);
+}
+
+.effectPctText {
+  font-weight: 700;
+  font-size: 11px;
+  min-width: 28px;
+}
+
+.detailsText {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.35;
+  max-width: 220px;
+}

@@ -6,6 +6,11 @@ export interface AiAssistantDrawerProps {
   onClose: () => void;
   onApplyDomainFilter: (domain: string) => void;
   activeScenarioTitle?: string;
+  sipContext?: {
+    monthlySip?: number;
+    householdIncome?: number;
+    selectedScenarioName?: string;
+  };
 }
 
 interface Message {
@@ -31,6 +36,7 @@ export const AiAssistantDrawer: React.FC<AiAssistantDrawerProps> = ({
   onClose,
   onApplyDomainFilter,
   activeScenarioTitle = 'Crude Oil Shock: +12%',
+  sipContext,
 }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -90,9 +96,12 @@ export const AiAssistantDrawer: React.FC<AiAssistantDrawerProps> = ({
       } else if (targetDomain === 'food') {
         actionSummary = 'Applied domain filter: Food & Agriculture';
         responseText = `Filtering on Food & Agriculture pathways. Rural food shares (44.52% in MP according to Table 3.6 of the MoSPI HCES report) create sensitivity to wholesale procurement and mandi freight, mitigated by PMGKAY targeted allocations.`;
-      } else if (lower.includes('sip') || lower.includes('invest')) {
-        actionSummary = 'Highlighted SIP Affordability module';
-        responseText = `At an estimated incremental expense burden of +₹2,450/month, a median household with ₹60,000 income faces approximately 10% compression in discretionary surplus, reducing monthly SIP investment capacity from ₹5,000 to ₹4,500.`;
+      } else if (lower.includes('sip') || lower.includes('invest') || lower.includes('capacity') || lower.includes('corpus')) {
+        actionSummary = 'Evaluated SIP Affordability & Forecasts';
+        const sipAmount = sipContext?.monthlySip || 5000;
+        const income = sipContext?.householdIncome || 60000;
+        const scenarioLabel = sipContext?.selectedScenarioName || activeScenarioTitle;
+        responseText = `At your active SIP contribution of ₹${sipAmount.toLocaleString('en-IN')}/mo and household income of ₹${income.toLocaleString('en-IN')}/mo under scenario "${scenarioLabel}":\n\nMacroeconomic expense shocks compress monthly discretionary surplus, reducing estimated comfortable SIP capacity by ~20% (to ~₹${Math.round(sipAmount * 0.8).toLocaleString('en-IN')}/mo). Continuing with ₹${sipAmount.toLocaleString('en-IN')}/mo is achievable by drawing from unallocated liquid savings, or you may adopt a flexible buffer between ₹${Math.round(sipAmount * 0.7).toLocaleString('en-IN')} – ₹${Math.round(sipAmount * 0.8).toLocaleString('en-IN')}.\n\n*Note: Grounded in deterministic MoSPI HCES 2023-24 expenditure models; not SEBI-registered personalized investment advice.*`;
       } else if (lower.includes('forecast')) {
         actionSummary = 'Highlighted 6-Month Expense Forecast';
         responseText = `The 6-month forecast indicates headline household expenditure rising from ₹58,000 in October 2024 to ₹68,000 by March 2025 (+9.1%), with a 1-sigma uncertainty interval spanning ₹64,800 to ₹71,200.`;

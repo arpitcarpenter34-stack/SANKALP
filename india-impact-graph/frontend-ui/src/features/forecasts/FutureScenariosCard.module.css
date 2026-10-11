@@ -1,0 +1,174 @@
+.cardContainer {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cardContainer:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.scenarioList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scenarioItem {
+  background: #FAFCFA;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.scenarioItem:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+.scenarioItem.selected {
+  background: #FFFFFF;
+  border-color: var(--accent-emerald);
+  box-shadow: 0 0 0 1.5px var(--accent-emerald), var(--shadow-card);
+}
+
+.itemTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.leftCol {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.iconCircle {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconOptimistic {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+.iconBase {
+  background: #EFF6FF;
+  color: #0284C7;
+}
+
+.iconPessimistic {
+  background: #FEF2F2;
+  color: #DC2626;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scenarioName {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.deltaBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+
+.badgePositive {
+  background: #D1FAE5;
+  color: #047857;
+}
+
+.badgeCurrent {
+  background: #E0F2FE;
+  color: #0284C7;
+}
+
+.badgeNegative {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.scenarioSubtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.valueBlock {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.corpusValue {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.itemBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid #EEF5F0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.paramText {
+  font-weight: 500;
+}
+
+.paramVal {
+  font-weight: 700;
+  color: var(--text-primary);
+}

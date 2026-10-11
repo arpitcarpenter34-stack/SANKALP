@@ -1,0 +1,196 @@
+.chartCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--transition-normal);
+  height: 100%;
+}
+
+.chartCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.infoBtn {
+  color: var(--text-muted);
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.infoBtn:hover {
+  color: var(--accent-emerald);
+}
+
+.rangePills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-mint-subtle);
+  padding: 2px;
+  border-radius: var(--radius-md);
+}
+
+.rangeBtn {
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.rangeBtn:hover:not(.activeRange) {
+  color: var(--text-primary);
+}
+
+.activeRange {
+  background: var(--accent-emerald) !important;
+  color: #FFFFFF !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+  font-size: 12px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.legendDotA {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: #047857;
+}
+
+.legendDotB {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: #0284C7;
+}
+
+.svgWrap {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 220px;
+}
+
+.chartSvg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: var(--border-subtle);
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+}
+
+.axisText {
+  fill: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+  user-select: none;
+}
+
+.crosshair {
+  stroke: #94A3B8;
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+
+/* Tooltip overlay */
+.tooltipOverlay {
+  position: absolute;
+  pointer-events: none;
+  background: #0F172A;
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  box-shadow: var(--shadow-lg);
+  font-size: 11px;
+  line-height: 1.4;
+  transform: translate(-50%, -115%);
+  white-space: nowrap;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.tooltipMonth {
+  font-weight: 700;
+  color: #94A3B8;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 2px;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.tooltipDotA {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: #10B981;
+}
+
+.tooltipDotB {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: #38BDF8;
+}
+
+.tooltipValue {
+  font-weight: 600;
+}

@@ -1,0 +1,29 @@
+.disclaimerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #FAFCFA;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  margin-top: 20px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.leftText {
+  flex: 1;
+  min-width: 260px;
+  line-height: 1.45;
+}
+
+.poweredBy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-emerald);
+  font-weight: 600;
+  white-space: nowrap;
+}

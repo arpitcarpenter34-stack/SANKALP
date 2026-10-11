@@ -1,0 +1,147 @@
+.cardContainer {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cardContainer:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.775rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendBox {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.boxInvested {
+  background: #A7F3D0;
+}
+
+.boxReturns {
+  background: #047857;
+}
+
+.svgWrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.chartSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: #E2ECE5;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.axisLabel {
+  font-size: 10px;
+  fill: var(--text-muted);
+  font-family: var(--font-sans);
+}
+
+.barGroup {
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.barGroup:hover {
+  opacity: 0.9;
+}
+
+.barInvested {
+  fill: #A7F3D0;
+  transition: height 0.4s ease, y 0.4s ease;
+}
+
+.barReturns {
+  fill: #047857;
+  transition: height 0.4s ease, y 0.4s ease;
+}
+
+.topTotalLabel {
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.insideLabel {
+  font-size: 9px;
+  font-weight: 600;
+  fill: #172B3A;
+  font-family: var(--font-sans);
+}
+
+.insideLabelWhite {
+  font-size: 9px;
+  font-weight: 600;
+  fill: #FFFFFF;
+  font-family: var(--font-sans);
+}
+
+.xCategoryLabel {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--text-secondary);
+  font-family: var(--font-sans);
+}
+
+.floatingTooltip {
+  position: absolute;
+  top: 10px;
+  background: rgba(23, 43, 58, 0.94);
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  backdrop-filter: blur(4px);
+  transform: translateX(-50%);
+}

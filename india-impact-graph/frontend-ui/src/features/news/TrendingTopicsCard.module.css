@@ -1,0 +1,110 @@
+.cardContainer {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.titleGroup {
+  margin-bottom: 1rem;
+}
+
+.cardTitle {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.cardSubtitle {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.topicList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.topicItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.75rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.topicItem:hover {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  transform: translateX(2px);
+}
+
+.topicLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rankBadge {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.rankTop1 {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.rankTop2 {
+  background: #e0e7ff;
+  color: #4f46e5;
+}
+
+.rankTop3 {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.topicMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.topicName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.topicCount {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.growthBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid #a7f3d0;
+}

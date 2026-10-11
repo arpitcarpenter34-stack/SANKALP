@@ -1,0 +1,361 @@
+.chartCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--transition-normal);
+  height: 100%;
+}
+
+.chartCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.chartSubtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.controlsArea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggleGroup {
+  display: flex;
+  align-items: center;
+  background: var(--bg-mint-subtle);
+  padding: 2px;
+  border-radius: var(--radius-md);
+}
+
+.toggleBtn {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toggleActive {
+  background: var(--accent-emerald) !important;
+  color: #FFFFFF !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.catFilterSelect {
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.catFilterSelect:hover {
+  border-color: var(--accent-emerald);
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDotCurrent {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-xs);
+  background: #A7F3D0; /* Light mint */
+}
+
+.legendDotImpact {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-xs);
+  background: #047857; /* Deep emerald */
+}
+
+.legendDotIncrease {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-xs);
+  background: #FCA5A5; /* Coral */
+}
+
+/* Chart Canvas */
+.chartCanvas {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  position: relative;
+  min-height: 230px;
+  margin-top: 6px;
+}
+
+.yAxisLabels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  height: 160px;
+  text-align: right;
+  min-width: 26px;
+  padding-bottom: 2px;
+}
+
+.barsContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  flex: 1;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.categoryColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast), transform 180ms ease;
+  flex: 1;
+  max-width: 90px;
+}
+
+.categoryColumn:hover {
+  background: var(--bg-card-subtle);
+  transform: translateY(-2px);
+}
+
+.categorySelected {
+  background: var(--bg-mint-subtle) !important;
+}
+
+.barTopLabels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.valLabelLeft {
+  color: #059669;
+}
+
+.valLabelRight {
+  color: #047857;
+}
+
+.barsPair {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  position: relative;
+}
+
+.barBaseline {
+  width: 16px;
+  background: #A7F3D0;
+  border-radius: 3px 3px 0 0;
+  transition: height 250ms ease, background var(--transition-fast);
+}
+
+.categoryColumn:hover .barBaseline {
+  background: #6EE7B7;
+}
+
+.barAfter {
+  width: 16px;
+  background: #047857;
+  border-radius: 3px 3px 0 0;
+  transition: height 250ms ease, background var(--transition-fast);
+}
+
+.categoryColumn:hover .barAfter {
+  background: #065F46;
+}
+
+.increaseBadge {
+  margin-top: 4px;
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+  background: #FEE2E2;
+  color: #DC2626;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+
+.colFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.catIconWrap {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--bg-mint);
+  color: var(--accent-emerald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 180ms ease;
+}
+
+.categoryColumn:hover .catIconWrap {
+  transform: scale(1.1);
+}
+
+.catNameText {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+  transition: color 160ms ease;
+}
+
+.categoryColumn:hover .catNameText {
+  color: var(--text-primary);
+}
+
+/* Hover Tooltip */
+.hoverTooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  min-width: 160px;
+  white-space: nowrap;
+  animation: fadeIn 140ms ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 4px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.tooltipTitle {
+  font-weight: 700;
+  color: #34D399;
+  margin-bottom: 4px;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 10.5px;
+  margin-bottom: 2px;
+}
+
+.tooltipLabel {
+  color: #94A3B8;
+}
+
+.tooltipVal {
+  font-weight: 600;
+}
+
+.tooltipValPositive {
+  color: #F87171;
+  font-weight: 700;
+}
+
+.tooltipDriver {
+  margin-top: 4px;
+  font-size: 9.5px;
+  color: #CBD5E1;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 3px;
+  white-space: normal;
+  max-width: 170px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .categoryColumn, .catIconWrap, .barBaseline, .barAfter {
+    transition: none !important;
+  }
+  .categoryColumn:hover {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .chartCanvas {
+    overflow-x: auto;
+  }
+  .barsContainer {
+    min-width: 480px;
+  }
+}

@@ -1,0 +1,171 @@
+.stockCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--transition-normal);
+  height: 100%;
+}
+
+.stockCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.title {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.tabsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.indexPills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.indexTabBtn {
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.indexTabBtn:hover:not(.activeTab) {
+  border-color: var(--border-medium);
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+}
+
+.activeTab {
+  background: var(--accent-emerald) !important;
+  border-color: var(--accent-emerald) !important;
+  color: #FFFFFF !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.currentQuote {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.quoteVal {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.quoteChangePositive {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-emerald);
+}
+
+.quoteChangeNegative {
+  font-size: 11px;
+  font-weight: 700;
+  color: #DC2626;
+}
+
+.chartArea {
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.chartSvg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: var(--border-subtle);
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+}
+
+.axisText {
+  fill: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* 4 Bottom Cards Grid */
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.summaryMiniCard {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.summaryMiniCard:hover,
+.activeMiniCard {
+  background: var(--bg-surface);
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.miniCardName {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.miniCardVal {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.miniCardChangePositive {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-emerald);
+}
+
+.miniCardChangeNegative {
+  font-size: 10px;
+  font-weight: 700;
+  color: #DC2626;
+}
+
+@media (max-width: 640px) {
+  .summaryRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

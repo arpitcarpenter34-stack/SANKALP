@@ -1,0 +1,300 @@
+.chartCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.chartCard:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card);
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.tooltipBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  cursor: help;
+  display: flex;
+  align-items: center;
+}
+
+.viewModeToggle {
+  display: flex;
+  background: #F1F5F2;
+  border-radius: var(--radius-full);
+  padding: 3px;
+  gap: 2px;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toggleBtn.active {
+  background: var(--accent-emerald);
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.25);
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.8125rem;
+  padding: 4px 0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotBaseline {
+  background: #047857;
+}
+
+.dotAfterImpact {
+  background: #0284C7;
+}
+
+.dotReduced {
+  background: #F59E0B;
+}
+
+.legendLabel {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.legendVal {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.svgWrapper {
+  position: relative;
+  width: 100%;
+  height: 290px;
+  user-select: none;
+}
+
+.chartSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: #E2ECE5;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.axisLabel {
+  font-size: 11px;
+  fill: var(--text-muted);
+  font-family: var(--font-sans);
+}
+
+.curveBaseline {
+  fill: none;
+  stroke: #047857;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.curveAfterImpact {
+  fill: none;
+  stroke: #0284C7;
+  stroke-width: 2.75;
+  stroke-linecap: round;
+  stroke-dasharray: 6 3;
+}
+
+.curveReduced {
+  fill: none;
+  stroke: #F59E0B;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.hoverLine {
+  stroke: #94A3B8;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+
+.endBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.floatingTooltip {
+  position: absolute;
+  top: 10px;
+  background: rgba(23, 43, 58, 0.94);
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 0.775rem;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 170px;
+  backdrop-filter: blur(4px);
+  transform: translateX(-50%);
+  transition: left 0.1s ease;
+}
+
+.tooltipTitle {
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+  color: #E2E8F0;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tooltipValBaseline {
+  color: #34D399;
+  font-weight: 700;
+}
+
+.tooltipValAfter {
+  color: #38BDF8;
+  font-weight: 700;
+}
+
+.tooltipValReduced {
+  color: #FBBF24;
+  font-weight: 700;
+}
+
+/* Bottom summary pills */
+.summaryPillsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.pillCard {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.pillCard:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-medium);
+}
+
+.pillIconCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--bg-mint);
+  color: var(--accent-emerald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pillTextCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.pillLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.pillValue {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .summaryPillsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .summaryPillsRow {
+    grid-template-columns: 1fr;
+  }
+}
