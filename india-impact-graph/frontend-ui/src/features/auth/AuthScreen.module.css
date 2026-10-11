@@ -60,9 +60,9 @@
 /* Two-Column Responsive Wrapper */
 .authLayoutWrapper {
   display: grid;
-  grid-template-columns: minmax(560px, 1.25fr) minmax(400px, 460px);
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, 460px);
   gap: 48px;
-  max-width: 1360px;
+  max-width: 1280px;
   width: 100%;
   align-items: center;
   position: relative;
@@ -286,16 +286,46 @@
 
 .authCard {
   width: 100%;
-  max-width: 440px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1.5px solid rgba(0, 134, 106, 0.20);
+  max-width: 450px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1.5px solid rgba(0, 134, 106, 0.18);
   border-radius: 24px;
-  padding: 32px 32px 28px;
+  padding: 32px 32px 26px;
   box-shadow: 0 24px 60px -8px rgba(4, 120, 87, 0.10), 0 6px 20px rgba(16, 35, 63, 0.04);
   backdrop-filter: blur(16px);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+}
+
+/* Card Brand Header (Visible in Auth Card) */
+.cardBrandBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.cardBrandLogo {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardBrandTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #10233F;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.cardBrandHighlight {
+  color: #00866A;
 }
 
 /* Segmented Top Tabs: Sign In | Create Account */
@@ -305,23 +335,23 @@
   border: 1.5px solid #D8EADF;
   border-radius: 12px;
   padding: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   width: 100%;
   box-sizing: border-box;
 }
 
 .tabButton {
   flex: 1;
-  padding: 9px 16px;
+  padding: 8px 16px;
   border: none;
   background: transparent;
-  border-radius: 9px;
-  font-size: 14.5px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
   color: #52677F;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 40px;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -356,7 +386,7 @@
   font-size: 14px;
   color: #52677F;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 /* Clerk Component Mount Point */
@@ -367,19 +397,45 @@
   box-sizing: border-box;
 }
 
-/* Guest Exploration Button */
-.guestButtonContainer {
-  margin-top: 14px;
+/* Guest Exploration Section with Subtle Divider */
+.guestSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.guestDivider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.guestDividerLine {
+  flex: 1;
+  height: 1px;
+  background-color: #E2E8F0;
+}
+
+.guestDividerText {
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748B;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
 }
 
 .guestButton {
   width: 100%;
-  min-height: 46px;
+  min-height: 48px;
+  height: 48px;
   background: #FFFFFF;
   border: 1.5px solid #D8EADF;
   border-radius: 12px;
-  color: #172B3A;
+  color: #10233F;
   font-size: 15px;
   font-weight: 600;
   display: flex;
@@ -389,7 +445,7 @@
   cursor: pointer;
   transition: all 0.15s ease;
   box-sizing: border-box;
-  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.02);
+  box-shadow: 0 1px 2px rgba(16, 35, 63, 0.02);
 }
 
 .guestButton:hover {
@@ -401,7 +457,7 @@
 
 /* Security & Legal Footer */
 .cardFooter {
-  margin-top: 22px;
+  margin-top: 20px;
   padding-top: 16px;
   border-top: 1px solid #E8F2EC;
   text-align: center;
@@ -415,7 +471,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12.5px;
+  font-size: 12px;
   color: #52677F;
   font-weight: 500;
 }
@@ -445,30 +501,56 @@
 }
 
 /* ==========================================================
-   SCOPED CLERK OVERRIDES (Preserving supported appearance)
+   SCOPED CLERK OVERRIDES (Eradicating nested card appearance)
    ========================================================== */
 
-.clerkMountContainer :global(.cl-rootBox) {
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
+.clerkMountContainer :global(.cl-rootBox),
+.clerkMountContainer :global(.cl-cardBox),
 .clerkMountContainer :global(.cl-card) {
   width: 100% !important;
   max-width: 100% !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
   padding: 0 !important;
+  margin: 0 !important;
   box-sizing: border-box !important;
 }
 
+.clerkMountContainer :global(.cl-main) {
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  gap: 14px !important;
+}
+
+.clerkMountContainer :global(.cl-header) {
+  display: none !important;
+}
+
+.clerkMountContainer :global(.cl-footer) {
+  display: none !important;
+}
+
+.clerkMountContainer :global(.cl-socialButtonsRoot) {
+  width: 100% !important;
+  margin-bottom: 14px !important;
+}
+
 .clerkMountContainer :global(.cl-socialButtonsBlockButton) {
-  min-height: 46px !important;
-  height: 46px !important;
+  min-height: 48px !important;
+  height: 48px !important;
   border: 1.5px solid #D8EADF !important;
   border-radius: 12px !important;
   font-size: 15px !important;
   font-weight: 600 !important;
-  color: #172B3A !important;
+  color: #10233F !important;
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 2px rgba(16, 35, 63, 0.03) !important;
   box-sizing: border-box !important;
+  width: 100% !important;
   transition: all 0.15s ease !important;
 }
 
@@ -477,15 +559,41 @@
   border-color: #00866A !important;
 }
 
+.clerkMountContainer :global(.cl-formFieldRow) {
+  margin-bottom: 14px !important;
+}
+
+.clerkMountContainer :global(.cl-formFieldLabel) {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #10233F !important;
+  margin-bottom: 6px !important;
+}
+
+.clerkMountContainer :global(.cl-formFieldAction) {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #00866A !important;
+  text-decoration: none !important;
+}
+
+.clerkMountContainer :global(.cl-formFieldAction:hover) {
+  color: #006E57 !important;
+  text-decoration: underline !important;
+}
+
 .clerkMountContainer :global(.cl-formFieldInput) {
-  min-height: 46px !important;
-  height: 46px !important;
+  min-height: 48px !important;
+  height: 48px !important;
   font-size: 15px !important;
   border: 1.5px solid #D8EADF !important;
   border-radius: 12px !important;
-  color: #172B3A !important;
-  padding: 0 14px !important;
+  color: #10233F !important;
+  padding: 0 16px !important;
+  width: 100% !important;
   box-sizing: border-box !important;
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 2px rgba(16, 35, 63, 0.02) !important;
 }
 
 .clerkMountContainer :global(.cl-formFieldInput:focus) {
@@ -494,20 +602,22 @@
 }
 
 .clerkMountContainer :global(.cl-formButtonPrimary) {
-  min-height: 46px !important;
-  height: 46px !important;
+  min-height: 48px !important;
+  height: 48px !important;
   background: linear-gradient(135deg, #00866A 0%, #00745A 100%) !important;
   border-radius: 12px !important;
   font-size: 15.5px !important;
   font-weight: 700 !important;
   color: #FFFFFF !important;
-  box-shadow: 0 4px 12px rgba(0, 134, 106, 0.25) !important;
+  width: 100% !important;
+  box-shadow: 0 4px 14px rgba(0, 134, 106, 0.25) !important;
   transition: all 0.15s ease !important;
+  margin-top: 8px !important;
 }
 
 .clerkMountContainer :global(.cl-formButtonPrimary:hover) {
   background: linear-gradient(135deg, #00745A 0%, #00604A 100%) !important;
-  box-shadow: 0 6px 16px rgba(0, 134, 106, 0.35) !important;
+  box-shadow: 0 6px 18px rgba(0, 134, 106, 0.35) !important;
 }
 
 /* ==========================================================

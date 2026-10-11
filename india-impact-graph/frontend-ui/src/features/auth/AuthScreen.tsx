@@ -78,11 +78,11 @@ const TypewriterText: React.FC = () => {
 const clerkAppearance = {
   variables: {
     colorPrimary: '#00866A',
-    colorText: '#172B3A',
+    colorText: '#10233F',
     colorTextSecondary: '#52677F',
-    colorBackground: '#FFFFFF',
+    colorBackground: 'transparent',
     colorInputBackground: '#FFFFFF',
-    colorInputText: '#172B3A',
+    colorInputText: '#10233F',
     colorDanger: '#EF4444',
     borderRadius: '12px',
     fontSize: '15px',
@@ -92,11 +92,21 @@ const clerkAppearance = {
   layout: {
     socialButtonsVariant: 'blockButton' as const,
     logoPlacement: 'none' as const,
+    showOptionalFields: false,
   },
   elements: {
     rootBox: {
       width: '100%',
       maxWidth: '100%',
+      boxSizing: 'border-box' as const,
+    },
+    cardBox: {
+      boxShadow: 'none',
+      border: 'none',
+      padding: '0',
+      width: '100%',
+      maxWidth: '100%',
+      backgroundColor: 'transparent',
       boxSizing: 'border-box' as const,
     },
     card: {
@@ -108,40 +118,37 @@ const clerkAppearance = {
       backgroundColor: 'transparent',
       boxSizing: 'border-box' as const,
     },
+    main: {
+      width: '100%',
+      boxSizing: 'border-box' as const,
+      gap: '14px',
+    },
     header: {
-      marginBottom: '18px',
-      textAlign: 'center' as const,
+      display: 'none',
     },
     headerTitle: {
-      fontSize: '22px',
-      fontWeight: '800',
-      color: '#10233F',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.25',
+      display: 'none',
     },
     headerSubtitle: {
-      fontSize: '14.5px',
-      lineHeight: '1.45',
-      color: '#52677F',
-      marginTop: '4px',
+      display: 'none',
     },
     socialButtonsRoot: {
       width: '100%',
-      marginBottom: '16px',
+      marginBottom: '14px',
     },
     socialButtons: {
       width: '100%',
     },
     socialButtonsBlockButton: {
-      minHeight: '46px',
-      height: '46px',
+      minHeight: '48px',
+      height: '48px',
       width: '100%',
       border: '1.5px solid #D8EADF',
       borderRadius: '12px',
       backgroundColor: '#FFFFFF',
       fontSize: '15px',
       fontWeight: '600',
-      color: '#172B3A',
+      color: '#10233F',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -149,7 +156,7 @@ const clerkAppearance = {
       position: 'relative' as const,
       boxSizing: 'border-box' as const,
       transition: 'all 0.15s ease',
-      boxShadow: '0 1px 3px rgba(16, 24, 40, 0.02)',
+      boxShadow: '0 1px 2px rgba(16, 35, 63, 0.03)',
       '&:hover': {
         backgroundColor: '#F0FAF4',
         borderColor: '#00866A',
@@ -162,7 +169,7 @@ const clerkAppearance = {
     socialButtonsBlockButtonText: {
       fontSize: '15px',
       fontWeight: '600',
-      color: '#172B3A',
+      color: '#10233F',
     },
     socialButtonsProviderIcon: {
       width: '20px',
@@ -186,7 +193,7 @@ const clerkAppearance = {
       alignItems: 'center',
     },
     dividerRow: {
-      margin: '18px 0',
+      margin: '16px 0',
       width: '100%',
     },
     dividerText: {
@@ -202,9 +209,10 @@ const clerkAppearance = {
     form: {
       width: '100%',
       boxSizing: 'border-box' as const,
+      gap: '14px',
     },
     formFieldRow: {
-      marginBottom: '16px',
+      marginBottom: '14px',
       width: '100%',
     },
     formField: {
@@ -212,26 +220,40 @@ const clerkAppearance = {
     },
     formFieldLabelRow: {
       marginBottom: '6px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
     },
     formFieldLabel: {
       fontSize: '14px',
       fontWeight: '600',
-      color: '#172B3A',
-      marginBottom: '6px',
+      color: '#10233F',
+      marginBottom: '0',
       display: 'block',
     },
+    formFieldAction: {
+      fontSize: '13px',
+      fontWeight: '600',
+      color: '#00866A',
+      textDecoration: 'none',
+      '&:hover': {
+        color: '#006E57',
+        textDecoration: 'underline',
+      },
+    },
     formFieldInput: {
-      minHeight: '46px',
-      height: '46px',
+      minHeight: '48px',
+      height: '48px',
       width: '100%',
       fontSize: '15px',
-      color: '#172B3A',
+      color: '#10233F',
       backgroundColor: '#FFFFFF',
       border: '1.5px solid #D8EADF',
       borderRadius: '12px',
-      padding: '0 14px',
+      padding: '0 16px',
       boxSizing: 'border-box' as const,
       transition: 'all 0.15s ease',
+      boxShadow: '0 1px 2px rgba(16, 35, 63, 0.02)',
       '&:focus': {
         borderColor: '#00866A',
         boxShadow: '0 0 0 3px rgba(0, 134, 106, 0.15)',
@@ -243,60 +265,48 @@ const clerkAppearance = {
       },
     },
     formButtonPrimary: {
-      minHeight: '46px',
-      height: '46px',
+      minHeight: '48px',
+      height: '48px',
       width: '100%',
       background: 'linear-gradient(135deg, #00866A 0%, #00745A 100%)',
       borderRadius: '12px',
       fontSize: '15.5px',
       fontWeight: '700',
       color: '#FFFFFF',
-      marginTop: '12px',
+      marginTop: '8px',
       boxSizing: 'border-box' as const,
-      boxShadow: '0 4px 12px rgba(0, 134, 106, 0.25)',
+      boxShadow: '0 4px 14px rgba(0, 134, 106, 0.25)',
       transition: 'all 0.15s ease',
       '&:hover': {
         background: 'linear-gradient(135deg, #00745A 0%, #00604A 100%)',
-        boxShadow: '0 6px 16px rgba(0, 134, 106, 0.35)',
+        boxShadow: '0 6px 18px rgba(0, 134, 106, 0.35)',
       },
       '&:active': {
         transform: 'translateY(1px)',
       },
     },
     footer: {
-      marginTop: '18px',
-      padding: '0',
-      textAlign: 'center' as const,
-      width: '100%',
+      display: 'none',
     },
     footerAction: {
-      fontSize: '13.5px',
-      color: '#52677F',
+      display: 'none',
     },
     footerActionText: {
-      fontSize: '13.5px',
-      color: '#52677F',
+      display: 'none',
     },
     footerActionLink: {
-      fontSize: '13.5px',
-      fontWeight: '600',
-      color: '#00866A',
-      textDecoration: 'none',
-      '&:hover': {
-        textDecoration: 'underline',
-        color: '#006E57',
-      },
+      display: 'none',
     },
     identityPreview: {
       padding: '12px 14px',
       borderRadius: '12px',
-      border: '1px solid #D8EADF',
+      border: '1.5px solid #D8EADF',
       backgroundColor: '#F0FAF4',
     },
     identityPreviewText: {
       fontSize: '14.5px',
       fontWeight: '600',
-      color: '#172B3A',
+      color: '#10233F',
     },
     identityPreviewEditButton: {
       fontSize: '13.5px',
@@ -509,6 +519,24 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onContinueAsGuest }) => 
             ========================================================================= */}
         <div className={styles.rightPanel}>
           <div className={styles.authCard}>
+            {/* Top Brand Badge */}
+            <div className={styles.cardBrandBadge}>
+              <div className={styles.cardBrandLogo}>
+                <svg width="24" height="24" viewBox="0 0 42 42" fill="none" aria-hidden="true">
+                  <path
+                    d="M10,8 Q15,6 20,7 Q24,11 25,16 Q27,21 28,26 Q25,32 21,35 Q18,34 16,30 Q14,26 12,22 Q9,16 8,12 Z"
+                    fill="#00866A"
+                  />
+                  <rect x="25" y="24" width="3" height="8" rx="1.5" fill="#00866A" />
+                  <rect x="30" y="20" width="3" height="12" rx="1.5" fill="#00866A" />
+                  <rect x="35" y="16" width="3" height="16" rx="1.5" fill="#00866A" />
+                </svg>
+              </div>
+              <span className={styles.cardBrandTitle}>
+                Bharat<span className={styles.cardBrandHighlight}>Impact</span>
+              </span>
+            </div>
+
             {/* Top Segmented Tabs: Sign In | Create Account */}
             <div className={styles.tabsContainer} role="tablist">
               <button
@@ -531,11 +559,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onContinueAsGuest }) => 
               </button>
             </div>
 
-            {/* Custom Header */}
+            {/* Primary Heading and Subtitle */}
             <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>
+              <h2 className={styles.cardTitle}>
                 {authMode === 'signin' ? 'Welcome Back' : 'Create Account'}
-              </h3>
+              </h2>
               <p className={styles.cardSubtitle}>
                 {authMode === 'signin'
                   ? 'Sign in to your BharatImpact account'
@@ -554,13 +582,18 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onContinueAsGuest }) => 
 
             {/* Guest Exploration Option */}
             {onContinueAsGuest && (
-              <div className={styles.guestButtonContainer}>
+              <div className={styles.guestSection}>
+                <div className={styles.guestDivider} aria-hidden="true">
+                  <span className={styles.guestDividerLine} />
+                  <span className={styles.guestDividerText}>or</span>
+                  <span className={styles.guestDividerLine} />
+                </div>
                 <button
                   type="button"
                   onClick={onContinueAsGuest}
                   className={styles.guestButton}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
