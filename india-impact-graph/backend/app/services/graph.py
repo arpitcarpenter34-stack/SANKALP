@@ -744,3 +744,118 @@ def build_knowledge_graph(event: FinancialEventModel) -> ImpactKnowledgeGraph:
         return _build_crude_oil_graph(event)
 
     return _build_generic_event_graph(event)
+
+
+PRESET_SCENARIOS: dict[str, dict] = {
+    "crude-oil-shock-12pct": {
+        "event_id": "crude-oil-shock-12pct",
+        "event_type": "commodity_price_shock",
+        "headline": "Brent crude surges 12% following Middle East supply disruption",
+        "is_scenario": True,
+        "event_date": "2026-03-15",
+        "geography": "Global",
+        "magnitude_direction": "increase",
+        "magnitude_value": 12.0,
+        "magnitude_unit": "percent",
+        "entities": [
+            {
+                "entity_id": "crude_oil",
+                "name": "Crude Oil (Brent)",
+                "entity_type": "commodity",
+                "mention_text": "Brent crude oil futures jumped 12%",
+            }
+        ],
+        "evidence_snippets": [
+            {
+                "quote": "Brent crude futures jumped 12% on Monday morning.",
+                "source_title": "Financial Express Energy Desk",
+                "source_url": "https://example.com/energy-shock",
+                "publication_date": "2026-03-15",
+            }
+        ],
+    },
+    "edible-oil-shock": {
+        "event_id": "edible-oil-shock",
+        "event_type": "commodity_price_shock",
+        "headline": "Edible oil prices rise amid export duties",
+        "is_scenario": True,
+        "event_date": "2026-03-20",
+        "geography": "India",
+        "magnitude_direction": "increase",
+        "magnitude_value": 8.5,
+        "magnitude_unit": "percent",
+        "entities": [
+            {
+                "entity_id": "edible_oil",
+                "name": "Edible Oil",
+                "entity_type": "commodity",
+                "mention_text": "edible oil",
+            }
+        ],
+        "evidence_snippets": [],
+    },
+    "wheat-price-shock": {
+        "event_id": "wheat-price-shock",
+        "event_type": "commodity_price_shock",
+        "headline": "Wheat procurement prices increase on tight domestic supply",
+        "is_scenario": True,
+        "event_date": "2026-03-22",
+        "geography": "India",
+        "magnitude_direction": "increase",
+        "magnitude_value": 6.0,
+        "magnitude_unit": "percent",
+        "entities": [
+            {
+                "entity_id": "wheat",
+                "name": "Wheat Grain",
+                "entity_type": "commodity",
+                "mention_text": "wheat",
+            }
+        ],
+        "evidence_snippets": [],
+    },
+}
+
+
+def get_preset_scenario_event(event_id: str) -> Optional[FinancialEventModel]:
+    """Retrieve an in-memory, read-only FinancialEventModel for recognized preset demo scenarios.
+
+    Provides canonical preset scenario definitions for graph generation when absent from the database,
+    avoiding database seeding or persistence side-effects.
+    """
+    preset_data = PRESET_SCENARIOS.get(event_id)
+    if not preset_data:
+        return None
+
+    from app.models.event import EventEntityModel, EventEvidenceSnippetModel
+
+    event = FinancialEventModel(
+        event_id=preset_data["event_id"],
+        event_type=preset_data["event_type"],
+        headline=preset_data["headline"],
+        is_scenario=preset_data["is_scenario"],
+        event_date=preset_data.get("event_date"),
+        geography=preset_data.get("geography"),
+        magnitude_direction=preset_data.get("magnitude_direction"),
+        magnitude_value=preset_data.get("magnitude_value"),
+        magnitude_unit=preset_data.get("magnitude_unit"),
+    )
+    for ent in preset_data.get("entities", []):
+        event.entities.append(
+            EventEntityModel(
+                entity_id=ent["entity_id"],
+                name=ent["name"],
+                entity_type=ent["entity_type"],
+                mention_text=ent["mention_text"],
+            )
+        )
+    for snip in preset_data.get("evidence_snippets", []):
+        event.evidence_snippets.append(
+            EventEvidenceSnippetModel(
+                quote=snip["quote"],
+                source_title=snip["source_title"],
+                source_url=snip.get("source_url"),
+                publication_date=snip.get("publication_date"),
+            )
+        )
+    return event

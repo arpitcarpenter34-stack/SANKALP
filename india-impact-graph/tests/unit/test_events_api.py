@@ -415,3 +415,130 @@ def test_extract_event_empty_text_error(client: TestClient):
     response = client.post("/api/events/extract", json=payload)
     assert response.status_code == 422
     assert "detail" in response.json()
+
+
+def test_extract_event_free_text_acceptance_headline(client: TestClient):
+    """Verify POST /api/events/extract extracts headline 'Crude oil surges by 15% amid geopolitical tensions'."""
+    payload = {"text": "Crude oil surges by 15% amid geopolitical tensions"}
+    response = client.post("/api/events/extract", json=payload)
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["event_id"] == "crude-oil-increase-15pct"
+    assert data["event_type"] == "commodity_price_shock"
+    assert data["is_scenario"] is False
+    assert data["headline"] == "Crude oil surges by 15% amid geopolitical tensions"
+    assert data["magnitude"] == {
+        "direction": "increase",
+        "value": 15.0,
+        "unit": "%",
+    }
+    assert len(data["entities"]) == 1
+    assert data["entities"][0]["entity_id"] == "crude_oil"
+    assert data["entities"][0]["name"] == "Crude Oil"
+    assert data["entities"][0]["entity_type"] == "commodity"
+    assert data["entities"][0]["mention_text"] == "Crude oil"
+    assert len(data["evidence_snippets"]) == 1
+    assert data["evidence_snippets"][0]["quote"] == "Crude oil surges by 15% amid geopolitical tensions"
+    assert data["evidence_snippets"][0]["source_title"] == "Input Text"
+
+
+def test_extract_event_free_text_ambiguous_direction(client: TestClient):
+    """Verify POST /api/events/extract returns HTTP 422 for ambiguous conflicting directions."""
+    payload = {"text": "Crude oil surges then cuts by 5%"}
+    response = client.post("/api/events/extract", json=payload)
+    assert response.status_code == 422
+    assert "ambiguous direction" in response.json()["detail"].lower()
+
+
+def test_extract_event_free_text_unsupported_text(client: TestClient):
+    """Verify POST /api/events/extract returns HTTP 422 for unsupported non-financial text."""
+    payload = {"text": "Film wins prestigious international cinema award"}
+    response = client.post("/api/events/extract", json=payload)
+    assert response.status_code == 422
+    assert "unsupported text" in response.json()["detail"].lower()
+
+
+def test_extract_event_live_mode_missing_api_key_error(client: TestClient):
+    """Verify POST /api/events/extract returns clear configuration error when USE_LIVE_LLM=true but key is missing."""
+    import os
+    from unittest.mock import patch
+
+    with patch.dict(os.environ, {"USE_LIVE_LLM": "true", "LIVE_LLM_API_KEY": ""}, clear=False):
+        response = client.post("/api/events/extract", json={"text": "SCENARIO: +12% crude oil"})
+        assert response.status_code == 422
+        detail = response.json()["detail"]
+        assert "LIVE_LLM_API_KEY is missing" in detail
+        # Ensure it did not silently pretend or fall back to fake provider
+        assert "event_id" not in response.json()
+
+
+def test_extract_event_live_mode_mocked_provider_success(client: TestClient):
+    """Verify POST /api/events/extract succeeds when live mode is configured and provider returns valid response without network calls."""
+    from unittest.mock import MagicMock
+    from app.api.events import get_extraction_provider
+    from app.main import app
+
+    mock_provider = MagicMock()
+    mock_provider.extract_event.return_value = {
+        "event_id": "live-crude-shock-15pct",
+        "event_type": "commodity_price_shock",
+        "headline": "Crude oil spikes by 15%",
+        "is_scenario": True,
+        "magnitude": {
+            "direction": "increase",
+            "value": 15.0,
+            "unit": "%",
+        },
+        "entities": [
+            {
+                "entity_id": "crude_oil",
+                "name": "Crude Oil",
+                "entity_type": "commodity",
+                "mention_text": "crude oil",
+            }
+        ],
+        "evidence_snippets": [
+            {
+                "quote": "Crude oil spikes by 15%",
+                "source_title": "Live LLM Provider",
+            }
+        ],
+    }
+
+    app.dependency_overrides[get_extraction_provider] = lambda: mock_provider
+    try:
+        response = client.post("/api/events/extract", json={"text": "Crude oil spikes by 15%"})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["event_id"] == "live-crude-shock-15pct"
+        assert data["event_type"] == "commodity_price_shock"
+        assert data["magnitude"]["value"] == 15.0
+        assert mock_provider.extract_event.called
+    finally:
+        app.dependency_overrides.pop(get_extraction_provider, None)
+
+
+def test_extract_event_live_mode_mocked_provider_schema_rejection(client: TestClient):
+    """Verify live provider responses are strictly schema-validated and rejected if malformed."""
+    from unittest.mock import MagicMock
+    from app.api.events import get_extraction_provider
+    from app.main import app
+
+    mock_provider = MagicMock()
+    # Live provider returns unsupported event_type
+    mock_provider.extract_event.return_value = {
+        "event_id": "bad-event",
+        "event_type": "hallucinated_unsupported_type",
+        "is_scenario": False,
+        "entities": [],
+        "evidence_snippets": [],
+    }
+
+    app.dependency_overrides[get_extraction_provider] = lambda: mock_provider
+    try:
+        response = client.post("/api/events/extract", json={"text": "Arbitrary financial text"})
+        assert response.status_code == 422
+        assert "Invalid event_type" in response.json()["detail"]
+    finally:
+        app.dependency_overrides.pop(get_extraction_provider, None)

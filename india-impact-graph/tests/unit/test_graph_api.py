@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -162,6 +162,43 @@ class TestGraphAPIEndpoints:
         response = client.get("/api/graph/non-existent-event-999")
         assert response.status_code == 404
         assert response.json()["detail"] == "Financial event with ID 'non-existent-event-999' not found"
+
+    def test_preset_scenario_fallback_on_empty_db(self, client: TestClient, db_session: Session):
+        """GET /api/graph/{event_id} must succeed for preset scenario even when absent from database without writing to DB."""
+        # Ensure database has no row for this event
+        existing = db_session.execute(
+            select(FinancialEventModel).where(FinancialEventModel.event_id == "crude-oil-shock-12pct")
+        ).scalar_one_or_none()
+        assert existing is None
+
+        response = client.get("/api/graph/crude-oil-shock-12pct")
+        assert response.status_code == 200
+        data = response.json()
+        assert "nodes" in data and "edges" in data
+        assert len(data["nodes"]) > 0
+        assert len(data["edges"]) > 0
+        node_ids = {n["id"] for n in data["nodes"]}
+        assert {"crude_oil", "diesel", "household_budget"}.issubset(node_ids)
+
+        # Confirm zero database writes or side-effects occurred
+        persisted = db_session.execute(
+            select(FinancialEventModel).where(FinancialEventModel.event_id == "crude-oil-shock-12pct")
+        ).scalar_one_or_none()
+        assert persisted is None
+
+    def test_persisted_event_takes_precedence(self, client: TestClient, seed_crude_event: FinancialEventModel, db_session: Session):
+        """GET /api/graph/{event_id} must prioritize persisted database event when present."""
+        persisted = db_session.execute(
+            select(FinancialEventModel).where(FinancialEventModel.event_id == "crude-oil-shock-12pct")
+        ).scalar_one_or_none()
+        assert persisted is not None
+
+        response = client.get("/api/graph/crude-oil-shock-12pct")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["nodes"]) > 0
+        assert len(data["edges"]) > 0
+
 
     def test_crude_oil_graph_structure_and_paths(self, client: TestClient, seed_crude_event: FinancialEventModel):
         """Crude oil event graph must contain Path A, Path B, and Path C conforming to schema."""

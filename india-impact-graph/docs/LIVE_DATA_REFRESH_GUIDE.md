@@ -1,0 +1,108 @@
+# India Impact Graph: Live Data Refresh & Windows Task Scheduler Guide
+
+> **Milestone 3 Reference Guide**  
+> **Target Environment:** Windows 10/11 Server / Developer Workstation  
+> **Script:** `scripts/refresh_live_data.py`  
+> **Python Virtual Environment:** `backend\.venv\Scripts\python.exe`  
+
+---
+
+## 1. Overview & Data Philosophy
+
+In the India Impact Graph architecture, historical time-series storage (in PostgreSQL) is decoupled from live tracking:
+
+1. **Official Sources Only:** Data is fetched solely from registered primary government repositories:
+   - **MoSPI CPI (Base 2024=100):** Monthly releases around the 12th of each month for the preceding reference month.
+   - **PPAC Indian Basket Crude Oil:** Public Important News archives containing discrete, sparse headline snapshots.
+2. **No Data Fabrication:** If an official source has not published a new data point, the system records `no_change` without fabricating synthetic dates, interpolating calendar days, or filling values with zero.
+3. **Freshness SLAs:**
+   - **MoSPI CPI:** 45-day threshold (monthly cadence accounting for standard publication lags).
+   - **PPAC Crude Oil:** 21-day threshold (sparse snapshot cadence). If no new snapshot is released within 21 days, the dataset is reported as `stale` to provide full transparency to analysts.
+
+---
+
+## 2. Command-Line Usage
+
+The refresh pipeline can be executed manually at any time without running background daemons.
+
+### 2.1 View Current Tracking Status (Dry-Run / Status-Only)
+```powershell
+# In PowerShell at H:\Sankalp\india-impact-graph
+$env:PYTHONPATH='backend'
+.\backend\.venv\Scripts\python.exe scripts\refresh_live_data.py --status-only
+```
+
+### 2.2 Execute Automated Official Refresh Check
+```powershell
+$env:PYTHONPATH='backend'
+# Check both SRC-01 (PPAC) and SRC-02 (MoSPI)
+.\backend\.venv\Scripts\python.exe scripts\refresh_live_data.py
+
+# Or check only a specific source:
+.\backend\.venv\Scripts\python.exe scripts\refresh_live_data.py --source SRC-01
+.\backend\.venv\Scripts\python.exe scripts\refresh_live_data.py --source SRC-02
+```
+
+### 2.3 Manual File Ingestion (Safe Fallback)
+If official portals introduce dynamic CAPTCHAs, temporary DDoS protection, or PDF attachments that require verified human extraction, operators can ingest validated CSV updates directly:
+
+```powershell
+$env:PYTHONPATH='backend'
+.\backend\.venv\Scripts\python.exe scripts\refresh_live_data.py --source SRC-02 --manual-file data/curated/cpi_september_2026_update.csv
+```
+
+---
+
+## 3. Windows Task Scheduler Setup
+
+To schedule automated daily or weekly background checks on Windows without relying on long-running dev servers:
+
+### Option A: Using PowerShell (Recommended)
+
+Run PowerShell as Administrator:
+
+```powershell
+$action = New-ScheduledTaskAction `
+    -Execute "H:\Sankalp\india-impact-graph\backend\.venv\Scripts\python.exe" `
+    -Argument "scripts\refresh_live_data.py" `
+    -WorkingDirectory "H:\Sankalp\india-impact-graph"
+
+# Schedule to run every day at 18:00 (after standard 17:30 MoSPI releases)
+$trigger = New-ScheduledTaskTrigger -Daily -At "18:00"
+
+$settings = New-ScheduledTaskSettingsSet `
+    -AllowStartIfOnBatteries `
+    -DontStopIfGoingOnBatteries `
+    -StartWhenAvailable `
+    -ExecutionTimeLimit (New-TimeSpan -Minutes 15)
+
+Register-ScheduledTask `
+    -TaskName "IndiaImpactGraph_DataRefresh" `
+    -Action $action `
+    -Trigger $trigger `
+    -Settings $settings `
+    -Description "Automated refresh and freshness tracking for MoSPI CPI and PPAC crude oil data."
+```
+
+### Option B: Using the Windows Task Scheduler GUI (`taskschd.msc`)
+
+1. Press `Win + R`, type `taskschd.msc`, and press **Enter**.
+2. Click **Create Basic Task...** in the right panel.
+3. **Name:** `IndiaImpactGraph_DataRefresh`.
+4. **Trigger:** Daily (e.g., 6:00 PM / 18:00 IST).
+5. **Action:** Start a program.
+   - **Program/script:** `H:\Sankalp\india-impact-graph\backend\.venv\Scripts\python.exe`
+   - **Add arguments:** `scripts\refresh_live_data.py`
+   - **Start in:** `H:\Sankalp\india-impact-graph`
+6. Click **Finish**.
+
+---
+
+## 4. Troubleshooting & Failure Modes
+
+| Symptom | Cause | Resolution |
+| :--- | :--- | :--- |
+| `Network connection error` | Portal unreachable or machine offline | The refresh pipeline logs an error in `data_source_refresh_runs` without crashing. Existing historical records remain completely safe. |
+| `HTTP 403 Forbidden` / Bot Block | Government portal blocking automated Python `User-Agent` | Download the official press release manually and use `--manual-file` option. |
+| Status indicates `STALE` | No new observation released within freshness SLA | Normal for sparse snapshot series or survey data; check portal for scheduled release dates. |
+| Missing observation values | Government release does not publish a sub-index | The pipeline rejects blank/zero values to avoid distorting downstream economic calculations. |

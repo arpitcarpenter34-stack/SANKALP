@@ -34,5 +34,22 @@ class TestTimeSeriesAPI(unittest.TestCase):
         dates = [obs["period"] for obs in data["observations"]]
         self.assertEqual(dates, sorted(dates))
 
+    def test_time_series_metrics_endpoint(self):
+        response = self.client.get("/time-series/metrics")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("metrics", data)
+        metric_ids = {m["id"] for m in data["metrics"]}
+        self.assertIn("cpi_2024_general", metric_ids)
+        self.assertIn("crude_oil_indian_basket", metric_ids)
+
+    def test_time_series_correlation_endpoint(self):
+        response = self.client.get("/time-series/correlation")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("disclaimer", data)
+        self.assertIn("co-movement, not direct causality", data["disclaimer"])
+
 if __name__ == '__main__':
+
     unittest.main()

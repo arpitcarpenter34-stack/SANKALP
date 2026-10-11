@@ -20,7 +20,7 @@ from app.schemas.graph import (
     PathFindingRequest,
     PathResultSchema,
 )
-from app.services.graph import build_knowledge_graph
+from app.services.graph import build_knowledge_graph, get_preset_scenario_event
 from evidence_service.evidence_service import EvidenceService
 from graph.graph_builder import (
     Edge as DomainEdge,
@@ -226,10 +226,12 @@ def get_graph(
     event_model = db.execute(stmt).scalar_one_or_none()
 
     if not event_model:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Financial event with ID '{event_id}' not found",
-        )
+        event_model = get_preset_scenario_event(event_id)
+        if not event_model:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Financial event with ID '{event_id}' not found",
+            )
 
     return build_knowledge_graph(event=event_model)
 
