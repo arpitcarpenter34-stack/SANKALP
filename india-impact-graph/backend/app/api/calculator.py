@@ -59,7 +59,12 @@ class CalculateImpactRequest(BaseModel):
     """Input payload to calculate persona impact for an economic shock."""
     persona_id: str = Field(description="ID of the demographic persona")
     price_shock_pct: float = Field(description="Upstream shock percentage (e.g. 12.0 for +12% crude)")
-    household_size: Optional[float] = Field(default=None, description="Optional family size (defaults to 1 for per-capita)")
+    household_size: Optional[float] = Field(
+        default=None,
+        ge=1.0,
+        le=20.0,
+        description="Optional family size (defaults to per-capita when omitted). Valid range: 1.0 to 20.0.",
+    )
     candidate_items: Optional[List[str]] = Field(default=None, description="Optional list of items to calculate")
 
 
@@ -193,16 +198,30 @@ def calculate_household_impact(payload: CalculateImpactRequest) -> CalculateImpa
     hh_size = Decimal(str(payload.household_size)) if payload.household_size is not None else None
 
     # Baseline receipt
+    if payload.household_size is not None:
+        receipt_unit = "INR/household/month"
+        receipt_formula = (
+            f"Household Budget Impact = MPCE × Household Size ({payload.household_size}) × Share × Price Shock × Pass-Through"
+        )
+        receipt_assumptions = (
+            f"Scaled to household total with multiplier {payload.household_size} "
+            f"(Baseline per-capita MPCE: {matched_persona.household_size_conversion_status})"
+        )
+    else:
+        receipt_unit = "INR/person/month (MPCE)"
+        receipt_formula = "Per-Capita Impact = MPCE × Share × Price Shock × Pass-Through"
+        receipt_assumptions = matched_persona.household_size_conversion_status
+
     baseline_receipt = CalcReceipt(
         source_title=f"{matched_persona.survey_source} ({matched_persona.survey_year})",
         source_url="https://mospi.gov.in",
         table_or_series_id="Statement 7 / Fractile Distributions",
         year_or_date=matched_persona.survey_year,
         geography=f"{matched_persona.state} ({matched_persona.sector})",
-        unit="INR/person/month (MPCE)",
-        formula_details="MPCE = Total Household Consumption Expenditure / Household Size",
+        unit=receipt_unit,
+        formula_details=receipt_formula,
         verification_status=matched_persona.verified_status,
-        assumptions_limitations=matched_persona.household_size_conversion_status,
+        assumptions_limitations=receipt_assumptions,
     )
 
     # Curated candidate items and pass-through factors
@@ -355,6 +374,7 @@ def calculate_household_impact(payload: CalculateImpactRequest) -> CalculateImpa
                     "unit": v.unit,
                     "verification_status": v.verification_status,
                     "formula": v.formula_details,
+                    "assumptions_limitations": v.assumptions_limitations,
                 }
                 for k, v in res.receipts.items()
             }

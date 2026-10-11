@@ -65,8 +65,26 @@ def test_calculate_household_impact_valid():
     assert results_by_id["gold"]["low_impact"] is None
 
 
-def test_calculate_household_impact_household_size():
-    """Verify household size scales calculation basis and total impact."""
+def test_calculate_household_impact_household_size_omitted():
+    """Verify omitted household size preserves per-capita behavior and receipt metadata."""
+    payload = {
+        "persona_id": "madhya_pradesh_rural_all",
+        "price_shock_pct": 10.0,
+    }
+    response = client.post("/api/calculator/calculate", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["household_size"] is None
+    assert data["calculation_basis"] == "INR/person/month"
+
+    petrol_receipts = data["item_results"][0]["receipts"]
+    assert "baseline" in petrol_receipts
+    assert petrol_receipts["baseline"]["unit"] == "INR/person/month (MPCE)"
+    assert "Per-Capita Impact" in petrol_receipts["baseline"]["formula"]
+
+
+def test_calculate_household_impact_household_size_valid_and_receipt_metadata():
+    """Verify valid household size scales impact and accurately reflects multiplier in receipt metadata."""
     payload_pc = {
         "persona_id": "madhya_pradesh_rural_all",
         "price_shock_pct": 10.0,
@@ -80,9 +98,44 @@ def test_calculate_household_impact_household_size():
     }
     resp_hh = client.post("/api/calculator/calculate", json=payload_hh).json()
 
+    assert resp_hh["household_size"] == 4.5
     assert resp_hh["calculation_basis"] == "INR/household/month"
     # Should be approx 4.5 times the per-capita value
     assert pytest.approx(resp_hh["total_low_impact"], rel=1e-2) == float(resp_pc["total_low_impact"]) * 4.5
+
+    # Check baseline receipt metadata accurately documents the household calculation and multiplier
+    petrol_receipts = resp_hh["item_results"][0]["receipts"]
+    assert "baseline" in petrol_receipts
+    baseline_rec = petrol_receipts["baseline"]
+    assert baseline_rec["unit"] == "INR/household/month"
+    assert "Household Size (4.5)" in baseline_rec["formula"]
+    assert "multiplier 4.5" in baseline_rec["assumptions_limitations"]
+
+
+@pytest.mark.parametrize("invalid_size", [0.0, -1.0, -5.5, 20.1, 25.0])
+def test_calculate_household_impact_invalid_household_size_rejected(invalid_size):
+    """Verify zero, negative, and over-limit household sizes are rejected with 422."""
+    payload = {
+        "persona_id": "madhya_pradesh_rural_all",
+        "price_shock_pct": 10.0,
+        "household_size": invalid_size,
+    }
+    response = client.post("/api/calculator/calculate", json=payload)
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize("boundary_size", [1.0, 20.0])
+def test_calculate_household_impact_boundary_household_size_accepted(boundary_size):
+    """Verify boundary values 1.0 and 20.0 are accepted."""
+    payload = {
+        "persona_id": "madhya_pradesh_rural_all",
+        "price_shock_pct": 10.0,
+        "household_size": boundary_size,
+    }
+    response = client.post("/api/calculator/calculate", json=payload)
+    assert response.status_code == 200
+    assert response.json()["household_size"] == boundary_size
+    assert response.json()["calculation_basis"] == "INR/household/month"
 
 
 def test_calculate_household_impact_unknown_persona():
