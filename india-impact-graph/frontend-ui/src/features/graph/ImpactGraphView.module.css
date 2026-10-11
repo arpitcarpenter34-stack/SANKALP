@@ -410,24 +410,123 @@
 /* 5. Left Floating Legend                                                   */
 /* ------------------------------------------------------------------------- */
 
-.floatingLegend {
+.legendContainer {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(8px);
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 0.85rem 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  font-size: 0.76rem;
-  color: #334155;
-  z-index: 20;
-  max-width: 190px;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 25;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  align-items: flex-start;
+  gap: 0.4rem;
   pointer-events: auto;
+}
+
+.legendTogglePill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.08);
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.legendTogglePill:hover {
+  background: #ffffff;
+  border-color: #10b981;
+  color: #047857;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.15);
+}
+
+.legendTogglePillActive {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #047857;
+}
+
+.legendChevron {
+  font-size: 0.65rem;
+  color: #64748b;
+  margin-left: 2px;
+}
+
+.floatingLegend {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  font-size: 0.75rem;
+  color: #334155;
+  max-width: 290px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: legendFadeIn 0.18s ease-out;
+}
+
+@keyframes legendFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.legendHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.legendMainTitle {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.legendCloseBtn {
+  background: transparent;
+  border: none;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.legendCloseBtn:hover {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+.legendBodyGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nodeTypesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.65rem;
 }
 
 .legendSection {

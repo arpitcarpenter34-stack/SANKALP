@@ -54,6 +54,7 @@ export const ImpactGraphView: React.FC<ImpactGraphViewProps> = ({
     investment: true,
   });
   const [isLayersOpen, setIsLayersOpen] = useState<boolean>(false);
+  const [isLegendOpen, setIsLegendOpen] = useState<boolean>(false);
 
   // 3. Pan & Zoom Canvas State
   const [zoomLevel, setZoomLevel] = useState<number>(1);
@@ -82,6 +83,7 @@ export const ImpactGraphView: React.FC<ImpactGraphViewProps> = ({
           setSelectedEdgeId(null);
           setSearchQuery('');
           setIsLayersOpen(false);
+          setIsLegendOpen(false);
         }
       }
     };
@@ -91,7 +93,11 @@ export const ImpactGraphView: React.FC<ImpactGraphViewProps> = ({
 
   // Pan handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest(`.${styles.nodeCardSvg}`) || (e.target as HTMLElement).closest(`.${styles.floatingLegend}`)) {
+    if (
+      (e.target as HTMLElement).closest(`.${styles.nodeCardSvg}`) ||
+      (e.target as HTMLElement).closest(`.${styles.floatingLegend}`) ||
+      (e.target as HTMLElement).closest(`.${styles.legendContainer}`)
+    ) {
       return;
     }
     setIsDragging(true);
@@ -666,58 +672,96 @@ export const ImpactGraphView: React.FC<ImpactGraphViewProps> = ({
           onMouseLeave={handleMouseUp}
           onWheel={handleWheel}
         >
-          {/* Left Floating Legends Card */}
-          <div className={styles.floatingLegend}>
-            <div className={styles.legendSection}>
-              <span className={styles.legendTitle}>
-                Relationship Type
-                <span style={{ color: '#94a3b8', fontSize: '0.68rem', cursor: 'help' }}>ⓘ</span>
-              </span>
-              <div className={styles.legendItem}>
-                <span className={styles.legendLineObserved} />
-                <span>Observed relationship</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendLineInferred} />
-                <span>Inferred relationship</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendLinePotential} />
-                <span>Potential impact</span>
-              </div>
-            </div>
+          {/* Floating Collapsible Legend */}
+          <div className={styles.legendContainer}>
+            <button
+              type="button"
+              className={`${styles.legendTogglePill} ${isLegendOpen ? styles.legendTogglePillActive : ''}`}
+              onClick={() => setIsLegendOpen(!isLegendOpen)}
+              title={isLegendOpen ? 'Hide graph legend' : 'Show graph legend'}
+              aria-label="Toggle graph legend"
+              aria-expanded={isLegendOpen}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              <span>Legend</span>
+              <span className={styles.legendChevron}>{isLegendOpen ? '▲' : '▼'}</span>
+            </button>
 
-            <div className={styles.legendSection}>
-              <span className={styles.legendTitle}>Node Type</span>
-              <div className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ background: '#EF4444' }} />
-                <span>Global Event</span>
+            {isLegendOpen && (
+              <div className={styles.floatingLegend} role="region" aria-label="Graph Legend">
+                <div className={styles.legendHeaderRow}>
+                  <span className={styles.legendMainTitle}>Graph Legend</span>
+                  <button
+                    type="button"
+                    className={styles.legendCloseBtn}
+                    onClick={() => setIsLegendOpen(false)}
+                    title="Close legend"
+                    aria-label="Close legend"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className={styles.legendBodyGrid}>
+                  <div className={styles.legendSection}>
+                    <span className={styles.legendTitle}>
+                      Relationship Type
+                      <span style={{ color: '#94a3b8', fontSize: '0.68rem', cursor: 'help' }}>ⓘ</span>
+                    </span>
+                    <div className={styles.legendItem}>
+                      <span className={styles.legendLineObserved} />
+                      <span>Observed relationship</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span className={styles.legendLineInferred} />
+                      <span>Inferred relationship</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span className={styles.legendLinePotential} />
+                      <span>Potential impact</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.legendSection}>
+                    <span className={styles.legendTitle}>Node Type</span>
+                    <div className={styles.nodeTypesGrid}>
+                      <div className={styles.legendItem}>
+                        <span className={styles.legendDot} style={{ background: '#EF4444' }} />
+                        <span>Global Event</span>
+                      </div>
+                      <div className={styles.legendItem}>
+                        <span className={styles.legendDot} style={{ background: '#F59E0B' }} />
+                        <span>Commodity</span>
+                      </div>
+                      <div className={styles.legendItem}>
+                        <span className={styles.legendDot} style={{ background: '#3B82F6' }} />
+                        <span>Supply Chain</span>
+                      </div>
+                      <div className={styles.legendItem}>
+                        <span className={styles.legendDot} style={{ background: '#6366F1' }} />
+                        <span>Indian Economy</span>
+                      </div>
+                      <div className={styles.legendItem}>
+                        <span className={styles.legendDot} style={{ background: '#10B981' }} />
+                        <span>Sector</span>
+                      </div>
+                      <div className={styles.legendItem}>
+                        <span className={styles.legendDot} style={{ background: '#0D9488' }} />
+                        <span>Household</span>
+                      </div>
+                      <div className={styles.legendItem}>
+                        <span className={styles.legendDot} style={{ background: '#EAB308' }} />
+                        <span>Investment</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ background: '#F59E0B' }} />
-                <span>Commodity</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ background: '#3B82F6' }} />
-                <span>Supply Chain</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ background: '#6366F1' }} />
-                <span>Indian Economy</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ background: '#10B981' }} />
-                <span>Sector</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ background: '#0D9488' }} />
-                <span>Household</span>
-              </div>
-              <div className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ background: '#EAB308' }} />
-                <span>Investment</span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* SVG Elements Layer */}
