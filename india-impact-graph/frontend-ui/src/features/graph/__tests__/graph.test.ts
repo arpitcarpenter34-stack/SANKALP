@@ -6,6 +6,11 @@ import { computeConnectedChain, computeCausalPaths } from '../graph-traversal';
 import { ImpactGraph } from '../ImpactGraph';
 import { sampleCrudeShockGraph } from '../fixtures/mockGraphData';
 import { DOMAIN_DATASETS, DOMAIN_OPTIONS } from '../domainGraphData';
+import {
+  deriveDomainFilteredGraph,
+  DOMAIN_FILTER_DEFINITIONS,
+  DomainFilterId,
+} from '../domain-filter';
 
 describe('Graph Feature Tests — Layout & Traversal', () => {
   it('Layout Test 1: returns empty array for null or empty data', () => {
@@ -409,5 +414,178 @@ describe('Domain Graph Datasets & Multi-Domain Integrity', () => {
         );
       }
     }
+  });
+});
+
+describe('Domain Filter Integrity & Verification Suite (8 Core Assertions)', () => {
+  it('Domain Definitions: exports exactly the 6 required domains with labels', () => {
+    expect(DOMAIN_FILTER_DEFINITIONS.length).toBe(6);
+    const ids = DOMAIN_FILTER_DEFINITIONS.map((d) => d.id);
+    expect(ids).toEqual(['all', 'petrol', 'lpg', 'semiconductors', 'food', 'currency']);
+  });
+
+  it('Assertion 1: "all" displays the full graph without removing any nodes or edges', () => {
+    const full = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'all', 'transmission');
+    expect(full.nodes.length).toBe(sampleCrudeShockGraph.nodes.length);
+    expect(full.edges.length).toBe(sampleCrudeShockGraph.edges.length);
+
+    const html = renderToStaticMarkup(
+      React.createElement(ImpactGraph, {
+        data: sampleCrudeShockGraph,
+        initialDomain: 'all',
+        selectedPath: 'all',
+      })
+    );
+    expect(html).toContain('Crude Oil');
+    expect(html).toContain('Motor Spirit');
+    expect(html).toContain('Diesel');
+    expect(html).toContain('Mandi Food');
+    expect(html).toContain('Nifty 50');
+  });
+
+  it('Assertion 2: Each domain filter produces expected domain-specific nodes and edges', () => {
+    const petrol = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'petrol', 'transmission');
+    const food = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'food', 'transmission');
+    const currency = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'currency', 'transmission');
+
+    const petrolIds = new Set(petrol.nodes.map((n) => n.id));
+    const foodIds = new Set(food.nodes.map((n) => n.id));
+    const currencyIds = new Set(currency.nodes.map((n) => n.id));
+
+    // Petrol must include fuel nodes and transport path
+    expect(petrolIds.has('petrol')).toBe(true);
+    expect(petrolIds.has('commute_fuel')).toBe(true);
+    expect(petrolIds.has('nifty_50')).toBe(false);
+
+    // Food must include vegetables & produce path
+    expect(foodIds.has('vegetables')).toBe(true);
+    expect(foodIds.has('freight_logistics')).toBe(true);
+    expect(foodIds.has('petrol')).toBe(false);
+    expect(foodIds.has('commute_fuel')).toBe(false);
+
+    // Currency must include RBI and Nifty
+    expect(currencyIds.has('rbi_repo_rate')).toBe(true);
+    expect(currencyIds.has('nifty_50')).toBe(true);
+    expect(currencyIds.has('vegetables')).toBe(false);
+    expect(currencyIds.has('petrol')).toBe(false);
+  });
+
+  it('Assertion 3: Different domains produce distinct and non-identical graphs', () => {
+    const petrol = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'petrol');
+    const food = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'food');
+    const currency = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'currency');
+
+    const petrolNodeIds = petrol.nodes.map((n) => n.id).sort();
+    const foodNodeIds = food.nodes.map((n) => n.id).sort();
+    const currencyNodeIds = currency.nodes.map((n) => n.id).sort();
+
+    expect(petrolNodeIds).not.toEqual(foodNodeIds);
+    expect(petrolNodeIds).not.toEqual(currencyNodeIds);
+    expect(foodNodeIds).not.toEqual(currencyNodeIds);
+  });
+
+  it('Assertion 4: Referential integrity — every rendered edge strictly references nodes present in the filtered graph', () => {
+    const domains: DomainFilterId[] = ['all', 'petrol', 'food', 'currency', 'lpg', 'semiconductors'];
+    for (const d of domains) {
+      for (const view of ['transmission', 'sector'] as const) {
+        const filtered = deriveDomainFilteredGraph(sampleCrudeShockGraph, d, view);
+        const nodeIds = new Set(filtered.nodes.map((n) => n.id));
+
+        for (const edge of filtered.edges) {
+          expect(nodeIds.has(edge.from)).toBe(true);
+          expect(nodeIds.has(edge.to)).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('Assertion 5: Domain switching updates the graph and renders domain-specific components immediately', () => {
+    const htmlFood = renderToStaticMarkup(
+      React.createElement(ImpactGraph, {
+        data: sampleCrudeShockGraph,
+        initialDomain: 'food',
+      })
+    );
+    expect(htmlFood).toContain('Mandi Food &amp; Produce');
+    expect(htmlFood).not.toContain('Motor Spirit');
+
+    const htmlCurrency = renderToStaticMarkup(
+      React.createElement(ImpactGraph, {
+        data: sampleCrudeShockGraph,
+        initialDomain: 'currency',
+      })
+    );
+    expect(htmlCurrency).toContain('Nifty 50');
+    expect(htmlCurrency).toContain('RBI Repo');
+    expect(htmlCurrency).not.toContain('Mandi Food &amp; Produce');
+  });
+
+  it('Assertion 6: Causal paths and animated sequences only traverse nodes/edges in the active domain', () => {
+    const petrolGraph = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'petrol');
+    const layout = computeDeterministicLayout(petrolGraph);
+    const petrolPaths = computeCausalPaths(layout.nodes, layout.edges);
+
+    expect(petrolPaths.length).toBeGreaterThan(0);
+    const petrolNodeSet = new Set(petrolGraph.nodes.map((n) => n.id));
+
+    for (const path of petrolPaths) {
+      for (const nodeId of path.nodeIds) {
+        expect(petrolNodeSet.has(nodeId)).toBe(true);
+      }
+    }
+  });
+
+  it('Assertion 7: Unsupported or empty domains display friendly honest empty state message without errors', () => {
+    const semiFiltered = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'semiconductors');
+    expect(semiFiltered.nodes.length).toBe(0);
+    expect(semiFiltered.edges.length).toBe(0);
+
+    const htmlSemi = renderToStaticMarkup(
+      React.createElement(ImpactGraph, {
+        data: sampleCrudeShockGraph,
+        initialDomain: 'semiconductors',
+      })
+    );
+    expect(htmlSemi).toContain('No impact pathways available for this domain yet.');
+    expect(htmlSemi).toContain('Semiconductors');
+    expect(htmlSemi).toContain('View All Domains');
+    expect(htmlSemi).not.toContain('svgGraph');
+
+    const lpgFiltered = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'lpg');
+    expect(lpgFiltered.nodes.length).toBe(0);
+
+    const htmlLpg = renderToStaticMarkup(
+      React.createElement(ImpactGraph, {
+        data: sampleCrudeShockGraph,
+        initialDomain: 'lpg',
+      })
+    );
+    expect(htmlLpg).toContain('No impact pathways available for this domain yet.');
+    expect(htmlLpg).toContain('LPG / CNG');
+  });
+
+  it('Assertion 8: Both Transmission Flow and Sector View respect domain filtering', () => {
+    const transFiltered = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'food', 'transmission');
+    const sectorFiltered = deriveDomainFilteredGraph(sampleCrudeShockGraph, 'food', 'sector');
+
+    expect(transFiltered.nodes.length).toBeGreaterThan(0);
+    expect(sectorFiltered.nodes.length).toBeGreaterThan(0);
+
+    const transHtml = renderToStaticMarkup(
+      React.createElement(ImpactGraph, {
+        data: sampleCrudeShockGraph,
+        initialDomain: 'food',
+        initialView: 'transmission',
+      })
+    );
+    const sectorHtml = renderToStaticMarkup(
+      React.createElement(ImpactGraph, {
+        data: sampleCrudeShockGraph,
+        initialDomain: 'food',
+        initialView: 'sector',
+      })
+    );
+    expect(transHtml).toContain('Interactive Economic Impact Graph');
+    expect(sectorHtml).toContain('Interactive Economic Impact Graph');
   });
 });

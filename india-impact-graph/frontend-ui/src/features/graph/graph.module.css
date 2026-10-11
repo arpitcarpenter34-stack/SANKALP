@@ -444,6 +444,55 @@
   color: var(--text-muted);
 }
 
+.domainEmptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 380px;
+  padding: 48px 24px;
+  gap: 12px;
+  background-color: #F8FCF9;
+  border: 1px dashed #D8EADF;
+  border-radius: var(--radius-lg);
+  margin: 16px 20px;
+  text-align: center;
+}
+
+.emptyDomainTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #10233F;
+  margin: 0;
+}
+
+.emptyDomainText {
+  font-size: 12.5px;
+  color: #4B6358;
+  max-width: 480px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.resetDomainPillBtn {
+  margin-top: 8px;
+  background-color: var(--accent-emerald, #047857);
+  color: #FFFFFF;
+  border: none;
+  padding: 7px 16px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.resetDomainPillBtn:hover {
+  background-color: #065F46;
+  transform: translateY(-1px);
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+

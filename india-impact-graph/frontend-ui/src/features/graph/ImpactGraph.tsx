@@ -2,9 +2,15 @@ import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react'
 import type {
   GraphCanvasSlotProps,
   KnowledgeGraphData,
+  PropagationPathCategory,
 } from '../../types/contracts';
 import { computeDeterministicLayout } from './graph-layout';
 import { computeConnectedChain, computeCausalPaths } from './graph-traversal';
+import {
+  deriveDomainFilteredGraph,
+  DOMAIN_FILTER_DEFINITIONS,
+  DomainFilterId,
+} from './domain-filter';
 import styles from './graph.module.css';
 
 const STAGE_COLUMNS = [
@@ -15,28 +21,31 @@ const STAGE_COLUMNS = [
   { index: 4, label: 'Household & Investment', bg: '#DCFCE7', border: '#BBF7D0', text: '#166534' },
 ];
 
-const DOMAIN_FILTERS = [
-  { id: 'all', label: 'All domains' },
-  { id: 'petrol', label: 'Petrol & Diesel', icon: '⛽' },
-  { id: 'lpg', label: 'LPG / CNG', icon: '🔥' },
-  { id: 'semiconductors', label: 'Semiconductors', icon: '💻' },
-  { id: 'food', label: 'Food & Agriculture', icon: '🌾' },
-  { id: 'currency', label: 'Currency & Markets', icon: '📈' },
-];
+const DOMAIN_FILTERS = DOMAIN_FILTER_DEFINITIONS;
 
-export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
+export interface ImpactGraphProps extends Omit<GraphCanvasSlotProps, 'selectedPath'> {
+  selectedPath?: PropagationPathCategory | 'all';
+  initialDomain?: DomainFilterId;
+  initialView?: 'transmission' | 'sector';
+  onDomainChange?: (domain: DomainFilterId) => void;
+}
+
+export const ImpactGraph: React.FC<ImpactGraphProps> = ({
   data,
-  selectedPath,
+  selectedPath = 'all',
   onSelectPath,
   selectedNodeId,
   onSelectNode,
   selectedEdgeId,
   onSelectEdge,
   isLoading = false,
+  initialDomain = 'all',
+  initialView = 'transmission',
+  onDomainChange,
 }) => {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [activeView, setActiveView] = useState<'transmission' | 'sector'>('transmission');
-  const [activeDomain, setActiveDomain] = useState<string>('all');
+  const [activeView, setActiveView] = useState<'transmission' | 'sector'>(initialView);
+  const [activeDomain, setActiveDomain] = useState<DomainFilterId>(initialDomain);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Automatic continuous animation state
@@ -50,10 +59,32 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }, []);
 
-  // Compute deterministic layout
+  // 1. Derive single domain-filtered graph model (guarantees referential edge integrity and isolated domain sets)
+  const filteredData = useMemo(() => {
+    return deriveDomainFilteredGraph(data, activeDomain, activeView);
+  }, [data, activeDomain, activeView]);
+
+  // 2. Compute deterministic layout from the domain-filtered data
   const { nodes: rawNodes, edges: rawEdges } = useMemo(() => {
-    return computeDeterministicLayout(data, { width: 1040, height: 420, paddingX: 110, paddingY: 80 });
-  }, [data]);
+    return computeDeterministicLayout(filteredData, { width: 1040, height: 420, paddingX: 110, paddingY: 80 });
+  }, [filteredData]);
+
+  // Reconcile manual selections if node or edge is no longer present in the active domain
+  useEffect(() => {
+    if (selectedNodeId) {
+      const nodeExists = rawNodes.some((n) => n.id === selectedNodeId);
+      if (!nodeExists && onSelectNode) {
+        onSelectNode(null);
+      }
+    }
+    if (selectedEdgeId) {
+      const edgeExists = rawEdges.some((e) => e.id === selectedEdgeId);
+      if (!edgeExists && onSelectEdge) {
+        onSelectEdge(null);
+      }
+    }
+  }, [rawNodes, rawEdges, selectedNodeId, selectedEdgeId, onSelectNode, onSelectEdge]);
+
 
   // Derive valid causal transmission paths from root nodes to terminal impact nodes
   const causalPaths = useMemo(() => {
@@ -388,10 +419,16 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
 
   // Handle domain filter selection
   const handleDomainSelect = (domainId: string) => {
-    setActiveDomain(domainId);
-    // Clear manual node selection so animation runs for newly selected domain
+    const targetDomain = domainId as DomainFilterId;
+    setActiveDomain(targetDomain);
+    if (onDomainChange) onDomainChange(targetDomain);
+    // Clear manual selections so animation traverses the newly selected domain
     if (selectedNodeId && onSelectNode) onSelectNode(null);
     if (selectedEdgeId && onSelectEdge) onSelectEdge(null);
+    if (animTimerRef.current) {
+      clearInterval(animTimerRef.current);
+      animTimerRef.current = null;
+    }
     setAnimStep(0);
     setAnimPathIndex(0);
 
@@ -406,9 +443,28 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
     }
   };
 
+  // Handle view change (Transmission Flow vs Sector View)
+  const handleViewChange = (newView: 'transmission' | 'sector') => {
+    setActiveView(newView);
+    if (selectedNodeId && onSelectNode) onSelectNode(null);
+    if (selectedEdgeId && onSelectEdge) onSelectEdge(null);
+    if (animTimerRef.current) {
+      clearInterval(animTimerRef.current);
+      animTimerRef.current = null;
+    }
+    setAnimStep(0);
+    setAnimPathIndex(0);
+  };
+
+  // Find human-readable label for active domain
+  const activeDomainDef = DOMAIN_FILTERS.find((d) => d.id === activeDomain);
+  const activeDomainLabel = activeDomainDef?.label || 'this domain';
+
   // Node details helper for aesthetic cards matching reference fintech design
   const getNodeDetails = (nodeId: string, nodeLabel: string) => {
     const id = nodeId.toLowerCase();
+    const lbl = nodeLabel.toLowerCase();
+
     if (id.includes('taiwan') || (id.includes('chip') && id.includes('disrupt'))) {
       return {
         title: 'Taiwan Chip Disruption',
@@ -431,7 +487,7 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         glow: false,
       };
     }
-    if (id.includes('crude_oil')) {
+    if (id.includes('crude_oil') || id === 'crude' || id.includes('brent')) {
       return {
         title: 'Crude Oil Brent',
         delta: '+12% Benchmark',
@@ -439,6 +495,50 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         iconBorder: '#FDE68A',
         deltaColor: '#D97706',
         icon: '🛢️',
+        glow: false,
+      };
+    }
+    if (id.includes('petrol') || id.includes('motor_spirit')) {
+      return {
+        title: 'Motor Spirit (Petrol)',
+        delta: '+9.8% Retail pump',
+        iconBg: '#ECFDF5',
+        iconBorder: '#A7F3D0',
+        deltaColor: '#047857',
+        icon: '⛽',
+        glow: false,
+      };
+    }
+    if (id.includes('diesel') || id.includes('hsd')) {
+      return {
+        title: 'Commercial Diesel (HSD)',
+        delta: '+10.5% Pump price',
+        iconBg: '#ECFDF5',
+        iconBorder: '#A7F3D0',
+        deltaColor: '#047857',
+        icon: '⛽',
+        glow: false,
+      };
+    }
+    if (id.includes('vegetable') || id.includes('mandi') || lbl.includes('mandi') || lbl.includes('food')) {
+      return {
+        title: nodeLabel.length > 22 ? 'Mandi Food & Produce' : nodeLabel,
+        delta: '44.52% Rural basket',
+        iconBg: '#FEF3C7',
+        iconBorder: '#FDE68A',
+        deltaColor: '#B45309',
+        icon: '🌾',
+        glow: false,
+      };
+    }
+    if (id.includes('commute') || id.includes('conveyance') || lbl.includes('conveyance')) {
+      return {
+        title: 'Conveyance & Transport',
+        delta: '7.59% Rural MPCE',
+        iconBg: '#E0F2FE',
+        iconBorder: '#BAE6FD',
+        deltaColor: '#0284C7',
+        icon: '🚗',
         glow: false,
       };
     }
@@ -450,6 +550,61 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         iconBorder: '#BAE6FD',
         deltaColor: '#0284C7',
         icon: '🚢',
+        glow: false,
+      };
+    }
+    if (id.includes('rbi') || id.includes('repo')) {
+      return {
+        title: 'RBI Repo Rate Policy',
+        delta: 'Monetary stance',
+        iconBg: '#EDE9FE',
+        iconBorder: '#DDD6FE',
+        deltaColor: '#6366F1',
+        icon: '🏛️',
+        glow: false,
+      };
+    }
+    if (id.includes('cpi') || id.includes('inflation')) {
+      return {
+        title: 'CPI Headline Inflation',
+        delta: '+35 bps passthrough',
+        iconBg: '#EDE9FE',
+        iconBorder: '#DDD6FE',
+        deltaColor: '#6366F1',
+        icon: '📈',
+        glow: false,
+      };
+    }
+    if (id.includes('nifty') || id.includes('equity') || id.includes('stock')) {
+      return {
+        title: 'Nifty 50 Index',
+        delta: 'Capital markets',
+        iconBg: '#F1F5F9',
+        iconBorder: '#CBD5E1',
+        deltaColor: '#475569',
+        icon: '📊',
+        glow: false,
+      };
+    }
+    if (id.includes('lpg') || id.includes('cng') || id.includes('gas')) {
+      return {
+        title: 'LPG / CNG Energy',
+        delta: 'Domestic & transit gas',
+        iconBg: '#FEF3C7',
+        iconBorder: '#FDE68A',
+        deltaColor: '#D97706',
+        icon: '🔥',
+        glow: false,
+      };
+    }
+    if (id.includes('currency') || id.includes('forex') || id.includes('inr') || id.includes('usd')) {
+      return {
+        title: 'INR/USD Exchange Rate',
+        delta: 'Import parity',
+        iconBg: '#EDE9FE',
+        iconBorder: '#DDD6FE',
+        deltaColor: '#6366F1',
+        icon: '💱',
         glow: false,
       };
     }
@@ -475,10 +630,10 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
         glow: false,
       };
     }
-    if (id.includes('household') || id.includes('expense') || id.includes('budget')) {
+    if (id.includes('household') || id.includes('expense') || id.includes('budget') || id.includes('persona')) {
       return {
-        title: 'Household Costs',
-        delta: '+3.5% Electronics',
+        title: 'Household Budget',
+        delta: 'MoSPI HCES 2023-24',
         iconBg: '#FEF3C7',
         iconBorder: '#FDE68A',
         deltaColor: '#D97706',
@@ -559,14 +714,14 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
             <button
               type="button"
               className={`${styles.viewBtn} ${activeView === 'transmission' ? styles.viewBtnActive : ''}`}
-              onClick={() => setActiveView('transmission')}
+              onClick={() => handleViewChange('transmission')}
             >
               Transmission Flow
             </button>
             <button
               type="button"
               className={`${styles.viewBtn} ${activeView === 'sector' ? styles.viewBtnActive : ''}`}
-              onClick={() => setActiveView('sector')}
+              onClick={() => handleViewChange('sector')}
             >
               Sector View
             </button>
@@ -635,12 +790,36 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
       )}
 
       {/* 2. Interactive SVG Graph Canvas with Stylized Fintech Cards */}
-      <div className={styles.svgViewportWrapper} role="region" aria-label="Interactive Economic Impact Graph">
-        <svg
-          viewBox="0 0 1040 420"
-          className={styles.svgGraph}
-          style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}
+      {rawNodes.length === 0 ? (
+        <div
+          className={styles.domainEmptyContainer}
+          role="status"
+          aria-label="No impact pathways available for this domain"
         >
+          <div className={styles.emptyIcon}>◇</div>
+          <h3 className={styles.emptyDomainTitle}>
+            No impact pathways available for this domain yet.
+          </h3>
+          <p className={styles.emptyDomainText}>
+            The active macroeconomic event does not contain verified transmission pathways for{' '}
+            <strong>{activeDomainLabel}</strong>
+            {activeView === 'sector' ? ' in Sector View' : ''}.
+          </p>
+          <button
+            type="button"
+            className={styles.resetDomainPillBtn}
+            onClick={() => handleDomainSelect('all')}
+          >
+            View All Domains
+          </button>
+        </div>
+      ) : (
+        <div className={styles.svgViewportWrapper} role="region" aria-label="Interactive Economic Impact Graph">
+          <svg
+            viewBox="0 0 1040 420"
+            className={styles.svgGraph}
+            style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}
+          >
           <defs>
             {/* Arrowheads for relationship types */}
             <marker
@@ -948,29 +1127,32 @@ export const ImpactGraph: React.FC<GraphCanvasSlotProps> = ({
           </g>
         </svg>
       </div>
+      )}
 
       {/* 3. Legend Bar below Canvas */}
-      <div className={styles.legendRow}>
-        <div className={styles.legendLeft}>
-          <div className={styles.legendItem}>
-            <span className={styles.observedArrow}>→</span>
-            <span className={styles.legendText}>Observed relationship</span>
+      {rawNodes.length > 0 && (
+        <div className={styles.legendRow}>
+          <div className={styles.legendLeft}>
+            <div className={styles.legendItem}>
+              <span className={styles.observedArrow}>→</span>
+              <span className={styles.legendText}>Observed relationship</span>
+            </div>
+
+            <div className={styles.inferredArrow}>- - →</div>
+            <span className={styles.legendText}>Inferred relationship</span>
+
+            <div className={styles.legendItem}>
+              <span className={styles.potentialArrow}>····→</span>
+              <span className={styles.legendText}>Potential impact</span>
+            </div>
           </div>
 
-          <div className={styles.inferredArrow}>- - →</div>
-          <span className={styles.legendText}>Inferred relationship</span>
-
-          <div className={styles.legendItem}>
-            <span className={styles.potentialArrow}>····→</span>
-            <span className={styles.legendText}>Potential impact</span>
+          <div className={styles.legendRightNote}>
+            <span className={styles.noteIcon}>ⓘ</span>
+            <span>Node size indicates relative impact and sector exposure</span>
           </div>
         </div>
-
-        <div className={styles.legendRightNote}>
-          <span className={styles.noteIcon}>ⓘ</span>
-          <span>Node size indicates relative impact and sector exposure</span>
-        </div>
-      </div>
+      )}
 
       {/* 4. Domain Filter Pills Bar */}
       <div className={styles.domainBar}>
